@@ -11,11 +11,20 @@ import {
   Edge,
   Node,
   MarkerType,
+  OnNodesDelete,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode, BaseNodeData } from './BaseNode';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+
+declare global {
+  interface Window {
+    mindmapApi?: {
+      deleteNode: (id: string) => void;
+    };
+  }
+}
 
 const nodeTypes = {
   base: BaseNode,
@@ -56,11 +65,20 @@ export const MindMap = () => {
     [setEdges]
   );
 
+  const deleteNode = useCallback((id: string) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+  }, [setNodes]);
+
+  // Expose the deleteNode function to the window object
+  window.mindmapApi = {
+    deleteNode,
+  };
+
   const addNode = (type: 'rectangle' | 'circle' | 'diamond') => {
-    const newNode: Node<BaseNodeData> = {
+    const newNode = {
       id: `${nodes.length + 1}`,
       type: 'base',
-      data: { label: 'New Node', type },
+      data: { label: 'New Node', type } as BaseNodeData,
       position: {
         x: Math.random() * 500,
         y: Math.random() * 500,
