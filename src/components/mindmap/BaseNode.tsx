@@ -6,10 +6,11 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface BaseNodeData {
   label: string;
-  type?: 'rectangle' | 'circle' | 'diamond';
+  type?: 'rectangle' | 'circle' | 'diamond' | 'transparent';
   backgroundColor?: string;
 }
 
@@ -20,6 +21,7 @@ const colors = [
   'bg-yellow-500',
   'bg-purple-500',
   'bg-pink-500',
+  'bg-transparent',
 ];
 
 export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
@@ -31,6 +33,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
     rectangle: 'rounded-lg',
     circle: 'rounded-full aspect-square',
     diamond: 'rotate-45',
+    transparent: 'rounded-lg bg-opacity-20',
   }[data.type || 'rectangle'];
 
   const handleDoubleClick = () => {
@@ -42,7 +45,8 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       setIsEditing(false);
     }
   };
@@ -65,17 +69,16 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
           />
           <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
           {isEditing ? (
-            <input
-              type="text"
+            <Textarea
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className="bg-transparent text-center outline-none w-full"
+              className="bg-transparent text-center outline-none w-full resize-none"
               autoFocus
             />
           ) : (
-            <div className={data.type === 'diamond' ? '-rotate-45' : ''}>
+            <div className={data.type === 'diamond' ? '-rotate-45' : ''} style={{ whiteSpace: 'pre-wrap' }}>
               {label}
             </div>
           )}
@@ -88,7 +91,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
         </ContextMenuItem>
         {colors.map((color) => (
           <ContextMenuItem key={color} onSelect={() => setBackgroundColor(color)}>
-            <div className={`w-4 h-4 rounded-full ${color} mr-2`} />
+            <div className={`w-4 h-4 rounded-full ${color} mr-2 border border-gray-300`} />
             Set Color
           </ContextMenuItem>
         ))}

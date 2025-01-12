@@ -11,7 +11,6 @@ import {
   Edge,
   Node,
   MarkerType,
-  OnNodesDelete,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode, BaseNodeData } from './BaseNode';
@@ -69,12 +68,11 @@ export const MindMap = () => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
   }, [setNodes]);
 
-  // Expose the deleteNode function to the window object
   window.mindmapApi = {
     deleteNode,
   };
 
-  const addNode = (type: 'rectangle' | 'circle' | 'diamond') => {
+  const addNode = (type: 'rectangle' | 'circle' | 'diamond' | 'transparent') => {
     const newNode = {
       id: `${nodes.length + 1}`,
       type: 'base',
@@ -126,6 +124,7 @@ export const MindMap = () => {
         <Button onClick={() => addNode('rectangle')}>Add Rectangle</Button>
         <Button onClick={() => addNode('circle')}>Add Circle</Button>
         <Button onClick={() => addNode('diamond')}>Add Diamond</Button>
+        <Button onClick={() => addNode('transparent')}>Add Transparent</Button>
         <Button onClick={saveToLocalStorage}>Save</Button>
         <Button onClick={loadFromLocalStorage}>Load</Button>
         <Button onClick={exportToJson}>Export</Button>
