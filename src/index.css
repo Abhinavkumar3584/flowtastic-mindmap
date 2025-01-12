@@ -81,3 +81,12 @@
 .react-flow__minimap {
   @apply bg-white bg-opacity-90 rounded-lg shadow-lg;
 }
+
+/* New toolbar styles */
+.toolbar-button {
+  @apply p-2 rounded-md hover:bg-gray-100 transition-colors;
+}
+
+.toolbar-divider {
+  @apply w-px h-6 bg-gray-200 mx-1;
+}
