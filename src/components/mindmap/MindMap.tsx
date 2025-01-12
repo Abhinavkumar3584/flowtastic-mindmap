@@ -16,6 +16,7 @@ import '@xyflow/react/dist/style.css';
 import { BaseNode, BaseNodeData } from './BaseNode';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { MindMapNode } from './types';
 
 declare global {
   interface Window {
@@ -29,11 +30,21 @@ const nodeTypes = {
   base: BaseNode,
 };
 
-const initialNodes: Node<BaseNodeData>[] = [
+const initialNodes: MindMapNode[] = [
   {
     id: '1',
     type: 'base',
-    data: { label: 'Main Idea', type: 'circle' },
+    data: { 
+      label: 'Main Idea',
+      type: 'circle',
+      backgroundColor: 'white',
+      strokeColor: 'black',
+      strokeWidth: 1,
+      strokeStyle: 'solid',
+      fontSize: 'M',
+      textAlign: 'center',
+      opacity: 1
+    },
     position: { x: 400, y: 200 },
   },
 ];
