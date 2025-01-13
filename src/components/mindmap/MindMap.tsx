@@ -15,7 +15,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { useToast } from '@/components/ui/use-toast';
-import { MindMapNode } from './types';
+import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
@@ -29,12 +29,12 @@ const initialNodes: MindMapNode[] = [
     type: 'base',
     data: { 
       label: 'Main Idea',
-      type: 'circle',
+      nodeType: 'title',
       backgroundColor: 'white',
       strokeColor: 'black',
       strokeWidth: 1,
       strokeStyle: 'solid',
-      fontSize: 'M',
+      fontSize: 'XL',
       textAlign: 'center',
       opacity: 1
     },
@@ -77,17 +77,17 @@ export const MindMap = () => {
   };
 
   const addNode = (type: string) => {
-    const newNode = {
+    const newNode: MindMapNode = {
       id: `${nodes.length + 1}`,
       type: 'base',
       data: { 
         label: type.charAt(0).toUpperCase() + type.slice(1),
-        type: type === 'title' ? 'rectangle' : 'circle',
+        nodeType: type,
         backgroundColor: 'white',
         strokeColor: 'black',
         strokeWidth: 1,
         strokeStyle: 'solid',
-        fontSize: type === 'title' ? 'L' : 'M',
+        fontSize: type === 'title' ? 'XL' : 'M',
         textAlign: 'center',
         opacity: 1
       },

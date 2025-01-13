@@ -8,32 +8,36 @@ import {
 } from "@/components/ui/context-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
-import { MindMapNode, BaseNodeData } from './types';
+import { BaseNodeData } from './types';
 
-const colors = [
-  'bg-blue-500',
-  'bg-green-500',
-  'bg-red-500',
-  'bg-yellow-500',
-  'bg-purple-500',
-  'bg-pink-500',
-  'bg-transparent',
-];
+const getNodeStyle = (nodeType?: string) => {
+  switch (nodeType) {
+    case 'topic':
+      return 'bg-yellow-300 border border-yellow-400';
+    case 'subtopic':
+      return 'bg-[#f5e6d3] border border-[#e6d5c3]';
+    case 'button':
+      return 'bg-blue-500 text-white rounded-md';
+    case 'section':
+      return 'bg-transparent border-2 border-dashed border-gray-300';
+    case 'horizontalLine':
+      return 'h-0.5 bg-gray-300 min-w-[100px]';
+    case 'verticalLine':
+      return 'w-0.5 bg-gray-300 min-h-[100px]';
+    default:
+      return 'bg-white border border-gray-200';
+  }
+};
 
 export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
   const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
-  const shape = {
-    rectangle: 'rounded-lg',
-    circle: 'rounded-full aspect-square',
-    diamond: 'rotate-45',
-    transparent: 'rounded-lg bg-opacity-20',
-  }[data.type || 'rectangle'];
-
   const handleDoubleClick = () => {
-    setIsEditing(true);
+    if (!['horizontalLine', 'verticalLine'].includes(data.nodeType || '')) {
+      setIsEditing(true);
+    }
   };
 
   const handleBlur = () => {
@@ -51,33 +55,24 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
     setNodeData(prev => ({ ...prev, ...updates }));
   };
 
-  const getFontSize = () => {
-    switch (nodeData.fontSize) {
-      case 'S': return 'text-sm';
-      case 'M': return 'text-base';
-      case 'L': return 'text-lg';
-      case 'XL': return 'text-xl';
-      default: return 'text-base';
-    }
-  };
+  const nodeStyle = getNodeStyle(data.nodeType);
 
-  const getBorderStyle = () => {
-    const width = nodeData.strokeWidth || 1;
-    const style = nodeData.strokeStyle || 'solid';
-    const color = nodeData.strokeColor || 'black';
-    return `${width}px ${style} ${color}`;
-  };
+  if (data.nodeType === 'horizontalLine') {
+    return <div className={nodeStyle} />;
+  }
+
+  if (data.nodeType === 'verticalLine') {
+    return <div className={nodeStyle} />;
+  }
 
   return (
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className={`min-w-[100px] min-h-[50px] ${nodeData.backgroundColor || 'bg-white'} 
-                     ${shape} flex items-center justify-center p-4 transition-colors
-                     hover:border-mindmap-node-selected relative ${getFontSize()}`}
+          className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
+                     flex items-center justify-center p-4 transition-colors
+                     hover:border-mindmap-node-selected relative`}
           style={{
-            border: getBorderStyle(),
-            fontFamily: nodeData.fontFamily,
             opacity: nodeData.opacity || 1,
             textAlign: nodeData.textAlign || 'center',
           }}
@@ -85,7 +80,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
         >
           <NodeResizer 
             minWidth={100}
-            minHeight={50}
+            minHeight={40}
             isVisible={selected}
             lineClassName="border-mindmap-primary"
             handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
@@ -101,7 +96,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
               autoFocus
             />
           ) : (
-            <div className={data.type === 'diamond' ? '-rotate-45' : ''} style={{ whiteSpace: 'pre-wrap' }}>
+            <div className={data.nodeType === 'title' ? 'text-xl font-bold' : ''}>
               {label}
             </div>
           )}
@@ -113,12 +108,6 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
         <ContextMenuItem onSelect={() => window.mindmapApi?.deleteNode(id)}>
           Delete Node
         </ContextMenuItem>
-        {colors.map((color) => (
-          <ContextMenuItem key={color} onSelect={() => handleSettingsChange({ backgroundColor: color })}>
-            <div className={`w-4 h-4 rounded-full ${color} mr-2 border border-gray-300`} />
-            Set Color
-          </ContextMenuItem>
-        ))}
       </ContextMenuContent>
     </ContextMenu>
   );
