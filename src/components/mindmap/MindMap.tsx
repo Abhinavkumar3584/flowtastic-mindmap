@@ -36,12 +36,7 @@ const initialNodes: MindMapNode[] = [
       strokeStyle: 'solid',
       fontSize: 'XL',
       textAlign: 'center',
-      opacity: 1,
-      lineStyle: {
-        color: '#CBD5E1',
-        width: 2,
-        style: 'solid'
-      }
+      opacity: 1
     },
     position: { x: 400, y: 200 },
   },
@@ -50,7 +45,7 @@ const initialNodes: MindMapNode[] = [
 const initialEdges: Edge[] = [];
 
 export const MindMap = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BaseNodeData>>(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { toast } = useToast();
 
@@ -87,19 +82,14 @@ export const MindMap = () => {
       type: 'base',
       data: { 
         label: type.charAt(0).toUpperCase() + type.slice(1),
-        nodeType: type as BaseNodeData['nodeType'],
+        nodeType: type,
         backgroundColor: 'white',
         strokeColor: 'black',
         strokeWidth: 1,
         strokeStyle: 'solid',
         fontSize: type === 'title' ? 'XL' : 'M',
         textAlign: 'center',
-        opacity: 1,
-        lineStyle: {
-          color: '#CBD5E1',
-          width: 2,
-          style: 'solid'
-        }
+        opacity: 1
       },
       position: {
         x: Math.random() * 500,
