@@ -11,6 +11,16 @@ export interface BaseNodeData {
   fontSize?: 'S' | 'M' | 'L' | 'XL';
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
+  [key: string]: unknown; // Add index signature
 }
 
 export type MindMapNode = Node<BaseNodeData>;
+
+// Define global mindmap API type
+declare global {
+  interface Window {
+    mindmapApi?: {
+      deleteNode: (id: string) => void;
+    };
+  }
+}

@@ -21,23 +21,101 @@ import {
   ArrowRight,
   SquareAsterisk,
   LayoutGrid,
+  Lock,
+  HandIcon,
+  Diamond,
+  Circle,
+  Share2,
+  Library,
 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ComponentsSidebarProps {
   onAddNode: (type: string) => void;
+  onSave?: () => void;
+  onLoad?: () => void;
+  onExport?: () => void;
 }
 
-export const ComponentsSidebar = ({ onAddNode }: ComponentsSidebarProps) => {
+export const ComponentsSidebar = ({ 
+  onAddNode,
+  onSave,
+  onLoad,
+  onExport
+}: ComponentsSidebarProps) => {
+  const { toast } = useToast();
+
   return (
     <Sidebar variant="floating" className="w-64">
       <SidebarHeader className="border-b">
         <div className="px-2 py-4">
-          <h2 className="text-lg font-semibold">Components</h2>
-          <p className="text-sm text-gray-500">Drag & Drop</p>
+          <h2 className="text-lg font-semibold">Mind Map Tools</h2>
+          <p className="text-sm text-gray-500">Create and manage your mind map</p>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={onSave}
+            >
+              <Lock className="h-4 w-4" />
+              <span>Save</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={onLoad}
+            >
+              <Library className="h-4 w-4" />
+              <span>Load</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={onExport}
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Export</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Basic Shapes</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode('rectangle')}
+            >
+              <Square className="h-4 w-4" />
+              <span>Rectangle</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode('diamond')}
+            >
+              <Diamond className="h-4 w-4" />
+              <span>Diamond</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode('circle')}
+            >
+              <Circle className="h-4 w-4" />
+              <span>Circle</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Components</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1.5 p-2">
             <Button
               variant="ghost"
@@ -78,14 +156,6 @@ export const ComponentsSidebar = ({ onAddNode }: ComponentsSidebarProps) => {
             >
               <Type className="h-4 w-4" />
               <span>Label</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("button")}
-            >
-              <Square className="h-4 w-4" />
-              <span>Button</span>
             </Button>
             <Button
               variant="ghost"

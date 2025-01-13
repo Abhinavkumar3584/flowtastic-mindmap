@@ -14,26 +14,10 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { MindMapNode } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { 
-  Lock, 
-  HandIcon, 
-  Square, 
-  Diamond, 
-  Circle,
-  ArrowRight,
-  Minus,
-  Link2,
-  Type,
-  Image,
-  Shapes,
-  Share2,
-  Library
-} from 'lucide-react';
 
 const nodeTypes = {
   base: BaseNode,
@@ -151,51 +135,13 @@ export const MindMap = () => {
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
-        <ComponentsSidebar onAddNode={addNode} />
+        <ComponentsSidebar 
+          onAddNode={addNode}
+          onSave={saveToLocalStorage}
+          onLoad={loadFromLocalStorage}
+          onExport={exportToJson}
+        />
         <div className="flex-1 relative">
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 bg-white rounded-lg shadow-lg p-2">
-            <Button variant="ghost" size="icon" onClick={saveToLocalStorage}>
-              <Lock className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <HandIcon className="h-4 w-4" />
-            </Button>
-            <div className="w-px h-6 bg-gray-200" />
-            <Button variant="ghost" size="icon" onClick={() => addNode('rectangle')}>
-              <Square className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => addNode('diamond')}>
-              <Diamond className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => addNode('circle')}>
-              <Circle className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Minus className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Link2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Type className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Image className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Shapes className="h-4 w-4" />
-            </Button>
-            <div className="w-px h-6 bg-gray-200" />
-            <Button variant="ghost" size="icon" onClick={exportToJson}>
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={loadFromLocalStorage}>
-              <Library className="h-4 w-4" />
-            </Button>
-          </div>
           <ReactFlow
             nodes={nodes}
             edges={edges}
