@@ -9,9 +9,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { BaseNodeData } from './types';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
-const getNodeStyle = (nodeType?: string) => {
-  switch (nodeType) {
+const getNodeStyle = (data: BaseNodeData) => {
+  switch (data.nodeType) {
     case 'topic':
       return 'bg-yellow-300 border border-yellow-400';
     case 'subtopic':
@@ -21,9 +24,8 @@ const getNodeStyle = (nodeType?: string) => {
     case 'section':
       return 'bg-transparent border-2 border-dashed border-gray-300';
     case 'horizontalLine':
-      return 'h-0.5 bg-gray-300 min-w-[100px]';
     case 'verticalLine':
-      return 'w-0.5 bg-gray-300 min-h-[100px]';
+      return '';
     default:
       return 'bg-white border border-gray-200';
   }
@@ -55,15 +57,193 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
     setNodeData(prev => ({ ...prev, ...updates }));
   };
 
-  const nodeStyle = getNodeStyle(data.nodeType);
-
   if (data.nodeType === 'horizontalLine') {
-    return <div className={nodeStyle} />;
+    return (
+      <div className="relative">
+        <NodeResizer 
+          minWidth={100}
+          minHeight={2}
+          isVisible={selected}
+          lineClassName="border-mindmap-primary"
+          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        />
+        <Handle type="target" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
+        <div 
+          className="h-0.5 bg-gray-300 min-w-[100px]"
+          style={{
+            backgroundColor: nodeData.lineStyle?.color || '#CBD5E1',
+            height: `${nodeData.lineStyle?.width || 2}px`,
+            borderStyle: nodeData.lineStyle?.style || 'solid'
+          }}
+        />
+        <Handle type="source" position={Position.Right} className="w-3 h-3 bg-mindmap-primary" />
+        {selected && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="absolute -top-8 right-0">
+                Line Settings
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="mb-2 font-medium">Line Color</h4>
+                  <div className="flex gap-2">
+                    {['#CBD5E1', '#3B82F6', '#10B981', '#EF4444', '#F59E0B'].map((color) => (
+                      <button
+                        key={color}
+                        className={`w-8 h-8 rounded-full ${
+                          nodeData.lineStyle?.color === color ? 'ring-2 ring-primary' : ''
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleSettingsChange({ 
+                          lineStyle: { 
+                            ...nodeData.lineStyle,
+                            color 
+                          }
+                        })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Width</h4>
+                  <Slider
+                    value={[nodeData.lineStyle?.width || 2]}
+                    min={1}
+                    max={10}
+                    step={1}
+                    onValueChange={([value]) => handleSettingsChange({
+                      lineStyle: {
+                        ...nodeData.lineStyle,
+                        width: value
+                      }
+                    })}
+                  />
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Style</h4>
+                  <div className="flex gap-2">
+                    {['solid', 'dashed'].map((style) => (
+                      <Button
+                        key={style}
+                        variant={nodeData.lineStyle?.style === style ? "default" : "outline"}
+                        onClick={() => handleSettingsChange({
+                          lineStyle: {
+                            ...nodeData.lineStyle,
+                            style: style as 'solid' | 'dashed'
+                          }
+                        })}
+                      >
+                        {style === 'solid' ? '—' : '- -'}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
+      </div>
+    );
   }
 
   if (data.nodeType === 'verticalLine') {
-    return <div className={nodeStyle} />;
+    return (
+      <div className="relative">
+        <NodeResizer 
+          minWidth={2}
+          minHeight={100}
+          isVisible={selected}
+          lineClassName="border-mindmap-primary"
+          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        />
+        <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
+        <div 
+          className="w-0.5 bg-gray-300 min-h-[100px]"
+          style={{
+            backgroundColor: nodeData.lineStyle?.color || '#CBD5E1',
+            width: `${nodeData.lineStyle?.width || 2}px`,
+            borderStyle: nodeData.lineStyle?.style || 'solid'
+          }}
+        />
+        <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
+        {selected && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="absolute -right-20 top-0">
+                Line Settings
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="mb-2 font-medium">Line Color</h4>
+                  <div className="flex gap-2">
+                    {['#CBD5E1', '#3B82F6', '#10B981', '#EF4444', '#F59E0B'].map((color) => (
+                      <button
+                        key={color}
+                        className={`w-8 h-8 rounded-full ${
+                          nodeData.lineStyle?.color === color ? 'ring-2 ring-primary' : ''
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleSettingsChange({ 
+                          lineStyle: { 
+                            ...nodeData.lineStyle,
+                            color 
+                          }
+                        })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Width</h4>
+                  <Slider
+                    value={[nodeData.lineStyle?.width || 2]}
+                    min={1}
+                    max={10}
+                    step={1}
+                    onValueChange={([value]) => handleSettingsChange({
+                      lineStyle: {
+                        ...nodeData.lineStyle,
+                        width: value
+                      }
+                    })}
+                  />
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Style</h4>
+                  <div className="flex gap-2">
+                    {['solid', 'dashed'].map((style) => (
+                      <Button
+                        key={style}
+                        variant={nodeData.lineStyle?.style === style ? "default" : "outline"}
+                        onClick={() => handleSettingsChange({
+                          lineStyle: {
+                            ...nodeData.lineStyle,
+                            style: style as 'solid' | 'dashed'
+                          }
+                        })}
+                      >
+                        {style === 'solid' ? '—' : '- -'}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
+      </div>
+    );
   }
+
+  const nodeStyle = getNodeStyle(data);
 
   return (
     <ContextMenu>
