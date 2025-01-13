@@ -18,6 +18,7 @@ export interface BaseNodeData {
     width: number;
     style: 'solid' | 'dashed';
   };
+  [key: string]: unknown;  // Add index signature for TypeScript compatibility
 }
 
 export type MindMapNode = Node<BaseNodeData>;

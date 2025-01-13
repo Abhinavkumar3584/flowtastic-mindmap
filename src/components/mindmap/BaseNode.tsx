@@ -69,7 +69,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
         />
         <Handle type="target" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
         <div 
-          className="h-0.5 bg-gray-300 min-w-[100px]"
+          className="h-0.5 bg-gray-300 min-w-[100px] w-full"
           style={{
             backgroundColor: nodeData.lineStyle?.color || '#CBD5E1',
             height: `${nodeData.lineStyle?.width || 2}px`,
@@ -162,7 +162,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
         />
         <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
         <div 
-          className="w-0.5 bg-gray-300 min-h-[100px]"
+          className="w-0.5 bg-gray-300 min-h-[100px] h-full"
           style={{
             backgroundColor: nodeData.lineStyle?.color || '#CBD5E1',
             width: `${nodeData.lineStyle?.width || 2}px`,
@@ -250,7 +250,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
       <ContextMenuTrigger>
         <div 
           className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
-                     flex items-center justify-center p-4 transition-colors
+                     flex items-center justify-center p-4
                      hover:border-mindmap-node-selected relative`}
           style={{
             opacity: nodeData.opacity || 1,
