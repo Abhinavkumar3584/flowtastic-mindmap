@@ -15,6 +15,8 @@ import { Slider } from "@/components/ui/slider";
 
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
+    case 'title':
+      return 'bg-transparent'; // Remove background and border for title
     case 'topic':
       return 'bg-yellow-300 border border-yellow-400';
     case 'subtopic':
@@ -161,22 +163,39 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
       <ContextMenuTrigger>
         <div 
           className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
-                     flex items-center justify-center p-4 transition-colors
-                     hover:border-mindmap-node-selected relative`}
+                     flex items-center justify-center p-4
+                     ${data.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''} relative`}
           style={{
             opacity: nodeData.opacity || 1,
             textAlign: nodeData.textAlign || 'center',
           }}
           onDoubleClick={handleDoubleClick}
         >
-          <NodeResizer 
-            minWidth={100}
-            minHeight={40}
-            isVisible={selected}
-            lineClassName="border-mindmap-primary"
-            handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          />
-          <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
+          {data.nodeType !== 'title' && (
+            <NodeResizer 
+              minWidth={100}
+              minHeight={40}
+              isVisible={selected}
+              lineClassName="border-mindmap-primary"
+              handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+            />
+          )}
+          
+          {/* Add handles on all sides for title node */}
+          {data.nodeType === 'title' ? (
+            <>
+              <Handle type="source" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
+              <Handle type="source" position={Position.Right} className="w-3 h-3 bg-mindmap-primary" />
+              <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
+              <Handle type="source" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
+            </>
+          ) : (
+            <>
+              <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
+              <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
+            </>
+          )}
+
           {isEditing ? (
             <Textarea
               value={label}
@@ -191,8 +210,8 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
               {label}
             </div>
           )}
-          <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
-          {selected && <NodeSettings data={nodeData} onChange={handleSettingsChange} />}
+          
+          {selected && data.nodeType !== 'title' && <NodeSettings data={nodeData} onChange={handleSettingsChange} />}
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
