@@ -14,37 +14,19 @@ import {
   AlignLeft,
   Type,
   Square,
-  List,
-  ListTodo,
-  Link,
   Minus,
   ArrowRight,
-  SquareAsterisk,
-  LayoutGrid,
-  Lock,
-  HandIcon,
   Diamond,
   Circle,
-  Share2,
-  Library,
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 
 interface ComponentsSidebarProps {
   onAddNode: (type: string) => void;
-  onSave?: () => void;
-  onLoad?: () => void;
-  onExport?: () => void;
 }
 
 export const ComponentsSidebar = ({ 
   onAddNode,
-  onSave,
-  onLoad,
-  onExport
 }: ComponentsSidebarProps) => {
-  const { toast } = useToast();
-
   return (
     <Sidebar variant="floating" className="w-64">
       <SidebarHeader className="border-b">
@@ -54,36 +36,6 @@ export const ComponentsSidebar = ({
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-1.5 p-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={onSave}
-            >
-              <Lock className="h-4 w-4" />
-              <span>Save</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={onLoad}
-            >
-              <Library className="h-4 w-4" />
-              <span>Load</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={onExport}
-            >
-              <Share2 className="h-4 w-4" />
-              <span>Export</span>
-            </Button>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         <SidebarGroup>
           <SidebarGroupLabel>Basic Shapes</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1.5 p-2">
@@ -160,38 +112,6 @@ export const ComponentsSidebar = ({
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
-              onClick={() => onAddNode("legend")}
-            >
-              <LayoutGrid className="h-4 w-4" />
-              <span>Legend</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("todo")}
-            >
-              <List className="h-4 w-4" />
-              <span>Todo</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("checklist")}
-            >
-              <ListTodo className="h-4 w-4" />
-              <span>Checklist</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("linksGroup")}
-            >
-              <Link className="h-4 w-4" />
-              <span>Links Group</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
               onClick={() => onAddNode("horizontalLine")}
             >
               <Minus className="h-4 w-4" />
@@ -204,14 +124,6 @@ export const ComponentsSidebar = ({
             >
               <ArrowRight className="h-4 w-4 rotate-90" />
               <span>Vertical Line</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("resourceButton")}
-            >
-              <SquareAsterisk className="h-4 w-4" />
-              <span>Resource Button</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -3,7 +3,7 @@ import { Node } from '@xyflow/react';
 export interface BaseNodeData {
   label: string;
   type?: 'rectangle' | 'circle' | 'diamond' | 'transparent';
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'label' | 'button' | 'legend' | 'todo' | 'checklist' | 'linksGroup' | 'horizontalLine' | 'verticalLine' | 'resourceButton' | 'section';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'label' | 'button' | 'section' | 'horizontalLine' | 'verticalLine';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -12,7 +12,7 @@ export interface BaseNodeData {
   fontSize?: 'S' | 'M' | 'L' | 'XL';
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
-  [key: string]: any; // Add index signature for additional properties
+  [key: string]: any;
 }
 
 export type MindMapNode = Node<BaseNodeData>;

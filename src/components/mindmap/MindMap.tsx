@@ -9,12 +9,10 @@ import {
   addEdge,
   Connection,
   Edge,
-  Node,
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
-import { useToast } from '@/components/ui/use-toast';
 import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -47,7 +45,6 @@ const initialEdges: Edge[] = [];
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { toast } = useToast();
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -100,47 +97,10 @@ export const MindMap = () => {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const saveToLocalStorage = () => {
-    localStorage.setItem('mindmap', JSON.stringify({ nodes, edges }));
-    toast({
-      title: "Mind Map Saved",
-      description: "Your mind map has been saved successfully.",
-    });
-  };
-
-  const loadFromLocalStorage = () => {
-    const saved = localStorage.getItem('mindmap');
-    if (saved) {
-      const { nodes: savedNodes, edges: savedEdges } = JSON.parse(saved);
-      setNodes(savedNodes);
-      setEdges(savedEdges);
-      toast({
-        title: "Mind Map Loaded",
-        description: "Your mind map has been loaded successfully.",
-      });
-    }
-  };
-
-  const exportToJson = () => {
-    const dataStr = JSON.stringify({ nodes, edges }, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'mindmap.json';
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
-
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
-        <ComponentsSidebar 
-          onAddNode={addNode}
-          onSave={saveToLocalStorage}
-          onLoad={loadFromLocalStorage}
-          onExport={exportToJson}
-        />
+        <ComponentsSidebar onAddNode={addNode} />
         <div className="flex-1 relative">
           <ReactFlow
             nodes={nodes}
