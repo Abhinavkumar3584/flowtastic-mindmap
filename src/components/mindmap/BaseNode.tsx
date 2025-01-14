@@ -9,6 +9,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { BaseNodeData } from './types';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
@@ -58,7 +61,95 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
   const nodeStyle = getNodeStyle(data.nodeType);
 
   if (data.nodeType === 'horizontalLine') {
-    return <div className={nodeStyle} />;
+    return (
+      <div className="relative group">
+        <NodeResizer 
+          minWidth={100}
+          minHeight={4}
+          isVisible={selected}
+          lineClassName="border-blue-500"
+          handleClassName="h-3 w-3 bg-white border-2 border-blue-500 rounded"
+        />
+        <div 
+          className={`${nodeStyle} transition-all duration-200`}
+          style={{
+            backgroundColor: nodeData.strokeColor || '#e5e7eb',
+            height: `${nodeData.strokeWidth || 2}px`,
+            opacity: nodeData.opacity || 1,
+            borderStyle: nodeData.strokeStyle || 'solid'
+          }}
+        />
+        {selected && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="absolute -right-24 top-1/2 -translate-y-1/2"
+              >
+                Edit Line
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="mb-2 font-medium">Line Color</h4>
+                  <div className="flex gap-2">
+                    {['#e5e7eb', '#000000', '#2563eb', '#dc2626', '#16a34a'].map((color) => (
+                      <button
+                        key={color}
+                        className={`w-8 h-8 rounded-full border ${
+                          nodeData.strokeColor === color ? 'ring-2 ring-blue-500' : ''
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleSettingsChange({ strokeColor: color })}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Width</h4>
+                  <Slider
+                    value={[nodeData.strokeWidth || 2]}
+                    min={1}
+                    max={10}
+                    step={1}
+                    onValueChange={([value]) => handleSettingsChange({ strokeWidth: value })}
+                  />
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Line Style</h4>
+                  <div className="flex gap-2">
+                    {['solid', 'dashed', 'dotted'].map((style) => (
+                      <Button
+                        key={style}
+                        variant={nodeData.strokeStyle === style ? "default" : "outline"}
+                        onClick={() => handleSettingsChange({ strokeStyle: style as 'solid' | 'dashed' | 'dotted' })}
+                      >
+                        {style === 'solid' ? '—' : style === 'dashed' ? '- -' : '...'}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 font-medium">Opacity</h4>
+                  <Slider
+                    value={[nodeData.opacity || 1]}
+                    min={0.1}
+                    max={1}
+                    step={0.1}
+                    onValueChange={([value]) => handleSettingsChange({ opacity: value })}
+                  />
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
+      </div>
+    );
   }
 
   if (data.nodeType === 'verticalLine') {

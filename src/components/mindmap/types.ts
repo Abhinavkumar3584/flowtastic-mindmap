@@ -12,6 +12,7 @@ export interface BaseNodeData {
   fontSize?: 'S' | 'M' | 'L' | 'XL';
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
+  [key: string]: any; // Add index signature for additional properties
 }
 
 export type MindMapNode = Node<BaseNodeData>;
