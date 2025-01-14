@@ -12,10 +12,7 @@ import {
   CircleDot,
   Layers,
   AlignLeft,
-  Type,
   Square,
-  Minus,
-  ArrowRight,
   Diamond,
   Circle,
 } from "lucide-react";
@@ -100,30 +97,6 @@ export const ComponentsSidebar = ({
             >
               <AlignLeft className="h-4 w-4" />
               <span>Paragraph</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("label")}
-            >
-              <Type className="h-4 w-4" />
-              <span>Label</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("horizontalLine")}
-            >
-              <Minus className="h-4 w-4" />
-              <span>Horizontal Line</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("verticalLine")}
-            >
-              <ArrowRight className="h-4 w-4 rotate-90" />
-              <span>Vertical Line</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>

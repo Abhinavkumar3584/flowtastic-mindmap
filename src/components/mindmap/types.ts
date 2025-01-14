@@ -2,7 +2,7 @@ import { Node } from '@xyflow/react';
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'horizontalLine' | 'verticalLine';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'rectangle' | 'diamond' | 'circle';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
