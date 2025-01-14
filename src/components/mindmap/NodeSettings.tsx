@@ -6,7 +6,6 @@ import { BaseNodeData } from "./types";
 const strokeColors = ['black', 'red', 'green', 'blue', 'orange', 'black'];
 const backgroundColors = ['white', 'pink', 'lightgreen', 'lightblue', 'lightyellow', 'transparent'];
 const fontFamilies = ['serif', 'sans-serif', 'monospace', 'cursive'];
-const fontSizes = ['S', 'M', 'L', 'XL'] as const;
 const strokeStyles = ['solid', 'dashed', 'dotted'] as const;
 const textAligns = ['left', 'center', 'right'] as const;
 
@@ -25,6 +24,20 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
       </SheetTrigger>
       <SheetContent>
         <div className="space-y-6">
+          <div>
+            <h4 className="mb-2 font-medium">Font Size</h4>
+            <Slider
+              value={[data.fontSize || 12]}
+              min={10}
+              max={32}
+              step={1}
+              onValueChange={([value]) => onChange({ fontSize: value })}
+            />
+            <div className="mt-1 text-sm text-gray-500">
+              {data.fontSize || 12}px
+            </div>
+          </div>
+
           <div>
             <h4 className="mb-2 font-medium">Stroke Color</h4>
             <div className="flex gap-2">
@@ -94,21 +107,6 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                   style={{ fontFamily: font }}
                 >
                   Aa
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="mb-2 font-medium">Font Size</h4>
-            <div className="flex gap-2">
-              {fontSizes.map((size) => (
-                <Button
-                  key={size}
-                  variant={data.fontSize === size ? "default" : "outline"}
-                  onClick={() => onChange({ fontSize: size })}
-                >
-                  {size}
                 </Button>
               ))}
             </div>

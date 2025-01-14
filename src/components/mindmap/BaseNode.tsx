@@ -16,7 +16,7 @@ import { Slider } from "@/components/ui/slider";
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
     case 'title':
-      return 'bg-transparent'; // Remove background and border for title
+      return 'bg-transparent'; 
     case 'topic':
       return 'bg-yellow-300 border border-yellow-400';
     case 'subtopic':
@@ -81,6 +81,8 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
             borderStyle: nodeData.strokeStyle || 'solid'
           }}
         />
+        <Handle type="target" position={Position.Left} />
+        <Handle type="source" position={Position.Right} />
         {selected && (
           <Sheet>
             <SheetTrigger asChild>
@@ -155,7 +157,12 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
   }
 
   if (data.nodeType === 'verticalLine') {
-    return <div className={nodeStyle} />;
+    return (
+      <div className={nodeStyle}>
+        <Handle type="target" position={Position.Top} />
+        <Handle type="source" position={Position.Bottom} />
+      </div>
+    );
   }
 
   return (
@@ -168,6 +175,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
           style={{
             opacity: nodeData.opacity || 1,
             textAlign: nodeData.textAlign || 'center',
+            fontSize: `${nodeData.fontSize || 12}px`,
           }}
           onDoubleClick={handleDoubleClick}
         >
@@ -181,20 +189,10 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
             />
           )}
           
-          {/* Add handles on all sides for title node */}
-          {data.nodeType === 'title' ? (
-            <>
-              <Handle type="source" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
-              <Handle type="source" position={Position.Right} className="w-3 h-3 bg-mindmap-primary" />
-              <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
-              <Handle type="source" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
-            </>
-          ) : (
-            <>
-              <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
-              <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
-            </>
-          )}
+          <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
+          <Handle type="source" position={Position.Right} className="w-3 h-3 bg-mindmap-primary" />
+          <Handle type="target" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
+          <Handle type="source" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
 
           {isEditing ? (
             <Textarea
@@ -204,6 +202,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
               onKeyDown={handleKeyDown}
               className="bg-transparent text-center outline-none w-full resize-none"
               autoFocus
+              style={{ fontSize: `${nodeData.fontSize || 12}px` }}
             />
           ) : (
             <div className={data.nodeType === 'title' ? 'text-xl font-bold' : ''}>
@@ -211,7 +210,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
             </div>
           )}
           
-          {selected && data.nodeType !== 'title' && <NodeSettings data={nodeData} onChange={handleSettingsChange} />}
+          {selected && <NodeSettings data={nodeData} onChange={handleSettingsChange} />}
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
