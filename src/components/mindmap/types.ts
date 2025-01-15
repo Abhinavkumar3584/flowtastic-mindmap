@@ -1,6 +1,6 @@
 import { Node, NodeProps } from '@xyflow/react';
 
-export interface BaseNodeData extends Record<string, unknown> {
+export interface BaseNodeData {
   label: string;
   nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'rectangle' | 'diamond' | 'circle';
   backgroundColor?: string;
