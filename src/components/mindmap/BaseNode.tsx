@@ -1,5 +1,5 @@
 import { NodeResizer } from '@xyflow/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -35,23 +35,26 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [label, setLabel] = useState(data.label);
   const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
+  useEffect(() => {
+    setNodeData(data);
+    setLabel(data.label);
+  }, [data]);
+
   const handleDoubleClick = () => {
     setIsEditing(true);
   };
 
   const handleBlur = () => {
     setIsEditing(false);
+    window.mindmapApi?.updateNodeData(id, { label });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       setIsEditing(false);
+      window.mindmapApi?.updateNodeData(id, { label });
     }
-  };
-
-  const handleSettingsChange = (updates: Partial<BaseNodeData>) => {
-    setNodeData(prev => ({ ...prev, ...updates }));
   };
 
   const nodeStyle = getNodeStyle(nodeData.nodeType);
@@ -66,9 +69,14 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                      flex items-center justify-center p-4 relative
                      ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
           style={{
+            backgroundColor: nodeData.backgroundColor,
+            borderColor: nodeData.strokeColor,
+            borderWidth: nodeData.strokeWidth,
+            borderStyle: nodeData.strokeStyle,
             opacity: nodeData.opacity || 1,
             textAlign: nodeData.textAlign || 'center',
             fontSize: `${nodeData.fontSize || 12}px`,
+            fontFamily: nodeData.fontFamily,
             transform: isDiamond ? 'rotate(45deg)' : 'none',
             aspectRatio: isCircle ? '1 / 1' : 'auto',
           }}
@@ -105,16 +113,22 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                 onKeyDown={handleKeyDown}
                 className="bg-transparent text-center outline-none w-full resize-none"
                 autoFocus
-                style={{ fontSize: `${nodeData.fontSize || 12}px` }}
+                style={{ 
+                  fontSize: `${nodeData.fontSize || 12}px`,
+                  fontFamily: nodeData.fontFamily 
+                }}
               />
             ) : (
-              <div className={nodeData.nodeType === 'title' ? 'text-xl font-bold' : ''}>
+              <div 
+                className={nodeData.nodeType === 'title' ? 'text-xl font-bold' : ''}
+                style={{ fontFamily: nodeData.fontFamily }}
+              >
                 {label}
               </div>
             )}
           </div>
           
-          {selected && <NodeSettings data={nodeData} onChange={handleSettingsChange} />}
+          {selected && <NodeSettings data={nodeData} nodeId={id} />}
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>

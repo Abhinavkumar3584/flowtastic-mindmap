@@ -11,10 +11,14 @@ const textAligns = ['left', 'center', 'right'] as const;
 
 interface NodeSettingsProps {
   data: BaseNodeData;
-  onChange: (updates: Partial<BaseNodeData>) => void;
+  nodeId: string;
 }
 
-export function NodeSettings({ data, onChange }: NodeSettingsProps) {
+export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
+  const handleChange = (updates: Partial<BaseNodeData>) => {
+    window.mindmapApi?.updateNodeData(nodeId, updates);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -31,7 +35,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
               min={10}
               max={32}
               step={1}
-              onValueChange={([value]) => onChange({ fontSize: value })}
+              onValueChange={([value]) => handleChange({ fontSize: value })}
             />
             <div className="mt-1 text-sm text-gray-500">
               {data.fontSize || 12}px
@@ -48,7 +52,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                     data.strokeColor === color ? 'ring-2 ring-primary' : ''
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => onChange({ strokeColor: color })}
+                  onClick={() => handleChange({ strokeColor: color })}
                 />
               ))}
             </div>
@@ -64,7 +68,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                     data.backgroundColor === color ? 'ring-2 ring-primary' : ''
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => onChange({ backgroundColor: color })}
+                  onClick={() => handleChange({ backgroundColor: color })}
                 />
               ))}
             </div>
@@ -77,7 +81,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
               min={1}
               max={5}
               step={1}
-              onValueChange={([value]) => onChange({ strokeWidth: value })}
+              onValueChange={([value]) => handleChange({ strokeWidth: value })}
             />
           </div>
 
@@ -88,7 +92,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                 <Button
                   key={style}
                   variant={data.strokeStyle === style ? "default" : "outline"}
-                  onClick={() => onChange({ strokeStyle: style })}
+                  onClick={() => handleChange({ strokeStyle: style })}
                 >
                   {style === 'solid' ? '—' : style === 'dashed' ? '- -' : '...'}
                 </Button>
@@ -103,7 +107,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                 <Button
                   key={font}
                   variant={data.fontFamily === font ? "default" : "outline"}
-                  onClick={() => onChange({ fontFamily: font })}
+                  onClick={() => handleChange({ fontFamily: font })}
                   style={{ fontFamily: font }}
                 >
                   Aa
@@ -119,7 +123,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
                 <Button
                   key={align}
                   variant={data.textAlign === align ? "default" : "outline"}
-                  onClick={() => onChange({ textAlign: align })}
+                  onClick={() => handleChange({ textAlign: align })}
                 >
                   {align === 'left' ? '⇤' : align === 'center' ? '⇔' : '⇥'}
                 </Button>
@@ -134,7 +138,7 @@ export function NodeSettings({ data, onChange }: NodeSettingsProps) {
               min={0.1}
               max={1}
               step={0.1}
-              onValueChange={([value]) => onChange({ opacity: value })}
+              onValueChange={([value]) => handleChange({ opacity: value })}
             />
           </div>
         </div>

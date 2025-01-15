@@ -69,8 +69,26 @@ export const MindMap = () => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
   }, [setNodes]);
 
+  const updateNodeData = useCallback((id: string, newData: Partial<BaseNodeData>) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...newData,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  }, [setNodes]);
+
   window.mindmapApi = {
     deleteNode,
+    updateNodeData,
   };
 
   const addNode = (type: BaseNodeData['nodeType']) => {

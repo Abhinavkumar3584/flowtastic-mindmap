@@ -20,6 +20,7 @@ declare global {
   interface Window {
     mindmapApi?: {
       deleteNode: (id: string) => void;
+      updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
     };
   }
 }
