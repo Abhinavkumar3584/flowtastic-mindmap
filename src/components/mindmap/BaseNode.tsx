@@ -1,4 +1,4 @@
-import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
+import { NodeResizer } from '@xyflow/react';
 import { useState } from 'react';
 import {
   ContextMenu,
@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/context-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
-import { BaseNodeData } from './types';
+import { NodeConnectors } from './NodeConnectors';
+import { MindMapNodeProps } from './types';
 
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
@@ -29,10 +30,10 @@ const getNodeStyle = (nodeType?: string) => {
   }
 };
 
-export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
+export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
-  const [nodeData, setNodeData] = useState<BaseNodeData>(data);
+  const [nodeData, setNodeData] = useState(data);
 
   const handleDoubleClick = () => {
     setIsEditing(true);
@@ -49,11 +50,11 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
     }
   };
 
-  const handleSettingsChange = (updates: Partial<BaseNodeData>) => {
+  const handleSettingsChange = (updates: Partial<typeof data>) => {
     setNodeData(prev => ({ ...prev, ...updates }));
   };
 
-  const nodeStyle = getNodeStyle(data.nodeType);
+  const nodeStyle = getNodeStyle(data.nodeType as string);
   const isDiamond = data.nodeType === 'diamond';
   const isCircle = data.nodeType === 'circle';
 
@@ -65,8 +66,8 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
                      flex items-center justify-center p-4 relative
                      ${data.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
           style={{
-            opacity: nodeData.opacity || 1,
-            textAlign: nodeData.textAlign || 'center',
+            opacity: nodeData.opacity as number || 1,
+            textAlign: (nodeData.textAlign as 'left' | 'center' | 'right') || 'center',
             fontSize: `${nodeData.fontSize || 12}px`,
             transform: isDiamond ? 'rotate(45deg)' : 'none',
             aspectRatio: isCircle ? '1 / 1' : 'auto',
@@ -84,30 +85,7 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
             />
           )}
           
-          <Handle 
-            type="target" 
-            position={Position.Top} 
-            className="w-3 h-3 bg-mindmap-primary !important"
-            id="top"
-          />
-          <Handle 
-            type="source" 
-            position={Position.Right} 
-            className="w-3 h-3 bg-mindmap-primary !important"
-            id="right"
-          />
-          <Handle 
-            type="target" 
-            position={Position.Bottom} 
-            className="w-3 h-3 bg-mindmap-primary !important"
-            id="bottom"
-          />
-          <Handle 
-            type="source" 
-            position={Position.Left} 
-            className="w-3 h-3 bg-mindmap-primary !important"
-            id="left"
-          />
+          <NodeConnectors />
 
           <div 
             style={{ 

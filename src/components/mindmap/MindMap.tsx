@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -32,7 +32,7 @@ const initialNodes: MindMapNode[] = [
       strokeColor: 'black',
       strokeWidth: 1,
       strokeStyle: 'solid',
-      fontSize: 'XL',
+      fontSize: 12,
       textAlign: 'center',
       opacity: 1
     },
@@ -43,7 +43,7 @@ const initialNodes: MindMapNode[] = [
 const initialEdges: Edge[] = [];
 
 export const MindMap = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback(
@@ -73,7 +73,9 @@ export const MindMap = () => {
     deleteNode,
   };
 
-  const addNode = (type: string) => {
+  const addNode = (type: BaseNodeData['nodeType']) => {
+    if (!type) return;
+    
     const newNode: MindMapNode = {
       id: `${nodes.length + 1}`,
       type: 'base',
@@ -84,7 +86,7 @@ export const MindMap = () => {
         strokeColor: 'black',
         strokeWidth: 1,
         strokeStyle: 'solid',
-        fontSize: type === 'title' ? 'XL' : 'M',
+        fontSize: type === 'title' ? 12 : 12,
         textAlign: 'center',
         opacity: 1
       },
