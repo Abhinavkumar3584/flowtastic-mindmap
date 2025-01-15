@@ -9,7 +9,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
-import { MindMapNodeProps } from './types';
+import { MindMapNodeProps, BaseNodeData } from './types';
 
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
@@ -33,7 +33,7 @@ const getNodeStyle = (nodeType?: string) => {
 export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
-  const [nodeData, setNodeData] = useState(data);
+  const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
   const handleDoubleClick = () => {
     setIsEditing(true);
@@ -50,13 +50,13 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
     }
   };
 
-  const handleSettingsChange = (updates: Partial<typeof data>) => {
+  const handleSettingsChange = (updates: Partial<BaseNodeData>) => {
     setNodeData(prev => ({ ...prev, ...updates }));
   };
 
-  const nodeStyle = getNodeStyle(data.nodeType as string);
-  const isDiamond = data.nodeType === 'diamond';
-  const isCircle = data.nodeType === 'circle';
+  const nodeStyle = getNodeStyle(nodeData.nodeType);
+  const isDiamond = nodeData.nodeType === 'diamond';
+  const isCircle = nodeData.nodeType === 'circle';
 
   return (
     <ContextMenu>
@@ -64,17 +64,17 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
         <div 
           className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
                      flex items-center justify-center p-4 relative
-                     ${data.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
+                     ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
           style={{
-            opacity: nodeData.opacity as number || 1,
-            textAlign: (nodeData.textAlign as 'left' | 'center' | 'right') || 'center',
+            opacity: nodeData.opacity || 1,
+            textAlign: nodeData.textAlign || 'center',
             fontSize: `${nodeData.fontSize || 12}px`,
             transform: isDiamond ? 'rotate(45deg)' : 'none',
             aspectRatio: isCircle ? '1 / 1' : 'auto',
           }}
           onDoubleClick={handleDoubleClick}
         >
-          {data.nodeType !== 'title' && (
+          {nodeData.nodeType !== 'title' && (
             <NodeResizer 
               minWidth={100}
               minHeight={isCircle ? 100 : 40}
@@ -108,7 +108,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                 style={{ fontSize: `${nodeData.fontSize || 12}px` }}
               />
             ) : (
-              <div className={data.nodeType === 'title' ? 'text-xl font-bold' : ''}>
+              <div className={nodeData.nodeType === 'title' ? 'text-xl font-bold' : ''}>
                 {label}
               </div>
             )}
