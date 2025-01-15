@@ -84,10 +84,30 @@ export const BaseNode = ({ data, id, selected }: NodeProps<BaseNodeData>) => {
             />
           )}
           
-          <Handle type="target" position={Position.Top} className="w-3 h-3 bg-mindmap-primary" />
-          <Handle type="source" position={Position.Right} className="w-3 h-3 bg-mindmap-primary" />
-          <Handle type="target" position={Position.Bottom} className="w-3 h-3 bg-mindmap-primary" />
-          <Handle type="source" position={Position.Left} className="w-3 h-3 bg-mindmap-primary" />
+          <Handle 
+            type="target" 
+            position={Position.Top} 
+            className="w-3 h-3 bg-mindmap-primary !important"
+            id="top"
+          />
+          <Handle 
+            type="source" 
+            position={Position.Right} 
+            className="w-3 h-3 bg-mindmap-primary !important"
+            id="right"
+          />
+          <Handle 
+            type="target" 
+            position={Position.Bottom} 
+            className="w-3 h-3 bg-mindmap-primary !important"
+            id="bottom"
+          />
+          <Handle 
+            type="source" 
+            position={Position.Left} 
+            className="w-3 h-3 bg-mindmap-primary !important"
+            id="left"
+          />
 
           <div 
             style={{ 
