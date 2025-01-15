@@ -1,13 +1,13 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { BaseNodeData } from "./types";
+import { BaseNodeData, FontSize } from "./types";
 
 const strokeColors = ['black', 'red', 'green', 'blue', 'orange', 'black'];
 const backgroundColors = ['white', 'pink', 'lightgreen', 'lightblue', 'lightyellow', 'transparent'];
 const fontFamilies = ['serif', 'sans-serif', 'monospace', 'cursive'];
 const strokeStyles = ['solid', 'dashed', 'dotted'] as const;
 const textAligns = ['left', 'center', 'right'] as const;
+const fontSizes: FontSize[] = ['xs', 's', 'm', 'l', 'xl'];
 
 interface NodeSettingsProps {
   data: BaseNodeData;
@@ -30,15 +30,17 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
         <div className="space-y-6">
           <div>
             <h4 className="mb-2 font-medium">Font Size</h4>
-            <Slider
-              value={[data.fontSize || 12]}
-              min={10}
-              max={32}
-              step={1}
-              onValueChange={([value]) => handleChange({ fontSize: value })}
-            />
-            <div className="mt-1 text-sm text-gray-500">
-              {data.fontSize || 12}px
+            <div className="flex gap-2">
+              {fontSizes.map((size) => (
+                <Button
+                  key={size}
+                  variant={data.fontSize === size ? "default" : "outline"}
+                  onClick={() => handleChange({ fontSize: size })}
+                  className="w-10"
+                >
+                  {size.toUpperCase()}
+                </Button>
+              ))}
             </div>
           </div>
 
@@ -72,17 +74,6 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
                 />
               ))}
             </div>
-          </div>
-
-          <div>
-            <h4 className="mb-2 font-medium">Stroke Width</h4>
-            <Slider
-              value={[data.strokeWidth || 1]}
-              min={1}
-              max={5}
-              step={1}
-              onValueChange={([value]) => handleChange({ strokeWidth: value })}
-            />
           </div>
 
           <div>
@@ -132,14 +123,18 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
           </div>
 
           <div>
-            <h4 className="mb-2 font-medium">Opacity</h4>
-            <Slider
-              value={[data.opacity || 1]}
-              min={0.1}
-              max={1}
-              step={0.1}
-              onValueChange={([value]) => handleChange({ opacity: value })}
-            />
+            <h4 className="mb-2 font-medium">Stroke Width</h4>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((width) => (
+                <Button
+                  key={width}
+                  variant={data.strokeWidth === width ? "default" : "outline"}
+                  onClick={() => handleChange({ strokeWidth: width })}
+                >
+                  {width}px
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </SheetContent>

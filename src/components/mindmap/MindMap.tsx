@@ -32,7 +32,7 @@ const initialNodes: MindMapNode[] = [
       strokeColor: 'black',
       strokeWidth: 1,
       strokeStyle: 'solid',
-      fontSize: 12,
+      fontSize: 'xs',
       textAlign: 'center',
       opacity: 1
     },
@@ -104,7 +104,7 @@ export const MindMap = () => {
         strokeColor: 'black',
         strokeWidth: 1,
         strokeStyle: 'solid',
-        fontSize: type === 'title' ? 12 : 12,
+        fontSize: 'xs',
         textAlign: 'center',
         opacity: 1
       },

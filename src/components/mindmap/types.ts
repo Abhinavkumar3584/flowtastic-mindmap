@@ -1,5 +1,7 @@
 import { Node, NodeProps } from '@xyflow/react';
 
+export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
+
 export interface BaseNodeData extends Record<string, unknown> {
   label: string;
   nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'rectangle' | 'diamond' | 'circle';
@@ -8,7 +10,7 @@ export interface BaseNodeData extends Record<string, unknown> {
   strokeWidth?: number;
   strokeStyle?: 'solid' | 'dashed' | 'dotted';
   fontFamily?: string;
-  fontSize?: number;
+  fontSize?: FontSize;
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
 }
