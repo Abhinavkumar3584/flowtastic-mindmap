@@ -13,12 +13,12 @@ import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
 
 const getFontSize = (size: FontSize | undefined): number => {
   switch (size) {
-    case 'xs': return 12;
-    case 's': return 14;
-    case 'm': return 16;
-    case 'l': return 20;
-    case 'xl': return 24;
-    default: return 12;
+    case 'xs': return 10;
+    case 's': return 12;
+    case 'm': return 14;
+    case 'l': return 16;
+    case 'xl': return 20;
+    default: return 10;
   }
 };
 
@@ -78,7 +78,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
       <ContextMenuTrigger>
         <div 
           className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
-                     flex items-center justify-center relative
+                     flex flex-col items-center justify-start relative p-4
                      ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
           style={{
             backgroundColor: nodeData.backgroundColor,
@@ -89,7 +89,6 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
             textAlign: nodeData.textAlign || 'center',
             transform: isDiamond ? 'rotate(45deg)' : 'none',
             aspectRatio: isCircle ? '1 / 1' : 'auto',
-            padding: '4px',
           }}
           onDoubleClick={handleDoubleClick}
         >
@@ -112,8 +111,8 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
               width: '100%',
               height: '100%',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              flexDirection: 'column',
+              gap: '0.5rem'
             }}
           >
             {isEditing ? (
@@ -131,15 +130,43 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                 }}
               />
             ) : (
-              <div 
-                className="w-full p-2 whitespace-pre-wrap break-words leading-normal"
-                style={{ 
-                  fontSize: `${fontSize}px`,
-                  fontFamily: nodeData.fontFamily
-                }}
-              >
-                {label}
-              </div>
+              <>
+                <div 
+                  className="w-full p-2 whitespace-pre-wrap break-words leading-normal"
+                  style={{ 
+                    fontSize: `${fontSize}px`,
+                    fontFamily: nodeData.fontFamily
+                  }}
+                >
+                  {label}
+                </div>
+
+                {nodeData.content && nodeData.content.length > 0 && (
+                  <div className="w-full space-y-2 border-t pt-2">
+                    {nodeData.content.map((item) => (
+                      <div key={item.id} className="text-sm">
+                        {item.text}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {nodeData.links && nodeData.links.length > 0 && (
+                  <div className="w-full space-y-1 border-t pt-2">
+                    {nodeData.links.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline text-sm block"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
           

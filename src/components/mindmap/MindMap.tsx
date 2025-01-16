@@ -34,7 +34,9 @@ const initialNodes: MindMapNode[] = [
       strokeStyle: 'solid',
       fontSize: 'xs',
       textAlign: 'center',
-      opacity: 1
+      opacity: 1,
+      content: [],
+      links: []
     },
     position: { x: 400, y: 200 },
   },
@@ -106,7 +108,9 @@ export const MindMap = () => {
         strokeStyle: 'solid',
         fontSize: 'xs',
         textAlign: 'center',
-        opacity: 1
+        opacity: 1,
+        content: [],
+        links: []
       },
       position: {
         x: Math.random() * 500,
