@@ -10,18 +10,14 @@ import {
   Connection,
   Edge,
   MarkerType,
-  NodeTypes,
-  Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 
-const nodeTypes: NodeTypes = {
+const nodeTypes = {
   base: BaseNode,
 };
 
@@ -38,9 +34,7 @@ const initialNodes: MindMapNode[] = [
       strokeStyle: 'solid',
       fontSize: 'xs',
       textAlign: 'center',
-      opacity: 1,
-      content: [],
-      links: []
+      opacity: 1
     },
     position: { x: 400, y: 200 },
   },
@@ -49,9 +43,8 @@ const initialNodes: MindMapNode[] = [
 const initialEdges: Edge[] = [];
 
 export const MindMap = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BaseNodeData>>(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { toast } = useToast();
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -113,9 +106,7 @@ export const MindMap = () => {
         strokeStyle: 'solid',
         fontSize: 'xs',
         textAlign: 'center',
-        opacity: 1,
-        content: [],
-        links: []
+        opacity: 1
       },
       position: {
         x: Math.random() * 500,
@@ -126,43 +117,11 @@ export const MindMap = () => {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const exportMindMap = () => {
-    const mindMapData = {
-      nodes,
-      edges,
-    };
-
-    const jsonString = JSON.stringify(mindMapData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'mindmap.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    const viewerUrl = `/viewer.html`;
-    window.open(viewerUrl, '_blank');
-
-    toast({
-      title: "Mind Map Exported",
-      description: "Your mind map has been exported as JSON. Opening viewer in new tab.",
-    });
-  };
-
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
         <div className="flex-1 relative">
-          <div className="absolute top-4 right-4 z-10">
-            <Button onClick={exportMindMap}>
-              Export Mind Map
-            </Button>
-          </div>
           <ReactFlow
             nodes={nodes}
             edges={edges}
