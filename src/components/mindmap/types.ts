@@ -14,7 +14,7 @@ export interface ContentItem {
   type: 'text' | 'heading' | 'list';
 }
 
-export interface BaseNodeData {
+export interface BaseNodeData extends Record<string, unknown> {
   label: string;
   nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'rectangle' | 'diamond' | 'circle';
   backgroundColor?: string;
