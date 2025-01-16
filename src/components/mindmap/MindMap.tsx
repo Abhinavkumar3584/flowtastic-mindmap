@@ -10,6 +10,7 @@ import {
   Connection,
   Edge,
   MarkerType,
+  NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -17,7 +18,7 @@ import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   base: BaseNode,
 };
 

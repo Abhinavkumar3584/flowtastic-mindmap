@@ -9,6 +9,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
+import { NodeContentDialog } from './NodeContentDialog';
 import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
 
 const getFontSize = (size: FontSize | undefined): number => {
@@ -43,16 +44,23 @@ const getNodeStyle = (nodeType?: string) => {
 
 export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [label, setLabel] = useState(data.label || '');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [label, setLabel] = useState(data.label);
   const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
   useEffect(() => {
     setNodeData(data);
-    setLabel(data.label || '');
+    setLabel(data.label);
   }, [data]);
 
   const handleDoubleClick = () => {
     setIsEditing(true);
+  };
+
+  const handleClick = () => {
+    if (!isEditing && (nodeData.content?.length || nodeData.links?.length)) {
+      setIsDialogOpen(true);
+    }
   };
 
   const handleBlur = () => {
@@ -71,66 +79,67 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const nodeStyle = getNodeStyle(nodeData.nodeType);
   const isDiamond = nodeData.nodeType === 'diamond';
   const isCircle = nodeData.nodeType === 'circle';
-  const fontSize = getFontSize(nodeData.fontSize as FontSize);
+  const fontSize = getFontSize(nodeData.fontSize);
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <div 
-          className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
-                     flex flex-col items-center justify-start relative p-4
-                     ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
-          style={{
-            backgroundColor: nodeData.backgroundColor,
-            borderColor: nodeData.strokeColor,
-            borderWidth: nodeData.strokeWidth,
-            borderStyle: nodeData.strokeStyle,
-            opacity: nodeData.opacity || 1,
-            textAlign: nodeData.textAlign || 'center',
-            transform: isDiamond ? 'rotate(45deg)' : 'none',
-            aspectRatio: isCircle ? '1 / 1' : 'auto',
-          }}
-          onDoubleClick={handleDoubleClick}
-        >
-          {nodeData.nodeType !== 'title' && (
-            <NodeResizer 
-              minWidth={100}
-              minHeight={isCircle ? 100 : 40}
-              isVisible={selected}
-              lineClassName="border-mindmap-primary"
-              handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-              keepAspectRatio={isCircle}
-            />
-          )}
-          
-          <NodeConnectors />
-
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger>
           <div 
-            style={{ 
-              transform: isDiamond ? 'rotate(-45deg)' : 'none',
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem'
+            className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
+                       flex flex-col items-center justify-start relative p-4
+                       ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected cursor-pointer' : ''}`}
+            style={{
+              backgroundColor: nodeData.backgroundColor,
+              borderColor: nodeData.strokeColor,
+              borderWidth: nodeData.strokeWidth,
+              borderStyle: nodeData.strokeStyle,
+              opacity: nodeData.opacity || 1,
+              textAlign: nodeData.textAlign || 'center',
+              transform: isDiamond ? 'rotate(45deg)' : 'none',
+              aspectRatio: isCircle ? '1 / 1' : 'auto',
             }}
+            onDoubleClick={handleDoubleClick}
+            onClick={handleClick}
           >
-            {isEditing ? (
-              <Textarea
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                className="bg-transparent text-center outline-none w-full resize-none p-2 leading-normal"
-                autoFocus
-                style={{ 
-                  fontSize: `${fontSize}px`,
-                  fontFamily: nodeData.fontFamily,
-                  lineHeight: '1.5'
-                }}
+            {nodeData.nodeType !== 'title' && (
+              <NodeResizer 
+                minWidth={100}
+                minHeight={isCircle ? 100 : 40}
+                isVisible={selected}
+                lineClassName="border-mindmap-primary"
+                handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+                keepAspectRatio={isCircle}
               />
-            ) : (
-              <>
+            )}
+            
+            <NodeConnectors />
+
+            <div 
+              style={{ 
+                transform: isDiamond ? 'rotate(-45deg)' : 'none',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem'
+              }}
+            >
+              {isEditing ? (
+                <Textarea
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
+                  onBlur={handleBlur}
+                  onKeyDown={handleKeyDown}
+                  className="bg-transparent text-center outline-none w-full resize-none p-2 leading-normal"
+                  autoFocus
+                  style={{ 
+                    fontSize: `${fontSize}px`,
+                    fontFamily: nodeData.fontFamily,
+                    lineHeight: '1.5'
+                  }}
+                />
+              ) : (
                 <div 
                   className="w-full p-2 whitespace-pre-wrap break-words leading-normal"
                   style={{ 
@@ -139,45 +148,30 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                   }}
                 >
                   {label}
+                  {(nodeData.content?.length || nodeData.links?.length) > 0 && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      Click to view details
+                    </div>
+                  )}
                 </div>
-
-                {nodeData.content && nodeData.content.length > 0 && (
-                  <div className="w-full space-y-2 border-t pt-2">
-                    {nodeData.content.map((item) => (
-                      <div key={item.id} className="text-sm">
-                        {item.text}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {nodeData.links && nodeData.links.length > 0 && (
-                  <div className="w-full space-y-1 border-t pt-2">
-                    {nodeData.links.map((link) => (
-                      <a
-                        key={link.id}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline text-sm block"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+              )}
+            </div>
+            
+            {selected && <NodeSettings data={nodeData} nodeId={id} />}
           </div>
-          
-          {selected && <NodeSettings data={nodeData} nodeId={id} />}
-        </div>
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem onSelect={() => window.mindmapApi?.deleteNode(id)}>
-          Delete Node
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onSelect={() => window.mindmapApi?.deleteNode(id)}>
+            Delete Node
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      <NodeContentDialog 
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        data={nodeData}
+      />
+    </>
   );
 };
