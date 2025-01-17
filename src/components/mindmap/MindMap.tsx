@@ -10,6 +10,7 @@ import {
   Connection,
   Edge,
   MarkerType,
+  NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -17,17 +18,27 @@ import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { saveMindMap, loadMindMap, getAllMindMaps } from '@/utils/mindmapStorage';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   base: BaseNode,
 };
 
@@ -56,6 +67,7 @@ export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
+  const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
   const onConnect = useCallback(
@@ -144,6 +156,34 @@ export const MindMap = () => {
     }
   };
 
+  const handleDeleteMindMap = (name: string) => {
+    setMindMapToDelete(name);
+  };
+
+  const confirmDeleteMindMap = () => {
+    if (!mindMapToDelete) return;
+
+    const success = deleteMindMap(mindMapToDelete);
+    if (success) {
+      if (currentMindMap === mindMapToDelete) {
+        setNodes(initialNodes);
+        setEdges([]);
+        setCurrentMindMap('');
+      }
+      toast({
+        title: "Success",
+        description: `Deleted mind map: ${mindMapToDelete}`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: `Failed to delete mind map: ${mindMapToDelete}`,
+        variant: "destructive",
+      });
+    }
+    setMindMapToDelete(null);
+  };
+
   const saveCurrentMindMap = useCallback(() => {
     if (!currentMindMap) {
       const name = prompt('Enter a name for the mind map:');
@@ -213,9 +253,18 @@ export const MindMap = () => {
                 {getAllMindMaps().map((name) => (
                   <DropdownMenuItem
                     key={name}
-                    onClick={() => loadExistingMindMap(name)}
+                    className="flex items-center justify-between group"
                   >
-                    {name}
+                    <span onClick={() => loadExistingMindMap(name)} className="flex-1 cursor-pointer">
+                      {name}
+                    </span>
+                    <Trash2
+                      className="h-4 w-4 text-destructive opacity-0 group-hover:opacity-100 cursor-pointer ml-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteMindMap(name);
+                      }}
+                    />
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -240,6 +289,24 @@ export const MindMap = () => {
           </ReactFlow>
         </div>
       </div>
+
+      <AlertDialog open={!!mindMapToDelete} onOpenChange={() => setMindMapToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the mind map
+              "{mindMapToDelete}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteMindMap} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SidebarProvider>
   );
 };

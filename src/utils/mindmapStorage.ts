@@ -9,7 +9,6 @@ export interface MindMapData {
 
 export const saveMindMap = (data: MindMapData) => {
   try {
-    // Create mindmaps directory if it doesn't exist
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = JSON.parse(mindmapsData);
     
@@ -47,5 +46,23 @@ export const getAllMindMaps = (): string[] => {
   } catch (error) {
     console.error('Error getting mind maps list:', error);
     return [];
+  }
+};
+
+export const deleteMindMap = (name: string): boolean => {
+  try {
+    const mindmapsData = localStorage.getItem('mindmaps') || '{}';
+    const mindmaps = JSON.parse(mindmapsData);
+    
+    if (mindmaps[name]) {
+      delete mindmaps[name];
+      localStorage.setItem('mindmaps', JSON.stringify(mindmaps));
+      console.log('Mind map deleted:', name);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error deleting mind map:', error);
+    return false;
   }
 };
