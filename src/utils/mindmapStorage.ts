@@ -1,8 +1,8 @@
-import { Edge, Node } from '@xyflow/react';
-import { BaseNodeData } from '@/components/mindmap/types';
+import { Edge } from '@xyflow/react';
+import { BaseNodeData, MindMapNode } from '@/components/mindmap/types';
 
 export interface MindMapData {
-  nodes: Node<BaseNodeData>[];
+  nodes: MindMapNode[];
   edges: Edge[];
   name: string;
 }
@@ -31,7 +31,15 @@ export const loadMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = JSON.parse(mindmapsData);
-    return mindmaps[name] || null;
+    const data = mindmaps[name];
+    
+    if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
+      console.error('Invalid mind map data structure for:', name);
+      return null;
+    }
+    
+    console.log('Loading mind map data for:', name, data);
+    return data;
   } catch (error) {
     console.error('Error loading mind map:', error);
     return null;

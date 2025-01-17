@@ -18,9 +18,15 @@ const Export = () => {
 
     const data = loadMindMap(name);
     if (data) {
-      console.log('Loaded mind map data:', data);
+      console.log('Loading mind map data:', data);
+      if (!data.nodes || !data.edges) {
+        setError('Invalid mind map data structure');
+        return;
+      }
       setMindMapData(data);
+      console.log('Successfully loaded mind map data:', data);
     } else {
+      console.error('Failed to load mind map:', name);
       setError(`Failed to load mind map: ${name}`);
     }
   }, [searchParams]);
