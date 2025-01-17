@@ -1,4 +1,4 @@
-import { ReactFlow, Background } from '@xyflow/react';
+import { ReactFlow, Background, NodeTypes } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import { MindMapNode } from './types';
 import '@xyflow/react/dist/style.css';
@@ -8,11 +8,12 @@ interface ExportedMindMapProps {
   edges: any[];
 }
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   base: BaseNode,
 };
 
 export const ExportedMindMap = ({ nodes, edges }: ExportedMindMapProps) => {
+  console.log('Rendering ExportedMindMap with nodes:', nodes);
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <ReactFlow
