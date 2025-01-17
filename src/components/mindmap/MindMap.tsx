@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -16,6 +16,16 @@ import { BaseNode } from './BaseNode';
 import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { saveMindMap, loadMindMap, getAllMindMaps } from '@/utils/mindmapStorage';
+import { useToast } from '@/hooks/use-toast';
 
 const nodeTypes = {
   base: BaseNode,
@@ -45,6 +55,8 @@ const initialEdges: Edge[] = [];
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [currentMindMap, setCurrentMindMap] = useState<string>('');
+  const { toast } = useToast();
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -86,6 +98,71 @@ export const MindMap = () => {
     );
   }, [setNodes]);
 
+  const createNewMindMap = () => {
+    const name = prompt('Enter a name for the new mind map:');
+    if (!name) return;
+
+    const success = saveMindMap({
+      nodes: initialNodes,
+      edges: [],
+      name
+    });
+
+    if (success) {
+      setNodes(initialNodes);
+      setEdges([]);
+      setCurrentMindMap(name);
+      toast({
+        title: "Success",
+        description: `Created new mind map: ${name}`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create new mind map",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadExistingMindMap = (name: string) => {
+    const data = loadMindMap(name);
+    if (data) {
+      setNodes(data.nodes);
+      setEdges(data.edges);
+      setCurrentMindMap(name);
+      toast({
+        title: "Success",
+        description: `Loaded mind map: ${name}`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: `Failed to load mind map: ${name}`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const saveCurrentMindMap = useCallback(() => {
+    if (!currentMindMap) {
+      const name = prompt('Enter a name for the mind map:');
+      if (!name) return;
+      setCurrentMindMap(name);
+      saveMindMap({ nodes, edges, name });
+      toast({
+        title: "Success",
+        description: `Saved mind map as: ${name}`,
+      });
+    } else {
+      saveMindMap({ nodes, edges, name: currentMindMap });
+      toast({
+        title: "Success",
+        description: `Saved changes to: ${currentMindMap}`,
+      });
+    }
+  }, [nodes, edges, currentMindMap, toast]);
+
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
@@ -122,6 +199,32 @@ export const MindMap = () => {
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
         <div className="flex-1 relative">
+          <div className="absolute top-4 right-4 z-10 flex gap-2">
+            <Button onClick={saveCurrentMindMap}>
+              Save
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  Load Mind Map
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {getAllMindMaps().map((name) => (
+                  <DropdownMenuItem
+                    key={name}
+                    onClick={() => loadExistingMindMap(name)}
+                  >
+                    {name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button onClick={createNewMindMap}>
+              <Plus className="mr-2 h-4 w-4" />
+              New
+            </Button>
+          </div>
           <ReactFlow
             nodes={nodes}
             edges={edges}
