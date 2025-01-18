@@ -9,7 +9,7 @@ export const renderMindMap = (name: string): MindMapData | null => {
     }
 
     const mindmaps = JSON.parse(mindmapsData);
-    const mindMap = mindmaps[name.toLowerCase()];
+    const mindMap = mindmaps[name];
 
     if (!mindMap) {
       console.error('Mind map not found:', name);

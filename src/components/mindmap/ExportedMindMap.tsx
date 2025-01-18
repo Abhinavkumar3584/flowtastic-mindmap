@@ -5,6 +5,15 @@ import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapData } from './types';
+import { getAllMindMaps } from '@/utils/mindmapStorage';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from '@/components/ui/button';
 
 const nodeTypes = {
   base: BaseNode,
@@ -12,38 +21,52 @@ const nodeTypes = {
 
 export const ExportedMindMap = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
+  const [selectedMap, setSelectedMap] = useState<string>('');
   const { toast } = useToast();
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get('name');
+  const mindMaps = getAllMindMaps();
 
-  useEffect(() => {
-    if (!name) {
+  const handleRender = () => {
+    if (!selectedMap) {
       toast({
         title: "Error",
-        description: "No mind map name provided",
+        description: "Please select a mind map to render",
         variant: "destructive",
       });
       return;
     }
 
-    const data = renderMindMap(name);
+    const data = renderMindMap(selectedMap);
     if (data) {
       console.log('Mind map data loaded:', data);
       setMindMapData(data);
     } else {
-      console.error('Failed to load mind map:', name);
+      console.error('Failed to load mind map:', selectedMap);
       toast({
         title: "Error",
-        description: `Failed to load mind map: ${name}`,
+        description: `Failed to load mind map: ${selectedMap}`,
         variant: "destructive",
       });
     }
-  }, [name, toast]);
+  };
 
   if (!mindMapData) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
-        Loading mind map...
+      <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
+        <div className="flex gap-4 items-center">
+          <Select value={selectedMap} onValueChange={setSelectedMap}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select a mind map" />
+            </SelectTrigger>
+            <SelectContent>
+              {mindMaps.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={handleRender}>Render</Button>
+        </div>
       </div>
     );
   }
