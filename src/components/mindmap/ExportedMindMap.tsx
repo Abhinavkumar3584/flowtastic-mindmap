@@ -25,6 +25,10 @@ export const ExportedMindMap = () => {
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
 
+  useEffect(() => {
+    console.log('Available mind maps:', mindMaps);
+  }, [mindMaps]);
+
   const handleRender = () => {
     if (!selectedMap) {
       toast({

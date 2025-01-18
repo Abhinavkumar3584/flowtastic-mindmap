@@ -22,4 +22,4 @@ export const renderMindMap = (name: string): MindMapData | null => {
     console.error('Error rendering mind map:', error);
     return null;
   }
-}
+};
