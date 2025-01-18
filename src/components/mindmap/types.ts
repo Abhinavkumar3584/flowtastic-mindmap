@@ -18,6 +18,12 @@ export interface BaseNodeData {
 export type MindMapNode = Node<BaseNodeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
+export interface MindMapData {
+  nodes: MindMapNode[];
+  edges: any[];
+  name: string;
+}
+
 declare global {
   interface Window {
     mindmapApi?: {

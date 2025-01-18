@@ -18,7 +18,7 @@ import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,6 +109,20 @@ export const MindMap = () => {
       })
     );
   }, [setNodes]);
+
+  const handleExport = () => {
+    if (!currentMindMap) {
+      toast({
+        title: "Error",
+        description: "Please save your mind map before exporting",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const exportUrl = `/export?name=${encodeURIComponent(currentMindMap)}`;
+    window.open(exportUrl, '_blank');
+  };
 
   const createNewMindMap = () => {
     const name = prompt('Enter a name for the new mind map:');
@@ -242,6 +256,10 @@ export const MindMap = () => {
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             <Button onClick={saveCurrentMindMap}>
               Save
+            </Button>
+            <Button onClick={handleExport} variant="outline">
+              <Share2 className="mr-2 h-4 w-4" />
+              Export
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
