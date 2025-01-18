@@ -1,13 +1,6 @@
-import { Edge, Node } from '@xyflow/react';
-import { BaseNodeData } from '@/components/mindmap/types';
+import { MindMapData } from '@/components/mindmap/types';
 
-export interface MindMapData {
-  nodes: Node<BaseNodeData>[];
-  edges: Edge[];
-  name: string;
-}
-
-export const saveMindMap = (data: MindMapData) => {
+export const saveMindMap = (data: MindMapData): boolean => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = JSON.parse(mindmapsData);

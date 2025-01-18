@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background } from '@xyflow/react';
+import { ReactFlow, Background, NodeTypes } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   base: BaseNode,
 };
 
@@ -78,11 +78,7 @@ export const ExportedMindMap = () => {
   return (
     <div className="w-full h-screen">
       <ReactFlow
-        nodes={mindMapData.nodes.map(node => ({
-          ...node,
-          draggable: false,
-          selectable: false,
-        }))}
+        nodes={mindMapData.nodes}
         edges={mindMapData.edges}
         nodeTypes={nodeTypes}
         fitView
