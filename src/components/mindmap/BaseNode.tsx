@@ -43,12 +43,14 @@ const getNodeStyle = (nodeType?: string) => {
 
 export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [label, setLabel] = useState(data.label);
+  const [label, setLabel] = useState(data?.label || '');
   const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
   useEffect(() => {
-    setNodeData(data);
-    setLabel(data.label);
+    if (data) {
+      setNodeData(data);
+      setLabel(data.label);
+    }
   }, [data]);
 
   const handleDoubleClick = () => {
@@ -67,6 +69,8 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
       window.mindmapApi?.updateNodeData(id, { label });
     }
   };
+
+  if (!nodeData) return null;
 
   const nodeStyle = getNodeStyle(nodeData.nodeType);
   const isDiamond = nodeData.nodeType === 'diamond';

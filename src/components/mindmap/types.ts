@@ -13,6 +13,7 @@ export interface BaseNodeData {
   fontSize?: FontSize;
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
+  [key: string]: unknown;
 }
 
 export type MindMapNode = Node<BaseNodeData>;
@@ -22,13 +23,4 @@ export interface MindMapData {
   nodes: MindMapNode[];
   edges: any[];
   name: string;
-}
-
-declare global {
-  interface Window {
-    mindmapApi?: {
-      deleteNode: (id: string) => void;
-      updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
-    };
-  }
 }

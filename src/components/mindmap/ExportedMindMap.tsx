@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background, Node, Edge } from '@xyflow/react';
+import { ReactFlow, Background } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
-import { loadMindMap } from '@/utils/mindmapStorage';
+import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapData } from './types';
 
@@ -14,7 +14,7 @@ export const ExportedMindMap = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const { toast } = useToast();
   const params = new URLSearchParams(window.location.search);
-  const name = params.get('name')?.toLowerCase();
+  const name = params.get('name');
 
   useEffect(() => {
     if (!name) {
@@ -26,8 +26,7 @@ export const ExportedMindMap = () => {
       return;
     }
 
-    console.log('Loading mind map:', name);
-    const data = loadMindMap(name);
+    const data = renderMindMap(name);
     if (data) {
       console.log('Mind map data loaded:', data);
       setMindMapData(data);
@@ -42,7 +41,11 @@ export const ExportedMindMap = () => {
   }, [name, toast]);
 
   if (!mindMapData) {
-    return <div className="w-full h-screen flex items-center justify-center">Loading mind map...</div>;
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        Loading mind map...
+      </div>
+    );
   }
 
   return (
