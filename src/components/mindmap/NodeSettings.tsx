@@ -1,6 +1,11 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { BaseNodeData, FontSize } from "./types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { BaseNodeData, FontSize, NodeContent } from "./types";
+import { Plus, Trash } from "lucide-react";
 
 const strokeColors = ['black', 'red', 'green', 'blue', 'orange', 'black'];
 const backgroundColors = ['white', 'pink', 'lightgreen', 'lightblue', 'lightyellow', 'transparent'];
@@ -15,8 +20,35 @@ interface NodeSettingsProps {
 }
 
 export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
+  const [newLink, setNewLink] = useState({ url: '', label: '' });
+  
   const handleChange = (updates: Partial<BaseNodeData>) => {
     window.mindmapApi?.updateNodeData(nodeId, updates);
+  };
+
+  const handleContentChange = (content: Partial<NodeContent>) => {
+    const updatedContent = {
+      ...data.content,
+      ...content
+    };
+    handleChange({ content: updatedContent });
+  };
+
+  const addLink = () => {
+    if (!newLink.url || !newLink.label) return;
+    
+    const currentLinks = data.content?.links || [];
+    handleContentChange({
+      links: [...currentLinks, newLink]
+    });
+    setNewLink({ url: '', label: '' });
+  };
+
+  const removeLink = (index: number) => {
+    const currentLinks = data.content?.links || [];
+    handleContentChange({
+      links: currentLinks.filter((_, i) => i !== index)
+    });
   };
 
   return (
@@ -27,54 +59,60 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
         </Button>
       </SheetTrigger>
       <SheetContent>
-        <div className="space-y-6">
-          <div>
-            <h4 className="mb-2 font-medium">Font Size</h4>
-            <div className="flex gap-2">
-              {fontSizes.map((size) => (
-                <Button
-                  key={size}
-                  variant={data.fontSize === size ? "default" : "outline"}
-                  onClick={() => handleChange({ fontSize: size })}
-                  className="w-10"
-                >
-                  {size.toUpperCase()}
-                </Button>
-              ))}
-            </div>
-          </div>
+        <Tabs defaultValue="style">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="style">Style</TabsTrigger>
+            <TabsTrigger value="content">Content & Links</TabsTrigger>
+          </TabsList>
 
-          <div>
-            <h4 className="mb-2 font-medium">Stroke Color</h4>
-            <div className="flex gap-2">
-              {strokeColors.map((color) => (
-                <button
-                  key={color}
-                  className={`w-8 h-8 rounded-full border ${
-                    data.strokeColor === color ? 'ring-2 ring-primary' : ''
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => handleChange({ strokeColor: color })}
-                />
-              ))}
+          <TabsContent value="style" className="space-y-6">
+            <div>
+              <h4 className="mb-2 font-medium">Font Size</h4>
+              <div className="flex gap-2">
+                {fontSizes.map((size) => (
+                  <Button
+                    key={size}
+                    variant={data.fontSize === size ? "default" : "outline"}
+                    onClick={() => handleChange({ fontSize: size })}
+                    className="w-10"
+                  >
+                    {size.toUpperCase()}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div>
-            <h4 className="mb-2 font-medium">Background Color</h4>
-            <div className="flex gap-2">
-              {backgroundColors.map((color) => (
-                <button
-                  key={color}
-                  className={`w-8 h-8 rounded-full border ${
-                    data.backgroundColor === color ? 'ring-2 ring-primary' : ''
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => handleChange({ backgroundColor: color })}
-                />
-              ))}
+            <div>
+              <h4 className="mb-2 font-medium">Stroke Color</h4>
+              <div className="flex gap-2">
+                {strokeColors.map((color) => (
+                  <button
+                    key={color}
+                    className={`w-8 h-8 rounded-full border ${
+                      data.strokeColor === color ? 'ring-2 ring-primary' : ''
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleChange({ strokeColor: color })}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+
+            <div>
+              <h4 className="mb-2 font-medium">Background Color</h4>
+              <div className="flex gap-2">
+                {backgroundColors.map((color) => (
+                  <button
+                    key={color}
+                    className={`w-8 h-8 rounded-full border ${
+                      data.backgroundColor === color ? 'ring-2 ring-primary' : ''
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleChange({ backgroundColor: color })}
+                  />
+                ))}
+              </div>
+            </div>
 
           <div>
             <h4 className="mb-2 font-medium">Stroke Style</h4>
@@ -136,7 +174,68 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
               ))}
             </div>
           </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="content" className="space-y-4">
+            <div>
+              <h4 className="mb-2 font-medium">Title</h4>
+              <Input
+                value={data.content?.title || ''}
+                onChange={(e) => handleContentChange({ title: e.target.value })}
+                placeholder="Enter title"
+              />
+            </div>
+
+            <div>
+              <h4 className="mb-2 font-medium">Description</h4>
+              <Textarea
+                value={data.content?.description || ''}
+                onChange={(e) => handleContentChange({ description: e.target.value })}
+                placeholder="Enter description"
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <div>
+              <h4 className="mb-2 font-medium">Links</h4>
+              <div className="space-y-2">
+                {data.content?.links?.map((link, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{link.label}</p>
+                      <p className="text-sm text-muted-foreground">{link.url}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeLink(index)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-2 space-y-2">
+                <Input
+                  value={newLink.label}
+                  onChange={(e) => setNewLink(prev => ({ ...prev, label: e.target.value }))}
+                  placeholder="Link label"
+                />
+                <div className="flex gap-2">
+                  <Input
+                    value={newLink.url}
+                    onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
+                    placeholder="URL"
+                  />
+                  <Button onClick={addLink}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );

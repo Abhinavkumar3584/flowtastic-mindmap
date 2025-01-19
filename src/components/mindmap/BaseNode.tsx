@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
+import { FileText } from 'lucide-react';
 
 const getFontSize = (size: FontSize | undefined): number => {
   switch (size) {
@@ -72,6 +73,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
 
   if (!nodeData) return null;
 
+  const hasContent = !!(nodeData.content?.title || nodeData.content?.description || (nodeData.content?.links && nodeData.content.links.length > 0));
   const nodeStyle = getNodeStyle(nodeData.nodeType);
   const isDiamond = nodeData.nodeType === 'diamond';
   const isCircle = nodeData.nodeType === 'circle';
@@ -109,6 +111,12 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           )}
           
           <NodeConnectors />
+
+          {hasContent && (
+            <div className="absolute top-1 right-1 text-gray-500">
+              <FileText className="h-4 w-4" />
+            </div>
+          )}
 
           <div 
             style={{ 
