@@ -9,7 +9,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
-import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
+import { MindMapNodeProps, BaseNodeData, FontSize, NodeContent } from './types';
+import { NodeContentDialog } from './NodeContentDialog';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const getFontSize = (size: FontSize | undefined): number => {
   switch (size) {
@@ -45,6 +50,9 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data?.label || '');
   const [nodeData, setNodeData] = useState<BaseNodeData>(data || { label: '' });
+  const [showContentDialog, setShowContentDialog] = useState(false);
+  const [newContent, setNewContent] = useState<Partial<NodeContent>>({});
+  const { toast } = useToast();
 
   useEffect(() => {
     if (data) {
@@ -70,6 +78,27 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
     }
   };
 
+  const handleAddContent = () => {
+    if (!newContent.type || !newContent.value) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const content: NodeContent[] = nodeData.content || [];
+    const updatedContent = [...content, newContent as NodeContent];
+    window.mindmapApi?.updateNodeData(id, { content: updatedContent });
+    setNewContent({});
+    
+    toast({
+      title: "Success",
+      description: "Content added successfully",
+    });
+  };
+
   if (!nodeData) return null;
 
   const nodeStyle = getNodeStyle(nodeData.nodeType);
@@ -82,7 +111,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
       <ContextMenuTrigger>
         <div 
           className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
-                     flex items-center justify-center relative
+                     flex items-center justify-center relative cursor-pointer
                      ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
           style={{
             backgroundColor: nodeData.backgroundColor,
@@ -96,6 +125,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
             padding: '4px',
           }}
           onDoubleClick={handleDoubleClick}
+          onClick={() => setShowContentDialog(true)}
         >
           {nodeData.nodeType !== 'title' && (
             <NodeResizer 
@@ -143,11 +173,49 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
                 }}
               >
                 {label}
+                {nodeData.content && nodeData.content.length > 0 && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    Click to view attached content ({nodeData.content.length})
+                  </div>
+                )}
               </div>
             )}
           </div>
           
-          {selected && <NodeSettings data={nodeData} nodeId={id} />}
+          {selected && (
+            <>
+              <NodeSettings data={nodeData} nodeId={id} />
+              <div className="absolute bottom-0 left-0 -translate-y-full bg-white p-2 rounded-md shadow-lg border">
+                <div className="space-y-2">
+                  <select 
+                    value={newContent.type || ''} 
+                    onChange={(e) => setNewContent(prev => ({ ...prev, type: e.target.value as 'link' | 'text' }))}
+                    className="w-full p-1 text-sm border rounded"
+                  >
+                    <option value="">Select type...</option>
+                    <option value="link">Link</option>
+                    <option value="text">Text</option>
+                  </select>
+                  <Input
+                    placeholder="Title (optional)"
+                    value={newContent.title || ''}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, title: e.target.value }))}
+                    className="text-sm"
+                  />
+                  <Input
+                    placeholder="Content value"
+                    value={newContent.value || ''}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, value: e.target.value }))}
+                    className="text-sm"
+                  />
+                  <Button size="sm" onClick={handleAddContent} className="w-full">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Content
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
@@ -155,6 +223,13 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           Delete Node
         </ContextMenuItem>
       </ContextMenuContent>
+
+      <NodeContentDialog
+        isOpen={showContentDialog}
+        onClose={() => setShowContentDialog(false)}
+        content={nodeData.content}
+        nodeLabel={label}
+      />
     </ContextMenu>
   );
 };
