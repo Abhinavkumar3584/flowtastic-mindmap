@@ -78,11 +78,7 @@ export const ExportedMindMap = () => {
   return (
     <div className="w-full h-screen">
       <ReactFlow
-        nodes={mindMapData.nodes.map(node => ({
-          ...node,
-          draggable: false,
-          selectable: false,
-        }))}
+        nodes={mindMapData.nodes}
         edges={mindMapData.edges}
         nodeTypes={nodeTypes}
         fitView
