@@ -23,13 +23,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-}
-
-export interface FocusArea {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  [key: string]: any; // Add index signature to satisfy Record<string, unknown>
 }
 
 export type MindMapNode = Node<BaseNodeData>;
@@ -39,7 +33,6 @@ export interface MindMapData {
   nodes: MindMapNode[];
   edges: any[];
   name: string;
-  focusArea?: FocusArea;
 }
 
 declare global {

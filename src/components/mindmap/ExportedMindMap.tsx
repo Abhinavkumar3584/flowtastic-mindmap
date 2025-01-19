@@ -4,7 +4,7 @@ import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData, BaseNodeData, FocusArea } from './types';
+import { MindMapData, BaseNodeData } from './types';
 import {
   Select,
   SelectContent,
@@ -26,21 +26,16 @@ const nodeTypes: NodeTypes = {
   base: BaseNode,
 };
 
-const isNodeInFocusArea = (node: Node, focusArea: FocusArea): boolean => {
-  return (
-    node.position.x >= focusArea.x &&
-    node.position.x <= focusArea.x + focusArea.width &&
-    node.position.y >= focusArea.y &&
-    node.position.y <= focusArea.y + focusArea.height
-  );
-};
-
 export const ExportedMindMap = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
+
+  useEffect(() => {
+    console.log('Available mind maps:', mindMaps);
+  }, [mindMaps]);
 
   const handleRender = () => {
     if (!selectedMap) {
@@ -54,27 +49,10 @@ export const ExportedMindMap = () => {
 
     const data = renderMindMap(selectedMap);
     if (data) {
-      if (data.focusArea) {
-        // Filter nodes based on focus area
-        const filteredNodes = data.nodes.filter(node => 
-          isNodeInFocusArea(node, data.focusArea!)
-        );
-        
-        // Filter edges to only include connections between visible nodes
-        const visibleNodeIds = new Set(filteredNodes.map(node => node.id));
-        const filteredEdges = data.edges.filter(edge => 
-          visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
-        );
-
-        setMindMapData({
-          ...data,
-          nodes: filteredNodes,
-          edges: filteredEdges,
-        });
-      } else {
-        setMindMapData(data);
-      }
+      console.log('Mind map data loaded:', data);
+      setMindMapData(data);
     } else {
+      console.error('Failed to load mind map:', selectedMap);
       toast({
         title: "Error",
         description: `Failed to load mind map: ${selectedMap}`,
