@@ -23,7 +23,6 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-  [key: string]: unknown;
 }
 
 export type MindMapNode = Node<BaseNodeData>;

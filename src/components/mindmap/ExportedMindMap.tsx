@@ -4,8 +4,7 @@ import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData } from './types';
-import { getAllMindMaps } from '@/utils/mindmapStorage';
+import { MindMapData, BaseNodeData } from './types';
 import {
   Select,
   SelectContent,
@@ -14,6 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -22,6 +27,7 @@ const nodeTypes: NodeTypes = {
 export const ExportedMindMap = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
+  const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
 
@@ -53,6 +59,12 @@ export const ExportedMindMap = () => {
     }
   };
 
+  const handleNodeClick = (_: React.MouseEvent, node: Node<BaseNodeData>) => {
+    if (node.data.content) {
+      setSelectedNode(node.data);
+    }
+  };
+
   if (!mindMapData) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
@@ -76,18 +88,56 @@ export const ExportedMindMap = () => {
   }
 
   return (
-    <div className="w-full h-screen">
-      <ReactFlow
-        nodes={mindMapData.nodes}
-        edges={mindMapData.edges}
-        nodeTypes={nodeTypes}
-        fitView
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
-      >
-        <Background gap={12} size={1} />
-      </ReactFlow>
-    </div>
+    <>
+      <div className="w-full h-screen">
+        <ReactFlow
+          nodes={mindMapData.nodes}
+          edges={mindMapData.edges}
+          nodeTypes={nodeTypes}
+          onNodeClick={handleNodeClick}
+          fitView
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={true}
+        >
+          <Background gap={12} size={1} />
+        </ReactFlow>
+      </div>
+
+      <Dialog open={!!selectedNode} onOpenChange={() => setSelectedNode(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedNode?.content?.title || selectedNode?.label}</DialogTitle>
+          </DialogHeader>
+          {selectedNode?.content?.description && (
+            <div className="mt-4">
+              <h3 className="font-medium mb-2">Description</h3>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {selectedNode.content.description}
+              </p>
+            </div>
+          )}
+          {selectedNode?.content?.links && selectedNode.content.links.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-medium mb-2">Links</h3>
+              <div className="space-y-2">
+                {selectedNode.content.links.map((link, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-500 hover:underline"
+                    >
+                      {link.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
