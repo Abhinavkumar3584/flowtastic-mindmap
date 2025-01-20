@@ -26,11 +26,11 @@ const getFontSize = (size: FontSize | undefined): number => {
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
     case 'title':
-      return 'bg-[#E6E6FA] border border-purple-300 rounded-lg p-5';
+      return 'bg-[#E6E6FA] border border-[#9B9BE6] rounded-lg p-2';
     case 'topic':
-      return 'bg-yellow-300 border border-black rounded-lg p-5';
+      return 'bg-yellow-300 border border-black rounded-lg p-2';
     case 'subtopic':
-      return 'bg-[#FFE5B4] border-2 border-black rounded-lg p-5';
+      return 'bg-[#FFE5B4] border border-black rounded-lg p-2';
     case 'rectangle':
       return 'bg-white border border-gray-200';
     case 'diamond':
