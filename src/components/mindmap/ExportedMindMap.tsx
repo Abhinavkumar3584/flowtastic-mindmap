@@ -54,18 +54,15 @@ export const ExportedMindMap = () => {
 
     const data = renderMindMap(selectedMap);
     if (data) {
+      // Filter nodes based on focus area if it exists
       if (data.focusArea) {
-        // Filter nodes based on focus area
         const filteredNodes = data.nodes.filter(node => 
           isNodeInFocusArea(node, data.focusArea!)
         );
-        
-        // Filter edges to only include connections between visible nodes
-        const visibleNodeIds = new Set(filteredNodes.map(node => node.id));
         const filteredEdges = data.edges.filter(edge => 
-          visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
+          filteredNodes.some(node => node.id === edge.source) &&
+          filteredNodes.some(node => node.id === edge.target)
         );
-
         setMindMapData({
           ...data,
           nodes: filteredNodes,
@@ -83,7 +80,7 @@ export const ExportedMindMap = () => {
     }
   };
 
-  const handleNodeClick = (_: React.MouseEvent, node: Node<BaseNodeData>) => {
+  const handleNodeClick = (_: React.MouseEvent, node: Node) => {
     if (node.data.content) {
       setSelectedNode(node.data);
     }

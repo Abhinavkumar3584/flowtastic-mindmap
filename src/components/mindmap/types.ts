@@ -23,6 +23,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
+  [key: string]: any;
 }
 
 export interface FocusArea {
@@ -32,15 +33,15 @@ export interface FocusArea {
   height: number;
 }
 
-export type MindMapNode = Node<BaseNodeData>;
-export type MindMapNodeProps = NodeProps<BaseNodeData>;
-
 export interface MindMapData {
   nodes: MindMapNode[];
   edges: any[];
   name: string;
   focusArea?: FocusArea;
 }
+
+export type MindMapNode = Node<BaseNodeData>;
+export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
 declare global {
   interface Window {
