@@ -1,4 +1,3 @@
-import { NodeResizer } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import {
   ContextMenu,
@@ -6,11 +5,12 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Textarea } from "@/components/ui/textarea";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
 import { FileText } from 'lucide-react';
+import { NodeLabel } from './node-components/NodeLabel';
+import { NodeContainer } from './node-components/NodeContainer';
 
 const getFontSize = (size: FontSize | undefined): number => {
   switch (size) {
@@ -45,7 +45,7 @@ const getNodeStyle = (nodeType?: string) => {
 export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label || '');
-  const [nodeData, setNodeData] = useState<BaseNodeData>(data || { label: '' });
+  const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
   useEffect(() => {
     if (data) {
@@ -82,34 +82,14 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div 
-          className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
-                     flex items-center justify-center relative
-                     ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
-          style={{
-            backgroundColor: nodeData.backgroundColor,
-            borderColor: nodeData.strokeColor,
-            borderWidth: nodeData.strokeWidth,
-            borderStyle: nodeData.strokeStyle,
-            opacity: nodeData.opacity || 1,
-            textAlign: nodeData.textAlign || 'center',
-            transform: isDiamond ? 'rotate(45deg)' : 'none',
-            aspectRatio: isCircle ? '1 / 1' : 'auto',
-            padding: '4px',
-          }}
+        <NodeContainer
+          nodeStyle={nodeStyle}
+          nodeData={nodeData}
+          selected={selected}
+          isCircle={isCircle}
+          isDiamond={isDiamond}
           onDoubleClick={handleDoubleClick}
         >
-          {nodeData.nodeType !== 'title' && (
-            <NodeResizer 
-              minWidth={100}
-              minHeight={isCircle ? 100 : 40}
-              isVisible={selected}
-              lineClassName="border-mindmap-primary"
-              handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-              keepAspectRatio={isCircle}
-            />
-          )}
-          
           <NodeConnectors />
 
           {hasContent && (
@@ -128,35 +108,19 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
               justifyContent: 'center'
             }}
           >
-            {isEditing ? (
-              <Textarea
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                className="bg-transparent text-center outline-none w-full resize-none p-2 leading-normal"
-                autoFocus
-                style={{ 
-                  fontSize: `${fontSize}px`,
-                  fontFamily: nodeData.fontFamily,
-                  lineHeight: '1.5'
-                }}
-              />
-            ) : (
-              <div 
-                className="w-full p-2 whitespace-pre-wrap break-words leading-normal"
-                style={{ 
-                  fontSize: `${fontSize}px`,
-                  fontFamily: nodeData.fontFamily
-                }}
-              >
-                {label}
-              </div>
-            )}
+            <NodeLabel
+              label={label}
+              fontSize={fontSize}
+              fontFamily={nodeData.fontFamily}
+              isEditing={isEditing}
+              onLabelChange={setLabel}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+            />
           </div>
           
           {selected && <NodeSettings data={nodeData} nodeId={id} />}
-        </div>
+        </NodeContainer>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem onSelect={() => window.mindmapApi?.deleteNode(id)}>
