@@ -23,7 +23,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 export interface FocusArea {
@@ -34,7 +34,7 @@ export interface FocusArea {
 }
 
 export interface MindMapData {
-  nodes: Node[];
+  nodes: MindMapNode[];
   edges: any[];
   name: string;
   focusArea?: FocusArea;
