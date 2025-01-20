@@ -64,19 +64,19 @@ const initialNodes: MindMapNode[] = [
 
 const initialEdges: Edge[] = [];
 
+const FOCUS_AREA = {
+  x: 300,
+  y: 0,
+  width: 400,
+  height: window.innerHeight
+};
+
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
-  const [focusArea] = useState<FocusArea>({
-    x: 300,  // Fixed x position for vertical area
-    y: 0,    // Start from top
-    width: 400, // Fixed width for vertical area
-    height: window.innerHeight, // Full height
-  });
-  const [isSettingFocusArea, setIsSettingFocusArea] = useState(false);
-  const focusStartPos = useRef<{ x: number; y: number } | null>(null);
+  const focusArea = FOCUS_AREA;
   const flowInstance = useRef<ReactFlowInstance | null>(null);
   const { toast } = useToast();
 
@@ -132,16 +132,6 @@ export const MindMap = () => {
     
     const exportUrl = `/export?name=${encodeURIComponent(currentMindMap)}`;
     window.open(exportUrl, '_blank');
-  };
-
-  const toggleFocusAreaSelection = () => {
-    setIsSettingFocusArea(!isSettingFocusArea);
-    if (!isSettingFocusArea) {
-      setFocusArea(null);
-    }
-    toast({
-      title: isSettingFocusArea ? "Focus area selection cancelled" : "Click and drag to select focus area",
-    });
   };
 
   const createNewMindMap = () => {
@@ -271,8 +261,8 @@ export const MindMap = () => {
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
-        <ComponentsSidebar onAddNode={addNode} />
-        <div className="flex-1 relative">
+        <ComponentsSidebar onAddNode={addNode} className="fixed left-0 top-0" />
+        <div className="flex-1 relative ml-64">
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             <Button onClick={saveCurrentMindMap}>
               Save
@@ -325,17 +315,17 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
-            {focusArea && (
-              <div
-                className="absolute border-2 border-blue-200 bg-blue-50 bg-opacity-20 pointer-events-none"
-                style={{
-                  left: focusArea.x,
-                  top: focusArea.y,
-                  width: focusArea.width,
-                  height: focusArea.height,
-                }}
-              />
-            )}
+            {/* Vertical Focus Area */}
+            <div
+              className="absolute border-2 border-blue-100 bg-blue-50 bg-opacity-10 pointer-events-none"
+              style={{
+                left: focusArea.x,
+                top: focusArea.y,
+                width: focusArea.width,
+                height: focusArea.height,
+                borderStyle: 'dashed'
+              }}
+            />
           </ReactFlow>
         </div>
       </div>

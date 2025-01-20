@@ -23,6 +23,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
+  [key: string]: unknown;
 }
 
 export interface FocusArea {

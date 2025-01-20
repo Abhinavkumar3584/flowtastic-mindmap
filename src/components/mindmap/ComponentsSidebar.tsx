@@ -19,13 +19,15 @@ import {
 
 interface ComponentsSidebarProps {
   onAddNode: (type: string) => void;
+  className?: string;
 }
 
 export const ComponentsSidebar = ({ 
   onAddNode,
+  className
 }: ComponentsSidebarProps) => {
   return (
-    <Sidebar variant="floating" className="w-64">
+    <Sidebar variant="floating" className={`w-64 ${className || ''}`}>
       <SidebarHeader className="border-b">
         <div className="px-2 py-4">
           <h2 className="text-lg font-semibold">Mind Map Tools</h2>
