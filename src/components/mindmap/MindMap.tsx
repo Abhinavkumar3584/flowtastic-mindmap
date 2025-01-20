@@ -48,13 +48,13 @@ const initialNodes: MindMapNode[] = [
     id: '1',
     type: 'base',
     data: { 
-      label: 'title node',
+      label: 'Main Idea',
       nodeType: 'title',
-      backgroundColor: '#E6E6FA',
-      strokeColor: '#9B9BE6',
+      backgroundColor: 'white',
+      strokeColor: 'black',
       strokeWidth: 1,
       strokeStyle: 'solid',
-      fontSize: 'm',
+      fontSize: 'xs',
       textAlign: 'center',
       opacity: 1
     },
