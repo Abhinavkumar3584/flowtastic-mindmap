@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
+import { ReactFlow, Background, NodeTypes, Node, Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
@@ -54,7 +54,6 @@ export const ExportedMindMap = () => {
 
     const data = renderMindMap(selectedMap);
     if (data) {
-      // Filter nodes based on focus area if it exists
       if (data.focusArea) {
         const filteredNodes = data.nodes.filter(node => 
           isNodeInFocusArea(node, data.focusArea!)
@@ -81,8 +80,9 @@ export const ExportedMindMap = () => {
   };
 
   const handleNodeClick = (_: React.MouseEvent, node: Node) => {
-    if (node.data.content) {
-      setSelectedNode(node.data);
+    const nodeData = node.data as BaseNodeData;
+    if (nodeData.content) {
+      setSelectedNode(nodeData);
     }
   };
 

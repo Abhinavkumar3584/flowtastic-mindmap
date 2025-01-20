@@ -19,7 +19,7 @@ import { MindMapNode, BaseNodeData, FocusArea } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Share2, Focus } from 'lucide-react';
+import { Plus, Trash2, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,7 +69,12 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
-  const [focusArea, setFocusArea] = useState<FocusArea | null>(null);
+  const [focusArea] = useState<FocusArea>({
+    x: 300,  // Fixed x position for vertical area
+    y: 0,    // Start from top
+    width: 400, // Fixed width for vertical area
+    height: window.innerHeight, // Full height
+  });
   const [isSettingFocusArea, setIsSettingFocusArea] = useState(false);
   const focusStartPos = useRef<{ x: number; y: number } | null>(null);
   const flowInstance = useRef<ReactFlowInstance | null>(null);
@@ -137,47 +142,6 @@ export const MindMap = () => {
     toast({
       title: isSettingFocusArea ? "Focus area selection cancelled" : "Click and drag to select focus area",
     });
-  };
-
-  const onPaneMouseDown = (event: React.MouseEvent) => {
-    if (!isSettingFocusArea) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const position = flowInstance.current?.project({
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
-    });
-
-    if (position) {
-      focusStartPos.current = position;
-    }
-  };
-
-  const onPaneMouseUp = (event: React.MouseEvent) => {
-    if (!isSettingFocusArea || !focusStartPos.current) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const position = flowInstance.current?.project({
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
-    });
-
-    if (position) {
-      const newFocusArea = {
-        x: Math.min(focusStartPos.current.x, position.x),
-        y: Math.min(focusStartPos.current.y, position.y),
-        width: Math.abs(position.x - focusStartPos.current.x),
-        height: Math.abs(position.y - focusStartPos.current.y),
-      };
-      setFocusArea(newFocusArea);
-      setIsSettingFocusArea(false);
-      toast({
-        title: "Focus area set",
-        description: "The export will now only include nodes within this area",
-      });
-    }
-
-    focusStartPos.current = null;
   };
 
   const createNewMindMap = () => {
@@ -317,13 +281,6 @@ export const MindMap = () => {
               <Share2 className="mr-2 h-4 w-4" />
               Export
             </Button>
-            <Button 
-              onClick={toggleFocusAreaSelection}
-              variant={isSettingFocusArea ? "default" : "outline"}
-            >
-              <Focus className="mr-2 h-4 w-4" />
-              {isSettingFocusArea ? 'Cancel Focus' : 'Set Focus'}
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
@@ -363,8 +320,6 @@ export const MindMap = () => {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             onInit={(instance) => flowInstance.current = instance}
-            onPaneMouseDown={onPaneMouseDown}
-            onPaneMouseUp={onPaneMouseUp}
             fitView
           >
             <Controls />
@@ -372,7 +327,7 @@ export const MindMap = () => {
             <Background gap={12} size={1} />
             {focusArea && (
               <div
-                className="absolute border-2 border-blue-500 bg-blue-100 bg-opacity-20 pointer-events-none"
+                className="absolute border-2 border-blue-200 bg-blue-50 bg-opacity-20 pointer-events-none"
                 style={{
                   left: focusArea.x,
                   top: focusArea.y,
