@@ -25,13 +25,6 @@ export interface BaseNodeData {
   content?: NodeContent;
 }
 
-export interface FocusArea {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 export type MindMapNode = Node<BaseNodeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
@@ -39,7 +32,6 @@ export interface MindMapData {
   nodes: MindMapNode[];
   edges: any[];
   name: string;
-  focusArea?: FocusArea;
 }
 
 declare global {
