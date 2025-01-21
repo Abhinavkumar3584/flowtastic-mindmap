@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background, NodeTypes } from '@xyflow/react';
+import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
@@ -18,7 +18,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { getAllMindMaps } from '@/utils/mindmapStorage';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -108,6 +110,9 @@ export const ExportedMindMap = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{selectedNode?.content?.title || selectedNode?.label}</DialogTitle>
+            <DialogDescription>
+              Click outside to close
+            </DialogDescription>
           </DialogHeader>
           {selectedNode?.content?.description && (
             <div className="mt-4">
