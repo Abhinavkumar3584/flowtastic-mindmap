@@ -253,7 +253,7 @@ export const MindMap = () => {
     <SidebarProvider>
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
-        <div className="flex-1 relative flex justify-center">
+        <div className="flex-1 relative">
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             <Button onClick={handleExport} variant="outline">
               <Share2 className="mr-2 h-4 w-4" />
@@ -295,8 +295,8 @@ export const MindMap = () => {
             Draw inside this area for best results (i.e., cleaner look and no zoom-in required)
           </div>
 
-          <div className="w-[800px] h-full">
-            <div className="w-full h-full relative border-x border-gray-200">
+          <div className="w-full h-full flex justify-center">
+            <div className="w-[800px] h-full relative border-x border-gray-200">
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
