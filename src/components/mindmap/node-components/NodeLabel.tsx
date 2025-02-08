@@ -1,6 +1,5 @@
-import { useState } from 'react';
+
 import { Textarea } from "@/components/ui/textarea";
-import { BaseNodeData, FontSize } from '../types';
 
 interface NodeLabelProps {
   label: string;
@@ -28,7 +27,7 @@ export const NodeLabel = ({
         onChange={(e) => onLabelChange(e.target.value)}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
-        className="bg-transparent text-center outline-none w-full resize-none p-2 leading-normal"
+        className="bg-transparent text-center outline-none w-full resize-none p-2 leading-normal font-semibold"
         autoFocus
         style={{ 
           fontSize: `${fontSize}px`,
@@ -41,7 +40,7 @@ export const NodeLabel = ({
 
   return (
     <div 
-      className="w-full p-2 whitespace-pre-wrap break-words leading-normal"
+      className="w-full p-2 whitespace-pre-wrap break-words leading-normal font-semibold"
       style={{ 
         fontSize: `${fontSize}px`,
         fontFamily

@@ -1,3 +1,4 @@
+
 import { ReactNode } from 'react';
 import { NodeResizer } from '@xyflow/react';
 import { BaseNodeData } from '../types';
@@ -23,8 +24,9 @@ export const NodeContainer = ({
 }: NodeContainerProps) => {
   return (
     <div 
-      className={`min-w-[100px] min-h-[100px] ${nodeStyle} 
+      className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
                  flex items-center justify-center relative
+                 transition-shadow duration-200 ease-in-out
                  ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
       style={{
         backgroundColor: nodeData.backgroundColor,
@@ -36,6 +38,7 @@ export const NodeContainer = ({
         transform: isDiamond ? 'rotate(45deg)' : 'none',
         aspectRatio: isCircle ? '1 / 1' : 'auto',
         padding: '4px',
+        margin: '4px'
       }}
       onDoubleClick={onDoubleClick}
     >

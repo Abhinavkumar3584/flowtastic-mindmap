@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import {
   ContextMenu,
@@ -26,11 +27,11 @@ const getFontSize = (size: FontSize | undefined): number => {
 const getNodeStyle = (nodeType?: string) => {
   switch (nodeType) {
     case 'title':
-      return 'bg-transparent';
+      return 'bg-[#E5DEFF] rounded-lg shadow-md';
     case 'topic':
-      return 'bg-yellow-300 border border-yellow-400';
+      return 'bg-[#FEF7CD] border border-black/20 rounded';
     case 'subtopic':
-      return 'bg-[#f5e6d3] border border-[#e6d5c3]';
+      return 'bg-[#FDE1D3] border-2 border-black/20 rounded-lg';
     case 'rectangle':
       return 'bg-white border border-gray-200';
     case 'diamond':
