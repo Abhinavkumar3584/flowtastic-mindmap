@@ -1,3 +1,4 @@
+
 import { Node, NodeProps } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -23,7 +24,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-  [key: string]: any; // Add index signature to satisfy Record<string, unknown>
+  [key: string]: any;
 }
 
 export type MindMapNode = Node<BaseNodeData>;
