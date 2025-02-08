@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import {
   ReactFlow,
@@ -253,7 +252,7 @@ export const MindMap = () => {
     <SidebarProvider>
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
-        <div className="flex-1 relative">
+        <div className="flex-1 h-full flex flex-col items-center relative">
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             <Button onClick={handleExport} variant="outline">
               <Share2 className="mr-2 h-4 w-4" />
@@ -291,25 +290,23 @@ export const MindMap = () => {
             </Button>
           </div>
 
-          <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-10 text-sm text-gray-500">
+          <div className="absolute top-16 z-10 text-sm text-gray-500">
             Draw inside this area for best results (i.e., cleaner look and no zoom-in required)
           </div>
 
-          <div className="w-full h-full flex justify-center">
-            <div className="w-[800px] h-full relative border-x border-gray-200">
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                nodeTypes={nodeTypes}
-                fitView
-              >
-                <Controls className="left-4" />
-                <Background gap={12} size={1} className="bg-gray-50" />
-              </ReactFlow>
-            </div>
+          <div className="w-[800px] h-full border-x border-gray-200 relative">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              nodeTypes={nodeTypes}
+              fitView
+            >
+              <Controls className="left-4" />
+              <Background gap={12} size={1} className="bg-gray-50" />
+            </ReactFlow>
           </div>
         </div>
       </div>
