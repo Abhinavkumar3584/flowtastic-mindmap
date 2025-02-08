@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
+import { EdgeStylePanel } from './EdgeStylePanel';
+import { EdgeData } from './types';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -68,6 +70,8 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
+  const [edgeStyles, setEdgeStyles] = useState<Record<string, EdgeData>>({});
   const { toast } = useToast();
 
   const onConnect = useCallback(
@@ -217,9 +221,51 @@ export const MindMap = () => {
     }
   }, [nodes, edges, currentMindMap, toast]);
 
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setSelectedEdge(edge.id);
+  }, []);
+
+  const updateEdgeStyle = useCallback((id: string, newData: Partial<EdgeData>) => {
+    setEdgeStyles((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        ...newData,
+      },
+    }));
+
+    setEdges((eds) =>
+      eds.map((edge) => {
+        if (edge.id === id) {
+          return {
+            ...edge,
+            style: {
+              ...edge.style,
+              stroke: newData.color,
+              strokeDasharray: newData.strokeStyle === 'dashed' ? '5 5' : newData.strokeStyle === 'dotted' ? '1 5' : undefined,
+              strokeWidth: newData.strokeWidth,
+            },
+            type: newData.pathStyle,
+            markerStart: newData.arrowStart ? {
+              type: MarkerType.Arrow,
+              color: newData.color,
+            } : undefined,
+            markerEnd: newData.arrowEnd ? {
+              type: MarkerType.Arrow,
+              color: newData.color,
+            } : undefined,
+          };
+        }
+        return edge;
+      })
+    );
+  }, [setEdges]);
+
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
+    updateEdgeStyle,
   };
 
   const addNode = (type: BaseNodeData['nodeType']) => {
@@ -298,6 +344,7 @@ export const MindMap = () => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onEdgeClick={onEdgeClick}
             nodeTypes={nodeTypes}
             fitView
           >
@@ -306,25 +353,32 @@ export const MindMap = () => {
             <Background gap={12} size={1} />
           </ReactFlow>
         </div>
-      </div>
 
-      <AlertDialog open={!!mindMapToDelete} onOpenChange={() => setMindMapToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the mind map
-              "{mindMapToDelete}".
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteMindMap} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <EdgeStylePanel
+          isOpen={!!selectedEdge}
+          onClose={() => setSelectedEdge(null)}
+          edgeStyle={selectedEdge ? edgeStyles[selectedEdge] || {} : {}}
+          onStyleChange={(style) => selectedEdge && updateEdgeStyle(selectedEdge, style)}
+        />
+
+        <AlertDialog open={!!mindMapToDelete} onOpenChange={() => setMindMapToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the mind map
+                "{mindMapToDelete}".
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDeleteMindMap} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </SidebarProvider>
   );
 };
