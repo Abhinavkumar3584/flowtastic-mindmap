@@ -1,3 +1,4 @@
+
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,6 +67,15 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
           </TabsList>
 
           <TabsContent value="style" className="space-y-6">
+            <div>
+              <h4 className="mb-2 font-medium">Component Text</h4>
+              <Input
+                value={data.label}
+                onChange={(e) => handleChange({ label: e.target.value })}
+                placeholder="Enter text"
+              />
+            </div>
+
             <div>
               <h4 className="mb-2 font-medium">Font Size</h4>
               <div className="flex gap-2">
