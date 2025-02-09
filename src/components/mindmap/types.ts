@@ -27,7 +27,7 @@ export interface BaseNodeData {
   [key: string]: any;
 }
 
-export interface EdgeData extends Record<string, any> {
+export interface EdgeData {
   label?: string;
   arrowStart?: boolean;
   arrowEnd?: boolean;
