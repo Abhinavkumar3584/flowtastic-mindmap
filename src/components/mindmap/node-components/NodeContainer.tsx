@@ -16,7 +16,6 @@ export const NodeContainer = ({
   nodeData,
   selected,
   children,
-  onDoubleClick,
 }: NodeContainerProps) => {
   return (
     <div 
@@ -34,7 +33,6 @@ export const NodeContainer = ({
         padding: '4px',
         margin: '4px'
       }}
-      onDoubleClick={onDoubleClick}
     >
       {nodeData.nodeType !== 'title' && (
         <NodeResizer 

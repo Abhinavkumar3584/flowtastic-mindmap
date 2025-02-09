@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -38,33 +38,13 @@ const getNodeStyle = (nodeType?: string) => {
 };
 
 export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [label, setLabel] = useState(data.label || '');
   const [nodeData, setNodeData] = useState<BaseNodeData>(data);
 
   useEffect(() => {
     if (data) {
       setNodeData(data);
-      setLabel(data.label);
     }
   }, [data]);
-
-  const handleDoubleClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    window.mindmapApi?.updateNodeData(id, { label });
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      setIsEditing(false);
-      window.mindmapApi?.updateNodeData(id, { label });
-    }
-  };
 
   if (!nodeData) return null;
 
@@ -79,7 +59,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           nodeStyle={nodeStyle}
           nodeData={nodeData}
           selected={selected}
-          onDoubleClick={handleDoubleClick}
+          onDoubleClick={() => {}}
         >
           <NodeConnectors />
           
@@ -91,13 +71,13 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
 
           <div className="w-full h-full flex items-center justify-center">
             <NodeLabel
-              label={label}
+              label={nodeData.label}
               fontSize={fontSize}
               fontFamily={nodeData.fontFamily}
-              isEditing={isEditing}
-              onLabelChange={setLabel}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
+              isEditing={false}
+              onLabelChange={() => {}}
+              onBlur={() => {}}
+              onKeyDown={() => {}}
             />
           </div>
           
