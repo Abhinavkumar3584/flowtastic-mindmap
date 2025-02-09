@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import {
   ReactFlow,
@@ -11,6 +12,7 @@ import {
   Edge,
   MarkerType,
   NodeTypes,
+  Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -19,6 +21,7 @@ import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Share2 } from 'lucide-react';
+import { NodeSettings } from './NodeSettings';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,6 +71,7 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Node<BaseNodeData> | null>(null);
   const { toast } = useToast();
 
   const onConnect = useCallback(
@@ -89,8 +93,13 @@ export const MindMap = () => {
     [setEdges]
   );
 
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node<BaseNodeData>) => {
+    setSelectedNode(node);
+  }, []);
+
   const deleteNode = useCallback((id: string) => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
+    setSelectedNode(null);
   }, [setNodes]);
 
   const updateNodeData = useCallback((id: string, newData: Partial<BaseNodeData>) => {
@@ -252,59 +261,67 @@ export const MindMap = () => {
     <SidebarProvider>
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
-        <div className="flex-1 relative">
-          <div className="absolute top-4 right-4 z-10 flex gap-2">
-            <Button onClick={saveCurrentMindMap}>
-              Save
-            </Button>
-            <Button onClick={handleExport} variant="outline">
-              <Share2 className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  Load Mind Map
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {getAllMindMaps().map((name) => (
-                  <DropdownMenuItem
-                    key={name}
-                    className="flex items-center justify-between group"
-                  >
-                    <span onClick={() => loadExistingMindMap(name)} className="flex-1 cursor-pointer">
-                      {name}
-                    </span>
-                    <Trash2
-                      className="h-4 w-4 text-destructive opacity-0 group-hover:opacity-100 cursor-pointer ml-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteMindMap(name);
-                      }}
-                    />
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button onClick={createNewMindMap}>
-              <Plus className="mr-2 h-4 w-4" />
-              New
-            </Button>
+        <div className="flex-1 relative flex">
+          <div className="flex-1 relative">
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+              <Button onClick={saveCurrentMindMap}>
+                Save
+              </Button>
+              <Button onClick={handleExport} variant="outline">
+                <Share2 className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    Load Mind Map
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {getAllMindMaps().map((name) => (
+                    <DropdownMenuItem
+                      key={name}
+                      className="flex items-center justify-between group"
+                    >
+                      <span onClick={() => loadExistingMindMap(name)} className="flex-1 cursor-pointer">
+                        {name}
+                      </span>
+                      <Trash2
+                        className="h-4 w-4 text-destructive opacity-0 group-hover:opacity-100 cursor-pointer ml-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteMindMap(name);
+                        }}
+                      />
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button onClick={createNewMindMap}>
+                <Plus className="mr-2 h-4 w-4" />
+                New
+              </Button>
+            </div>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeClick={onNodeClick}
+              nodeTypes={nodeTypes}
+              fitView
+            >
+              <Controls />
+              <MiniMap />
+              <Background gap={12} size={1} />
+            </ReactFlow>
           </div>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            nodeTypes={nodeTypes}
-            fitView
-          >
-            <Controls />
-            <MiniMap />
-            <Background gap={12} size={1} />
-          </ReactFlow>
+          {selectedNode && (
+            <div className="w-80 border-l border-border bg-background p-4 overflow-y-auto">
+              <NodeSettings data={selectedNode.data} nodeId={selectedNode.id} />
+            </div>
+          )}
         </div>
       </div>
 

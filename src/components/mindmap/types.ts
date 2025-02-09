@@ -24,7 +24,6 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-  [key: string]: any;
 }
 
 export interface EdgeData {
