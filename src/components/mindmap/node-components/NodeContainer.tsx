@@ -7,8 +7,6 @@ interface NodeContainerProps {
   nodeStyle: string;
   nodeData: BaseNodeData;
   selected: boolean;
-  isCircle: boolean;
-  isDiamond: boolean;
   children: ReactNode;
   onDoubleClick: () => void;
 }
@@ -17,8 +15,6 @@ export const NodeContainer = ({
   nodeStyle,
   nodeData,
   selected,
-  isCircle,
-  isDiamond,
   children,
   onDoubleClick,
 }: NodeContainerProps) => {
@@ -35,8 +31,6 @@ export const NodeContainer = ({
         borderStyle: nodeData.strokeStyle,
         opacity: nodeData.opacity || 1,
         textAlign: nodeData.textAlign || 'center',
-        transform: isDiamond ? 'rotate(45deg)' : 'none',
-        aspectRatio: isCircle ? '1 / 1' : 'auto',
         padding: '4px',
         margin: '4px'
       }}
@@ -45,11 +39,10 @@ export const NodeContainer = ({
       {nodeData.nodeType !== 'title' && (
         <NodeResizer 
           minWidth={100}
-          minHeight={isCircle ? 100 : 40}
+          minHeight={40}
           isVisible={selected}
           lineClassName="border-mindmap-primary"
           handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          keepAspectRatio={isCircle}
         />
       )}
       {children}

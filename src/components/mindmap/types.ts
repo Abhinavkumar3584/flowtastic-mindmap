@@ -1,5 +1,5 @@
 
-import { Node as ReactFlowNode, NodeProps } from '@xyflow/react';
+import { Node as ReactFlowNode, NodeProps, Edge } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -14,7 +14,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'button' | 'section' | 'rectangle' | 'diamond' | 'circle';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -27,12 +27,23 @@ export interface BaseNodeData {
   [key: string]: any;
 }
 
+export interface EdgeData {
+  label?: string;
+  arrowStart?: boolean;
+  arrowEnd?: boolean;
+  pathStyle?: 'straight' | 'curved' | 'step';
+  strokeStyle?: 'solid' | 'dashed' | 'dotted';
+  strokeColor?: string;
+  strokeWidth?: number;
+}
+
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
+export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
 export interface MindMapData {
   nodes: MindMapNode[];
-  edges: any[];
+  edges: MindMapEdge[];
   name: string;
 }
 

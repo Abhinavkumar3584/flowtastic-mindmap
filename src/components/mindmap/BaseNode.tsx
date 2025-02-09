@@ -32,12 +32,6 @@ const getNodeStyle = (nodeType?: string) => {
       return 'bg-[#FEF7CD] border border-black/20 rounded';
     case 'subtopic':
       return 'bg-[#FDE1D3] border-2 border-black/20 rounded-lg';
-    case 'rectangle':
-      return 'bg-white border border-gray-200';
-    case 'diamond':
-      return 'bg-white border border-gray-200 rotate-45';
-    case 'circle':
-      return 'bg-white border border-gray-200 rounded-full';
     default:
       return 'bg-white border border-gray-200';
   }
@@ -76,8 +70,6 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
 
   const hasContent = !!(nodeData.content?.title || nodeData.content?.description || (nodeData.content?.links && nodeData.content.links.length > 0));
   const nodeStyle = getNodeStyle(nodeData.nodeType);
-  const isDiamond = nodeData.nodeType === 'diamond';
-  const isCircle = nodeData.nodeType === 'circle';
   const fontSize = getFontSize(nodeData.fontSize as FontSize);
 
   return (
@@ -87,28 +79,17 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           nodeStyle={nodeStyle}
           nodeData={nodeData}
           selected={selected}
-          isCircle={isCircle}
-          isDiamond={isDiamond}
           onDoubleClick={handleDoubleClick}
         >
           <NodeConnectors />
-
+          
           {hasContent && (
             <div className="absolute top-1 right-1 text-gray-500">
               <FileText className="h-4 w-4" />
             </div>
           )}
 
-          <div 
-            style={{ 
-              transform: isDiamond ? 'rotate(-45deg)' : 'none',
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
+          <div className="w-full h-full flex items-center justify-center">
             <NodeLabel
               label={label}
               fontSize={fontSize}

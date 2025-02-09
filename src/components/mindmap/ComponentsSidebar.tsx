@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -12,9 +13,6 @@ import {
   CircleDot,
   Layers,
   AlignLeft,
-  Square,
-  Diamond,
-  Circle,
 } from "lucide-react";
 
 interface ComponentsSidebarProps {
@@ -33,36 +31,6 @@ export const ComponentsSidebar = ({
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Basic Shapes</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-1.5 p-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode('rectangle')}
-            >
-              <Square className="h-4 w-4" />
-              <span>Rectangle</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode('diamond')}
-            >
-              <Diamond className="h-4 w-4" />
-              <span>Diamond</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode('circle')}
-            >
-              <Circle className="h-4 w-4" />
-              <span>Circle</span>
-            </Button>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         <SidebarGroup>
           <SidebarGroupLabel>Components</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1.5 p-2">
