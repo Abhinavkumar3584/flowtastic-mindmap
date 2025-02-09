@@ -1,5 +1,3 @@
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -53,76 +51,70 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="absolute top-0 right-0 -translate-y-full">
-          Settings
-        </Button>
-      </SheetTrigger>
-      <SheetContent>
-        <Tabs defaultValue="style">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="style">Style</TabsTrigger>
-            <TabsTrigger value="content">Content & Links</TabsTrigger>
-          </TabsList>
+    <div className="h-full">
+      <Tabs defaultValue="style">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="style">Style</TabsTrigger>
+          <TabsTrigger value="content">Content & Links</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="style" className="space-y-6">
-            <div>
-              <h4 className="mb-2 font-medium">Component Text</h4>
-              <Input
-                value={data.label}
-                onChange={(e) => handleChange({ label: e.target.value })}
-                placeholder="Enter text"
-              />
-            </div>
+        <TabsContent value="style" className="space-y-6">
+          <div>
+            <h4 className="mb-2 font-medium">Component Text</h4>
+            <Input
+              value={data.label}
+              onChange={(e) => handleChange({ label: e.target.value })}
+              placeholder="Enter text"
+            />
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Font Size</h4>
-              <div className="flex gap-2">
-                {fontSizes.map((size) => (
-                  <Button
-                    key={size}
-                    variant={data.fontSize === size ? "default" : "outline"}
-                    onClick={() => handleChange({ fontSize: size })}
-                    className="w-10"
-                  >
-                    {size.toUpperCase()}
-                  </Button>
-                ))}
-              </div>
+          <div>
+            <h4 className="mb-2 font-medium">Font Size</h4>
+            <div className="flex gap-2">
+              {fontSizes.map((size) => (
+                <Button
+                  key={size}
+                  variant={data.fontSize === size ? "default" : "outline"}
+                  onClick={() => handleChange({ fontSize: size })}
+                  className="w-10"
+                >
+                  {size.toUpperCase()}
+                </Button>
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Stroke Color</h4>
-              <div className="flex gap-2">
-                {strokeColors.map((color) => (
-                  <button
-                    key={color}
-                    className={`w-8 h-8 rounded-full border ${
-                      data.strokeColor === color ? 'ring-2 ring-primary' : ''
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleChange({ strokeColor: color })}
-                  />
-                ))}
-              </div>
+          <div>
+            <h4 className="mb-2 font-medium">Stroke Color</h4>
+            <div className="flex gap-2">
+              {strokeColors.map((color) => (
+                <button
+                  key={color}
+                  className={`w-8 h-8 rounded-full border ${
+                    data.strokeColor === color ? 'ring-2 ring-primary' : ''
+                  }`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handleChange({ strokeColor: color })}
+                />
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Background Color</h4>
-              <div className="flex gap-2">
-                {backgroundColors.map((color) => (
-                  <button
-                    key={color}
-                    className={`w-8 h-8 rounded-full border ${
-                      data.backgroundColor === color ? 'ring-2 ring-primary' : ''
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleChange({ backgroundColor: color })}
-                  />
-                ))}
-              </div>
+          <div>
+            <h4 className="mb-2 font-medium">Background Color</h4>
+            <div className="flex gap-2">
+              {backgroundColors.map((color) => (
+                <button
+                  key={color}
+                  className={`w-8 h-8 rounded-full border ${
+                    data.backgroundColor === color ? 'ring-2 ring-primary' : ''
+                  }`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handleChange({ backgroundColor: color })}
+                />
+              ))}
             </div>
+          </div>
 
           <div>
             <h4 className="mb-2 font-medium">Stroke Style</h4>
@@ -184,69 +176,68 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
               ))}
             </div>
           </div>
-          </TabsContent>
+        </TabsContent>
 
-          <TabsContent value="content" className="space-y-4">
-            <div>
-              <h4 className="mb-2 font-medium">Title</h4>
-              <Input
-                value={data.content?.title || ''}
-                onChange={(e) => handleContentChange({ title: e.target.value })}
-                placeholder="Enter title"
-              />
-            </div>
+        <TabsContent value="content" className="space-y-4">
+          <div>
+            <h4 className="mb-2 font-medium">Title</h4>
+            <Input
+              value={data.content?.title || ''}
+              onChange={(e) => handleContentChange({ title: e.target.value })}
+              placeholder="Enter title"
+            />
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Description</h4>
-              <Textarea
-                value={data.content?.description || ''}
-                onChange={(e) => handleContentChange({ description: e.target.value })}
-                placeholder="Enter description"
-                className="min-h-[100px]"
-              />
-            </div>
+          <div>
+            <h4 className="mb-2 font-medium">Description</h4>
+            <Textarea
+              value={data.content?.description || ''}
+              onChange={(e) => handleContentChange({ description: e.target.value })}
+              placeholder="Enter description"
+              className="min-h-[100px]"
+            />
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Links</h4>
-              <div className="space-y-2">
-                {data.content?.links?.map((link, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{link.label}</p>
-                      <p className="text-sm text-muted-foreground">{link.url}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeLink(index)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
+          <div>
+            <h4 className="mb-2 font-medium">Links</h4>
+            <div className="space-y-2">
+              {data.content?.links?.map((link, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{link.label}</p>
+                    <p className="text-sm text-muted-foreground">{link.url}</p>
                   </div>
-                ))}
-              </div>
-
-              <div className="mt-2 space-y-2">
-                <Input
-                  value={newLink.label}
-                  onChange={(e) => setNewLink(prev => ({ ...prev, label: e.target.value }))}
-                  placeholder="Link label"
-                />
-                <div className="flex gap-2">
-                  <Input
-                    value={newLink.url}
-                    onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
-                    placeholder="URL"
-                  />
-                  <Button onClick={addLink}>
-                    <Plus className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeLink(index)}
+                  >
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
+              ))}
+            </div>
+
+            <div className="mt-2 space-y-2">
+              <Input
+                value={newLink.label}
+                onChange={(e) => setNewLink(prev => ({ ...prev, label: e.target.value }))}
+                placeholder="Link label"
+              />
+              <div className="flex gap-2">
+                <Input
+                  value={newLink.url}
+                  onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
+                  placeholder="URL"
+                />
+                <Button onClick={addLink}>
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
-      </SheetContent>
-    </Sheet>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

@@ -317,11 +317,15 @@ export const MindMap = () => {
               <Background gap={12} size={1} />
             </ReactFlow>
           </div>
-          {selectedNode && (
-            <div className="w-80 border-l border-border bg-background p-4 overflow-y-auto">
+          <div className="w-80 border-l border-border bg-background p-4 overflow-y-auto">
+            {selectedNode ? (
               <NodeSettings data={selectedNode.data} nodeId={selectedNode.id} />
-            </div>
-          )}
+            ) : (
+              <div className="text-center text-muted-foreground p-4">
+                Select a node to edit its properties
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
