@@ -41,12 +41,6 @@ export type MindMapNode = ReactFlowNode<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
-export interface MindMapData {
-  nodes: MindMapNode[];
-  edges: MindMapEdge[];
-  name: string;
-}
-
 declare global {
   interface Window {
     mindmapApi?: {
