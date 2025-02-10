@@ -10,7 +10,6 @@ export interface NodeContent {
     url: string;
     label: string;
   }>;
-  [key: string]: unknown;
 }
 
 export interface BaseNodeData {
@@ -25,7 +24,7 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 export interface EdgeData {
@@ -36,7 +35,6 @@ export interface EdgeData {
   strokeStyle?: 'solid' | 'dashed' | 'dotted';
   strokeColor?: string;
   strokeWidth?: number;
-  [key: string]: unknown;
 }
 
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
