@@ -48,7 +48,6 @@ export interface EdgeData {
   strokeStyle?: 'solid' | 'dashed' | 'dotted';
   strokeColor?: string;
   strokeWidth?: number;
-  [key: string]: any;
 }
 
 export type MindMapData = {

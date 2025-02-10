@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useReactFlow, useStore } from '@xyflow/react';
+import { useReactFlow } from '@xyflow/react';
 import { ChromePicker } from 'react-color';
 import {
   Select,
@@ -20,11 +20,8 @@ import { EdgeData } from './types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export const EdgeSettings = () => {
-  const { getEdges } = useReactFlow();
-  const selectedEdges = useStore((state) => {
-    const selectedEdgeIds = state.selectedEdges;
-    return getEdges().filter((edge) => selectedEdgeIds.includes(edge.id));
-  });
+  const { getEdges, getSelectedEdges } = useReactFlow();
+  const selectedEdges = getSelectedEdges();
 
   if (selectedEdges.length === 0) return null;
 
@@ -63,7 +60,7 @@ export const EdgeSettings = () => {
           <Label>Stroke Style</Label>
           <Select
             value={data.strokeStyle || 'solid'}
-            onValueChange={(value) => updateEdge({ strokeStyle: value })}
+            onValueChange={(value: 'solid' | 'dashed' | 'dotted') => updateEdge({ strokeStyle: value })}
           >
             <SelectTrigger>
               <SelectValue />
@@ -103,7 +100,7 @@ export const EdgeSettings = () => {
           <Label>Path Style</Label>
           <Select
             value={data.pathStyle || 'straight'}
-            onValueChange={(value) => updateEdge({ pathStyle: value })}
+            onValueChange={(value: 'straight' | 'curved' | 'step') => updateEdge({ pathStyle: value })}
           >
             <SelectTrigger>
               <SelectValue />
