@@ -1,5 +1,5 @@
 
-import { Node as ReactFlowNode, NodeProps, Edge } from '@xyflow/react';
+import { Node as ReactFlowNode, NodeProps, Edge, Node } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -57,7 +57,7 @@ export type MindMapData = {
   name?: string;
 };
 
-export type MindMapNode = ReactFlowNode<BaseNodeData>;
+export type MindMapNode = Node<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 
@@ -66,6 +66,7 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
+      updateEdgeData: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
