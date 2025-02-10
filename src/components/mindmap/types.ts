@@ -3,6 +3,14 @@ import { Node as ReactFlowNode, NodeProps, Edge } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
+export type LegendPosition = 
+  | 'left-top' 
+  | 'left-center' 
+  | 'left-bottom' 
+  | 'right-top' 
+  | 'right-center' 
+  | 'right-bottom';
+
 export interface NodeContent {
   title?: string;
   description?: string;
@@ -24,6 +32,11 @@ export interface BaseNodeData {
   textAlign?: 'left' | 'center' | 'right';
   opacity?: number;
   content?: NodeContent;
+  legend?: {
+    enabled: boolean;
+    position: LegendPosition;
+    color: string;
+  };
   [key: string]: any;
 }
 
@@ -41,6 +54,7 @@ export interface EdgeData {
 export type MindMapData = {
   nodes: Array<MindMapNode>;
   edges: Array<MindMapEdge>;
+  name?: string;
 };
 
 export type MindMapNode = ReactFlowNode<BaseNodeData>;

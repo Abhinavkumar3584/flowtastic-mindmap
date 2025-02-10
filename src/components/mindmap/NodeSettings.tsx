@@ -1,12 +1,13 @@
-
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { BaseNodeData, FontSize, NodeContent } from "./types";
-import { Plus, Trash } from "lucide-react";
+import { BaseNodeData, FontSize, NodeContent, LegendPosition } from "./types";
+import { Plus, Trash, Check } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const strokeColors = ['black', 'red', 'green', 'blue', 'orange', 'black'];
 const backgroundColors = ['white', 'pink', 'lightgreen', 'lightblue', 'lightyellow', 'transparent'];
@@ -14,6 +15,15 @@ const fontFamilies = ['serif', 'sans-serif', 'monospace', 'cursive'];
 const strokeStyles = ['solid', 'dashed', 'dotted'] as const;
 const textAligns = ['left', 'center', 'right'] as const;
 const fontSizes: FontSize[] = ['xs', 's', 'm', 'l', 'xl'];
+
+const legendPositions: { value: LegendPosition; label: string }[] = [
+  { value: 'left-top', label: 'Left: Top' },
+  { value: 'left-center', label: 'Left: Center' },
+  { value: 'left-bottom', label: 'Left: Bottom' },
+  { value: 'right-top', label: 'Right: Top' },
+  { value: 'right-center', label: 'Right: Center' },
+  { value: 'right-bottom', label: 'Right: Bottom' },
+];
 
 interface NodeSettingsProps {
   data: BaseNodeData;
@@ -33,6 +43,37 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
       ...content
     };
     handleChange({ content: updatedContent });
+  };
+
+  const handleLegendChange = (position: LegendPosition) => {
+    handleChange({
+      legend: {
+        enabled: true,
+        position,
+        color: data.legend?.color || '#000000',
+      },
+    });
+  };
+
+  const removeLegend = () => {
+    handleChange({
+      legend: {
+        enabled: false,
+        position: data.legend?.position || 'right-top',
+        color: data.legend?.color || '#000000',
+      },
+    });
+  };
+
+  const handleLegendColorChange = (color: string) => {
+    if (data.legend) {
+      handleChange({
+        legend: {
+          ...data.legend,
+          color,
+        },
+      });
+    }
   };
 
   const addLink = () => {
@@ -62,9 +103,10 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
         <div className="space-y-6 pb-6">
           <Tabs defaultValue="style" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="style">Style</TabsTrigger>
               <TabsTrigger value="content">Content & Links</TabsTrigger>
+              <TabsTrigger value="legend">Legend</TabsTrigger>
             </TabsList>
 
             <TabsContent value="style" className="space-y-6 mt-4">
@@ -248,6 +290,58 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
                     </div>
                   </div>
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="legend" className="mt-4 space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-3">Legend Position</h4>
+                  <RadioGroup
+                    value={data.legend?.enabled ? data.legend.position : undefined}
+                    onValueChange={(value) => handleLegendChange(value as LegendPosition)}
+                    className="grid grid-cols-2 gap-2"
+                  >
+                    {legendPositions.map((pos) => (
+                      <div key={pos.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={pos.value} id={pos.value} />
+                        <Label htmlFor={pos.value}>{pos.label}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                {data.legend?.enabled && (
+                  <>
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Legend Color</h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {strokeColors.map((color) => (
+                          <button
+                            key={color}
+                            className={`w-8 h-8 rounded-full border flex items-center justify-center ${
+                              data.legend?.color === color ? 'ring-2 ring-primary' : ''
+                            }`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => handleLegendColorChange(color)}
+                          >
+                            {data.legend?.color === color && (
+                              <Check className="h-4 w-4 text-white" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="destructive"
+                      onClick={removeLegend}
+                      className="w-full"
+                    >
+                      Remove Legend
+                    </Button>
+                  </>
+                )}
               </div>
             </TabsContent>
           </Tabs>

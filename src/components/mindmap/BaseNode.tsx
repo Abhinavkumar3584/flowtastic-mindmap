@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import {
   ContextMenu,
@@ -8,8 +7,8 @@ import {
 } from "@/components/ui/context-menu";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
-import { MindMapNodeProps, BaseNodeData, FontSize } from './types';
-import { FileText } from 'lucide-react';
+import { MindMapNodeProps, BaseNodeData, FontSize, LegendPosition } from './types';
+import { FileText, Check } from 'lucide-react';
 import { NodeLabel } from './node-components/NodeLabel';
 import { NodeContainer } from './node-components/NodeContainer';
 
@@ -66,6 +65,38 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
     }
   };
 
+  const getLegendPosition = (position: LegendPosition): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      position: 'absolute',
+      width: '20px',
+      height: '20px',
+      borderRadius: '50%',
+      border: `2px solid ${nodeData.legend?.color || '#000000'}`,
+      backgroundColor: 'white',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10,
+    };
+
+    switch (position) {
+      case 'left-top':
+        return { ...base, left: '-10px', top: '-10px' };
+      case 'left-center':
+        return { ...base, left: '-10px', top: '50%', transform: 'translateY(-50%)' };
+      case 'left-bottom':
+        return { ...base, left: '-10px', bottom: '-10px' };
+      case 'right-top':
+        return { ...base, right: '-10px', top: '-10px' };
+      case 'right-center':
+        return { ...base, right: '-10px', top: '50%', transform: 'translateY(-50%)' };
+      case 'right-bottom':
+        return { ...base, right: '-10px', bottom: '-10px' };
+      default:
+        return base;
+    }
+  };
+
   if (!nodeData) return null;
 
   const hasContent = !!(nodeData.content?.title || nodeData.content?.description || (nodeData.content?.links && nodeData.content.links.length > 0));
@@ -86,6 +117,15 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           {hasContent && (
             <div className="absolute top-1 right-1 text-gray-500">
               <FileText className="h-4 w-4" />
+            </div>
+          )}
+
+          {nodeData.legend?.enabled && (
+            <div style={getLegendPosition(nodeData.legend.position)}>
+              <Check
+                className="h-3 w-3"
+                style={{ color: nodeData.legend.color }}
+              />
             </div>
           )}
 
