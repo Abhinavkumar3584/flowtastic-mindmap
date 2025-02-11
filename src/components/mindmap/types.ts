@@ -48,7 +48,7 @@ export interface EdgeData {
   strokeStyle?: 'solid' | 'dashed' | 'dotted';
   strokeColor?: string;
   strokeWidth?: number;
-  [key: string]: any;
+  [key: string]: any; // Add index signature to satisfy Record<string, unknown>
 }
 
 export type MindMapData = {
@@ -66,6 +66,7 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
+      updateEdgeData: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
