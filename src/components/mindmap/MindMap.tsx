@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
+import { EdgeSettings } from './EdgeSettings';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -76,10 +77,12 @@ export const MindMap = () => {
         addEdge(
           {
             ...params,
-            type: 'smoothstep',
-            animated: true,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
+            type: 'default',
+            data: {
+              label: '',
+            },
+            style: {
+              stroke: '#000000',
             },
           },
           eds
@@ -300,10 +303,12 @@ export const MindMap = () => {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
+            elementsSelectable={true}
           >
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
+            <EdgeSettings />
           </ReactFlow>
         </div>
       </div>
