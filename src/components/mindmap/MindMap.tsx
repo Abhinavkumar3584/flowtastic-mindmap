@@ -37,7 +37,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
-import { EdgeSettings } from './EdgeSettings';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -110,23 +109,6 @@ export const MindMap = () => {
       })
     );
   }, [setNodes]);
-
-  const updateEdgeData = useCallback((id: string, newData: Partial<EdgeData>) => {
-    setEdges((eds) =>
-      eds.map((edge) => {
-        if (edge.id === id) {
-          return {
-            ...edge,
-            data: {
-              ...edge.data,
-              ...newData,
-            },
-          };
-        }
-        return edge;
-      })
-    );
-  }, [setEdges]);
 
   const handleExport = () => {
     if (!currentMindMap) {
@@ -238,7 +220,6 @@ export const MindMap = () => {
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
-    updateEdgeData,
   };
 
   const addNode = (type: BaseNodeData['nodeType']) => {
@@ -319,13 +300,10 @@ export const MindMap = () => {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
-            edgesFocusable={true}
-            elementsSelectable={true}
           >
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
-            <EdgeSettings />
           </ReactFlow>
         </div>
       </div>
