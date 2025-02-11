@@ -21,6 +21,9 @@ export interface NodeContent {
 }
 
 export interface BaseNodeData {
+  id?: string;
+  position?: { x: number; y: number };
+  data?: any;
   label: string;
   nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
@@ -66,7 +69,6 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
-      updateEdge: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
