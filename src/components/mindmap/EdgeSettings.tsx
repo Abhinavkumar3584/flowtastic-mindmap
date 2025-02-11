@@ -3,6 +3,13 @@ import React from 'react';
 import { useReactFlow, MarkerType } from '@xyflow/react';
 import { ChromePicker } from 'react-color';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardHeader,
@@ -11,24 +18,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { EdgeData } from './types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { 
-  ArrowLeft,
-  ArrowRight,
-  ArrowLeftRight,
-  Minus,
-  LineStroke,
-  StraightLine,
-  CurvedLine,
-  GitBranch,
-  DotDashed,
-  Waves,
-  Bold,
-  AlignJustify,
-} from 'lucide-react';
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-const LINE_WEIGHTS = [1, 2, 3, 4];
 
 export const EdgeSettings = () => {
   const { getEdges, setEdges } = useReactFlow();
@@ -50,6 +39,9 @@ export const EdgeSettings = () => {
         }
         if ('markerEnd' in updates) {
           newEdge.markerEnd = updates.markerEnd;
+        }
+        if ('animated' in updates) {
+          newEdge.animated = updates.animated;
         }
         if ('type' in updates) {
           newEdge.type = updates.type;
@@ -78,16 +70,12 @@ export const EdgeSettings = () => {
     return 'none';
   };
 
-  const getLineWeight = () => {
-    return selectedEdge.style?.strokeWidth || 1;
-  };
-
   return (
-    <Card className="absolute right-4 top-20 w-72 z-50 bg-background border shadow-lg">
+    <Card className="absolute right-4 top-20 w-64 z-50 bg-background border shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium">Edge Settings</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label>Color</Label>
           <Popover>
@@ -109,116 +97,73 @@ export const EdgeSettings = () => {
         </div>
 
         <div className="space-y-2">
-          <Label>Line Weight</Label>
-          <ToggleGroup 
-            type="single" 
-            value={getLineWeight().toString()}
-            onValueChange={(value) => {
-              if (value) {
-                updateEdge({ 
-                  style: { strokeWidth: parseInt(value) } 
-                });
-              }
-            }}
-            className="justify-start"
-          >
-            {LINE_WEIGHTS.map((weight) => (
-              <ToggleGroupItem 
-                key={weight} 
-                value={weight.toString()}
-                className="p-2"
-              >
-                <LineStroke style={{ strokeWidth: weight }} />
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </div>
-
-        <div className="space-y-2">
           <Label>Stroke Style</Label>
-          <ToggleGroup 
-            type="single" 
+          <Select
             value={getStrokeStyle()}
             onValueChange={(value) => {
-              if (value) {
-                const strokeDasharray = value === 'dashed' ? '5,5' : 
-                                      value === 'dotted' ? '2,2' : 
-                                      undefined;
-                updateEdge({ 
-                  style: { strokeDasharray } 
-                });
-              }
+              const strokeDasharray = value === 'dashed' ? '5,5' : 
+                                    value === 'dotted' ? '2,2' : 
+                                    undefined;
+              updateEdge({ 
+                style: { strokeDasharray } 
+              });
             }}
-            className="justify-start"
           >
-            <ToggleGroupItem value="solid">
-              <Minus className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="dashed">
-              <DotDashed className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="dotted">
-              <Waves className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="solid">Solid</SelectItem>
+              <SelectItem value="dashed">Dashed</SelectItem>
+              <SelectItem value="dotted">Dotted</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
           <Label>Arrow Style</Label>
-          <ToggleGroup 
-            type="single" 
+          <Select
             value={getArrowStyle()}
             onValueChange={(value) => {
-              if (value) {
-                updateEdge({
-                  markerStart: value === 'start' || value === 'both' 
-                    ? { type: MarkerType.Arrow }
-                    : undefined,
-                  markerEnd: value === 'end' || value === 'both'
-                    ? { type: MarkerType.Arrow }
-                    : undefined,
-                });
-              }
+              updateEdge({
+                markerStart: value === 'start' || value === 'both' 
+                  ? { type: MarkerType.Arrow }
+                  : undefined,
+                markerEnd: value === 'end' || value === 'both'
+                  ? { type: MarkerType.Arrow }
+                  : undefined,
+              });
             }}
-            className="justify-start"
           >
-            <ToggleGroupItem value="none">
-              <Minus className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="start">
-              <ArrowLeft className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="end">
-              <ArrowRight className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="both">
-              <ArrowLeftRight className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="start">Start</SelectItem>
+              <SelectItem value="end">End</SelectItem>
+              <SelectItem value="both">Both</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
           <Label>Path Style</Label>
-          <ToggleGroup 
-            type="single" 
+          <Select
             value={selectedEdge.type || 'default'}
             onValueChange={(value) => {
-              if (value) {
-                updateEdge({ type: value });
-              }
+              updateEdge({ type: value });
             }}
-            className="justify-start"
           >
-            <ToggleGroupItem value="default">
-              <StraightLine className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="smoothstep">
-              <CurvedLine className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="step">
-              <GitBranch className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Straight</SelectItem>
+              <SelectItem value="smoothstep">Curved</SelectItem>
+              <SelectItem value="step">Angular</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>

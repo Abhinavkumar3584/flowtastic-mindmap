@@ -37,7 +37,6 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
-  [key: string]: any; // Add index signature
 }
 
 export interface EdgeData {
@@ -49,9 +48,7 @@ export interface EdgeData {
   style?: {
     strokeDasharray?: string;
     stroke?: string;
-    strokeWidth?: number;
   };
-  [key: string]: any; // Add index signature
 }
 
 export type MindMapData = {

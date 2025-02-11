@@ -304,9 +304,6 @@ export const MindMap = () => {
             nodeTypes={nodeTypes}
             fitView
             elementsSelectable={true}
-            edgesUpdatable={true}
-            edgesFocusable={true}
-            selectNodesOnDrag={false}
           >
             <Controls />
             <MiniMap />
