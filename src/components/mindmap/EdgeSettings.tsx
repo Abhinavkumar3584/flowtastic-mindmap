@@ -29,14 +29,25 @@ export const EdgeSettings = () => {
   const updateEdge = (updates: Partial<EdgeData>) => {
     setEdges(edges.map(edge => {
       if (edge.id === selectedEdge.id) {
-        return {
-          ...edge,
-          ...updates,
-          style: {
-            ...edge.style,
-            ...updates.style,
-          },
-        };
+        const newEdge = { ...edge };
+
+        if ('style' in updates) {
+          newEdge.style = { ...newEdge.style, ...updates.style };
+        }
+        if ('markerStart' in updates) {
+          newEdge.markerStart = updates.markerStart;
+        }
+        if ('markerEnd' in updates) {
+          newEdge.markerEnd = updates.markerEnd;
+        }
+        if ('animated' in updates) {
+          newEdge.animated = updates.animated;
+        }
+        if ('type' in updates) {
+          newEdge.type = updates.type;
+        }
+
+        return newEdge;
       }
       return edge;
     }));
@@ -83,28 +94,6 @@ export const EdgeSettings = () => {
               />
             </PopoverContent>
           </Popover>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Line Weight</Label>
-          <Select
-            value={String(selectedEdge.style?.strokeWidth || 1)}
-            onValueChange={(value) => {
-              updateEdge({
-                style: { strokeWidth: Number(value) }
-              });
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Thin</SelectItem>
-              <SelectItem value="2">Normal</SelectItem>
-              <SelectItem value="3">Medium</SelectItem>
-              <SelectItem value="4">Bold</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="space-y-2">

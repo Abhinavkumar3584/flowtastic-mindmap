@@ -37,7 +37,6 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
-  [key: string]: any; // Add index signature for TypeScript compatibility
 }
 
 export interface EdgeData {
@@ -49,9 +48,7 @@ export interface EdgeData {
   style?: {
     strokeDasharray?: string;
     stroke?: string;
-    strokeWidth?: number;
   };
-  [key: string]: any; // Add index signature for TypeScript compatibility
 }
 
 export type MindMapData = {
@@ -69,6 +66,7 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
+      updateEdge: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
