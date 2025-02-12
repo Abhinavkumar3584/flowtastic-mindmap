@@ -305,9 +305,12 @@ export const MindMap = () => {
             fitView
             elementsSelectable={true}
             defaultEdgeOptions={{
-              interactionWidth: 20,
+              interactionWidth: 10,
               style: { strokeWidth: 2 },
             }}
+            edgesFocusable={true}
+            selectNodesOnDrag={false}
+            className="touch-none"
           >
             <Controls />
             <MiniMap />

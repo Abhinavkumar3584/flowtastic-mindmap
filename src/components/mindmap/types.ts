@@ -21,9 +21,6 @@ export interface NodeContent {
 }
 
 export interface BaseNodeData {
-  id?: string;
-  position?: { x: number; y: number };
-  data?: any;
   label: string;
   nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
@@ -40,6 +37,7 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
+  [key: string]: any; // Add index signature for TypeScript compatibility
 }
 
 export interface EdgeData {
@@ -51,7 +49,9 @@ export interface EdgeData {
   style?: {
     strokeDasharray?: string;
     stroke?: string;
+    strokeWidth?: number;
   };
+  [key: string]: any; // Add index signature for TypeScript compatibility
 }
 
 export type MindMapData = {
