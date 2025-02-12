@@ -41,8 +41,12 @@ export interface BaseNodeData {
 
 export interface EdgeData {
   label?: string;
-  markerStart?: { type: MarkerType };
-  markerEnd?: { type: MarkerType };
+  markerStart?: {
+    type: MarkerType;
+  };
+  markerEnd?: {
+    type: MarkerType;
+  };
   type?: string;
   animated?: boolean;
   style?: {
