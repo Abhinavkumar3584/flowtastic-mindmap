@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import {
   ReactFlow,
@@ -40,9 +39,11 @@ import {
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeSettings } from './EdgeSettings';
+import SectionNode from './node-components/SectionNode';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
+  section: SectionNode,
 };
 
 const initialNodes: MindMapNode[] = [
@@ -140,11 +141,11 @@ export const MindMap = () => {
     
     const newNode: MindMapNode = {
       id: `${nodes.length + 1}`,
-      type: 'base',
+      type: type === 'section' ? 'section' : 'base',
       data: { 
         label: type.charAt(0).toUpperCase() + type.slice(1),
         nodeType: type,
-        backgroundColor: 'white',
+        backgroundColor: type === 'section' ? 'transparent' : 'white',
         strokeColor: 'black',
         strokeWidth: 1,
         strokeStyle: 'solid',
@@ -156,6 +157,10 @@ export const MindMap = () => {
         x: Math.random() * 500,
         y: Math.random() * 500,
       },
+      style: type === 'section' ? {
+        width: 300,
+        height: 200,
+      } : undefined,
     };
 
     setNodes((nds) => [...nds, newNode]);
