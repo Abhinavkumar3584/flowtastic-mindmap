@@ -7,7 +7,7 @@ import { NodeConnectors } from '../NodeConnectors';
 
 const SectionNode = ({ data, selected }: MindMapNodeProps) => {
   return (
-    <div className="relative min-w-[200px] min-h-[150px]">
+    <>
       <NodeResizer 
         minWidth={200}
         minHeight={150}
@@ -17,27 +17,32 @@ const SectionNode = ({ data, selected }: MindMapNodeProps) => {
           width: '8px', 
           height: '8px', 
           backgroundColor: 'white',
-          border: '2px solid var(--mindmap-primary)'
+          border: '2px solid #000000'
         }}
         lineStyle={{
           borderWidth: '1px',
           borderStyle: 'dashed',
-          borderColor: 'var(--mindmap-primary)'
+          borderColor: '#000000'
         }}
+      />
+      <NodeContainer
+        nodeStyle="border-2 rounded-lg bg-transparent border-black"
+        nodeData={{
+          ...data,
+          backgroundColor: 'transparent',
+          strokeColor: '#000000',
+          strokeWidth: 2,
+          strokeStyle: 'solid'
+        }}
+        selected={selected}
+        onDoubleClick={() => {}}
       >
-        <NodeContainer
-          nodeStyle="border-2 rounded-lg bg-transparent"
-          nodeData={data}
-          selected={selected}
-          onDoubleClick={() => {}}
-        >
-          <div className="absolute top-2 left-2 text-sm font-medium text-gray-600">
-            {data.label}
-          </div>
-        </NodeContainer>
-      </NodeResizer>
+        <div className="absolute top-2 left-2 text-sm font-medium text-gray-600">
+          {data.label}
+        </div>
+      </NodeContainer>
       <NodeConnectors />
-    </div>
+    </>
   );
 };
 

@@ -21,7 +21,6 @@ export const NodeContainer = ({
     <div 
       className={`w-full h-full ${nodeStyle} 
                  flex items-center justify-center relative
-                 transition-shadow duration-200 ease-in-out
                  ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
       style={{
         backgroundColor: nodeData.backgroundColor,
@@ -31,7 +30,9 @@ export const NodeContainer = ({
         opacity: nodeData.opacity || 1,
         textAlign: nodeData.textAlign || 'center',
         padding: '4px',
-        position: 'relative'
+        position: 'relative',
+        minWidth: '200px',
+        minHeight: '150px'
       }}
       onDoubleClick={onDoubleClick}
     >
