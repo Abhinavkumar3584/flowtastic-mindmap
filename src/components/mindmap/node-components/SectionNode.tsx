@@ -7,22 +7,46 @@ import { NodeConnectors } from '../NodeConnectors';
 
 const SectionNode = ({ data, selected }: MindMapNodeProps) => {
   return (
-    <div className="relative min-w-[200px] min-h-[150px]">
+    <div 
+      className="section-node" 
+      style={{ 
+        width: '100%', 
+        height: '100%',
+        minWidth: '200px',
+        minHeight: '150px',
+        position: 'relative'
+      }}
+    >
       <NodeResizer 
         minWidth={200}
         minHeight={150}
         isVisible={selected}
-        lineClassName="border-mindmap-primary"
-        handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        keepAspectRatio={false}
+        handleStyle={{
+          width: '8px',
+          height: '8px',
+          background: '#ffffff',
+          border: '2px solid #000000',
+          borderRadius: '2px'
+        }}
+        lineStyle={{
+          border: '1px dashed #000000'
+        }}
       />
       <NodeContainer
-        nodeStyle="border-2 rounded-lg bg-transparent"
-        nodeData={data}
+        nodeStyle="border-2 rounded-lg"
+        nodeData={{
+          ...data,
+          backgroundColor: 'transparent',
+          strokeColor: '#000000',
+          strokeWidth: 2,
+          strokeStyle: 'solid'
+        }}
         selected={selected}
         onDoubleClick={() => {}}
       >
         <div className="absolute top-2 left-2 text-sm font-medium text-gray-600">
-          {data.label}
+          {data?.label || ''}
         </div>
       </NodeContainer>
       <NodeConnectors />

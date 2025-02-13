@@ -1,4 +1,3 @@
-
 import { Node as ReactFlowNode, NodeProps, Edge, MarkerType } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -37,6 +36,7 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
+  [key: string]: unknown;
 }
 
 export interface EdgeData {
@@ -53,11 +53,12 @@ export interface EdgeData {
     strokeDasharray?: string;
     stroke?: string;
   };
+  [key: string]: unknown;
 }
 
 export type MindMapData = {
-  nodes: Array<MindMapNode>;
-  edges: Array<MindMapEdge>;
+  nodes: Array<ReactFlowNode<BaseNodeData>>;
+  edges: Array<Edge<EdgeData>>;
   name?: string;
 };
 
