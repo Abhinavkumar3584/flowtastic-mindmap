@@ -1,5 +1,6 @@
 
 import { ReactNode } from 'react';
+import { NodeResizer } from '@xyflow/react';
 import { BaseNodeData } from '../types';
 
 interface NodeContainerProps {
@@ -19,7 +20,7 @@ export const NodeContainer = ({
 }: NodeContainerProps) => {
   return (
     <div 
-      className={`w-full h-full ${nodeStyle} 
+      className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
                  flex items-center justify-center relative
                  transition-shadow duration-200 ease-in-out
                  ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
@@ -31,10 +32,19 @@ export const NodeContainer = ({
         opacity: nodeData.opacity || 1,
         textAlign: nodeData.textAlign || 'center',
         padding: '4px',
-        position: 'relative'
+        margin: '4px'
       }}
       onDoubleClick={onDoubleClick}
     >
+      {nodeData.nodeType !== 'title' && (
+        <NodeResizer 
+          minWidth={100}
+          minHeight={40}
+          isVisible={selected}
+          lineClassName="border-mindmap-primary"
+          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        />
+      )}
       {children}
     </div>
   );

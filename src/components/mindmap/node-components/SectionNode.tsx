@@ -12,30 +12,19 @@ const SectionNode = ({ data, selected }: MindMapNodeProps) => {
         minWidth={200}
         minHeight={150}
         isVisible={selected}
-        keepAspectRatio={false}
-        handleStyle={{ 
-          width: '8px', 
-          height: '8px', 
-          backgroundColor: 'white',
-          border: '2px solid var(--mindmap-primary)'
-        }}
-        lineStyle={{
-          borderWidth: '1px',
-          borderStyle: 'dashed',
-          borderColor: 'var(--mindmap-primary)'
-        }}
+        lineClassName="border-mindmap-primary"
+        handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+      />
+      <NodeContainer
+        nodeStyle="border-2 rounded-lg bg-transparent"
+        nodeData={data}
+        selected={selected}
+        onDoubleClick={() => {}}
       >
-        <NodeContainer
-          nodeStyle="border-2 rounded-lg bg-transparent"
-          nodeData={data}
-          selected={selected}
-          onDoubleClick={() => {}}
-        >
-          <div className="absolute top-2 left-2 text-sm font-medium text-gray-600">
-            {data.label}
-          </div>
-        </NodeContainer>
-      </NodeResizer>
+        <div className="absolute top-2 left-2 text-sm font-medium text-gray-600">
+          {data.label}
+        </div>
+      </NodeContainer>
       <NodeConnectors />
     </div>
   );
