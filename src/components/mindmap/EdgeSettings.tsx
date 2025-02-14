@@ -47,7 +47,6 @@ export const EdgeSettings = () => {
           newEdge.type = updates.type;
         }
 
-        window.mindmapApi?.updateEdge(edge.id, updates);
         return newEdge;
       }
       return edge;

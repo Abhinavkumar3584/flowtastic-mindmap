@@ -1,3 +1,4 @@
+
 import { Node as ReactFlowNode, NodeProps, Edge, MarkerType } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -21,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -36,29 +37,23 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
-  [key: string]: unknown;
 }
 
 export interface EdgeData {
   label?: string;
-  markerStart?: {
-    type: MarkerType;
-  };
-  markerEnd?: {
-    type: MarkerType;
-  };
+  markerStart?: { type: MarkerType };
+  markerEnd?: { type: MarkerType };
   type?: string;
   animated?: boolean;
   style?: {
     strokeDasharray?: string;
     stroke?: string;
   };
-  [key: string]: unknown;
 }
 
 export type MindMapData = {
-  nodes: Array<ReactFlowNode<BaseNodeData>>;
-  edges: Array<Edge<EdgeData>>;
+  nodes: Array<MindMapNode>;
+  edges: Array<MindMapEdge>;
   name?: string;
 };
 

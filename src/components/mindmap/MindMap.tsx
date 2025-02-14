@@ -13,9 +13,8 @@ import {
   NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-
 import { BaseNode } from './BaseNode';
-import { MindMapNode, BaseNodeData, EdgeData } from './types';
+import { MindMapNode, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -39,11 +38,9 @@ import {
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeSettings } from './EdgeSettings';
-import SectionNode from './node-components/SectionNode';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
-  section: SectionNode,
 };
 
 const initialNodes: MindMapNode[] = [
@@ -116,75 +113,6 @@ export const MindMap = () => {
     );
   }, [setNodes]);
 
-  const updateEdge = useCallback((id: string, newData: Partial<EdgeData>) => {
-    setEdges((eds) =>
-      eds.map((edge) => {
-        if (edge.id === id) {
-          return {
-            ...edge,
-            ...newData,
-          };
-        }
-        return edge;
-      })
-    );
-  }, [setEdges]);
-
-  window.mindmapApi = {
-    deleteNode,
-    updateNodeData,
-    updateEdge,
-  };
-
-  const addNode = (type: BaseNodeData['nodeType']) => {
-    if (!type) return;
-    
-    const newNode: MindMapNode = {
-      id: `${nodes.length + 1}`,
-      type: type === 'section' ? 'section' : 'base',
-      data: { 
-        label: type.charAt(0).toUpperCase() + type.slice(1),
-        nodeType: type,
-        backgroundColor: type === 'section' ? 'transparent' : 'white',
-        strokeColor: 'black',
-        strokeWidth: 1,
-        strokeStyle: 'solid',
-        fontSize: 'xs',
-        textAlign: 'center',
-        opacity: 1
-      },
-      position: {
-        x: Math.random() * 500,
-        y: Math.random() * 500,
-      },
-      style: type === 'section' ? {
-        width: 300,
-        height: 200,
-      } : undefined,
-    };
-
-    setNodes((nds) => [...nds, newNode]);
-  };
-
-  const handleSave = useCallback(() => {
-    if (!currentMindMap) {
-      const name = prompt('Enter a name for the mind map:');
-      if (!name) return;
-      setCurrentMindMap(name);
-      saveMindMap({ nodes, edges, name });
-      toast({
-        title: "Success",
-        description: `Saved mind map as: ${name}`,
-      });
-    } else {
-      saveMindMap({ nodes, edges, name: currentMindMap });
-      toast({
-        title: "Success",
-        description: `Saved changes to: ${currentMindMap}`,
-      });
-    }
-  }, [nodes, edges, currentMindMap, toast]);
-
   const handleExport = () => {
     if (!currentMindMap) {
       toast({
@@ -199,7 +127,34 @@ export const MindMap = () => {
     window.open(exportUrl, '_blank');
   };
 
-  const handleLoadMindMap = (name: string) => {
+  const createNewMindMap = () => {
+    const name = prompt('Enter a name for the new mind map:');
+    if (!name) return;
+
+    const success = saveMindMap({
+      nodes: initialNodes,
+      edges: [],
+      name
+    });
+
+    if (success) {
+      setNodes(initialNodes);
+      setEdges([]);
+      setCurrentMindMap(name);
+      toast({
+        title: "Success",
+        description: `Created new mind map: ${name}`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create new mind map",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadExistingMindMap = (name: string) => {
     const data = loadMindMap(name);
     if (data) {
       setNodes(data.nodes);
@@ -246,13 +201,63 @@ export const MindMap = () => {
     setMindMapToDelete(null);
   };
 
+  const saveCurrentMindMap = useCallback(() => {
+    if (!currentMindMap) {
+      const name = prompt('Enter a name for the mind map:');
+      if (!name) return;
+      setCurrentMindMap(name);
+      saveMindMap({ nodes, edges, name });
+      toast({
+        title: "Success",
+        description: `Saved mind map as: ${name}`,
+      });
+    } else {
+      saveMindMap({ nodes, edges, name: currentMindMap });
+      toast({
+        title: "Success",
+        description: `Saved changes to: ${currentMindMap}`,
+      });
+    }
+  }, [nodes, edges, currentMindMap, toast]);
+
+  window.mindmapApi = {
+    deleteNode,
+    updateNodeData,
+  };
+
+  const addNode = (type: BaseNodeData['nodeType']) => {
+    if (!type) return;
+    
+    const newNode: MindMapNode = {
+      id: `${nodes.length + 1}`,
+      type: 'base',
+      data: { 
+        label: type.charAt(0).toUpperCase() + type.slice(1),
+        nodeType: type,
+        backgroundColor: 'white',
+        strokeColor: 'black',
+        strokeWidth: 1,
+        strokeStyle: 'solid',
+        fontSize: 'xs',
+        textAlign: 'center',
+        opacity: 1
+      },
+      position: {
+        x: Math.random() * 500,
+        y: Math.random() * 500,
+      },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+  };
+
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
         <ComponentsSidebar onAddNode={addNode} />
         <div className="flex-1 relative">
           <div className="absolute top-4 right-4 z-10 flex gap-2">
-            <Button onClick={handleSave}>
+            <Button onClick={saveCurrentMindMap}>
               Save
             </Button>
             <Button onClick={handleExport} variant="outline">
@@ -271,7 +276,7 @@ export const MindMap = () => {
                     key={name}
                     className="flex items-center justify-between group"
                   >
-                    <span onClick={() => handleLoadMindMap(name)} className="flex-1 cursor-pointer">
+                    <span onClick={() => loadExistingMindMap(name)} className="flex-1 cursor-pointer">
                       {name}
                     </span>
                     <Trash2
@@ -285,18 +290,7 @@ export const MindMap = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button onClick={() => {
-              const name = prompt('Enter a name for the new mind map:');
-              if (!name) return;
-              saveMindMap({ nodes: initialNodes, edges: [], name });
-              setNodes(initialNodes);
-              setEdges([]);
-              setCurrentMindMap(name);
-              toast({
-                title: "Success",
-                description: `Created new mind map: ${name}`,
-              });
-            }}>
+            <Button onClick={createNewMindMap}>
               <Plus className="mr-2 h-4 w-4" />
               New
             </Button>
@@ -310,10 +304,6 @@ export const MindMap = () => {
             nodeTypes={nodeTypes}
             fitView
             elementsSelectable={true}
-            defaultEdgeOptions={{
-              interactionWidth: 10,
-              style: { strokeWidth: 2 },
-            }}
           >
             <Controls />
             <MiniMap />
