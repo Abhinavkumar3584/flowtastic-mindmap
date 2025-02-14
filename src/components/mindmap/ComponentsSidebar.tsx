@@ -13,7 +13,6 @@ import {
   CircleDot,
   Layers,
   AlignLeft,
-  Square,
 } from "lucide-react";
 
 interface ComponentsSidebarProps {
@@ -66,14 +65,6 @@ export const ComponentsSidebar = ({
             >
               <AlignLeft className="h-4 w-4" />
               <span>Paragraph</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => onAddNode("section")}
-            >
-              <Square className="h-4 w-4" />
-              <span>Section</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>
