@@ -1,5 +1,5 @@
 
-import { Node as ReactFlowNode, NodeProps, Edge, MarkerType } from '@xyflow/react';
+import { Node as ReactFlowNode, NodeProps, Edge } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -37,18 +37,18 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
+  [key: string]: any;
 }
 
 export interface EdgeData {
   label?: string;
-  markerStart?: { type: MarkerType };
-  markerEnd?: { type: MarkerType };
-  type?: string;
-  animated?: boolean;
-  style?: {
-    strokeDasharray?: string;
-    stroke?: string;
-  };
+  arrowStart?: boolean;
+  arrowEnd?: boolean;
+  pathStyle?: 'straight' | 'curved' | 'step';
+  strokeStyle?: 'solid' | 'dashed' | 'dotted';
+  strokeColor?: string;
+  strokeWidth?: number;
+  [key: string]: any;
 }
 
 export type MindMapData = {
@@ -66,7 +66,6 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
-      updateEdge: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
