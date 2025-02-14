@@ -1,8 +1,10 @@
+
 import { ReactFlow, Controls, Background, Edge, NodeTypes, useNodesState, useEdgesState, addEdge } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import { MindMapData, MindMapNode, MindMapEdge, BaseNodeData } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import SectionNode from './node-components/SectionNode';
+import { SidebarProvider } from '../ui/sidebar';
 
 const nodeTypes: NodeTypes = {
   title: BaseNode,
@@ -12,84 +14,83 @@ const nodeTypes: NodeTypes = {
   section: SectionNode,
 };
 
-interface MindMapProps {
-  initialData?: MindMapData;
-}
+export const MindMap = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState<BaseNodeData>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-export const MindMap = ({ initialData }: MindMapProps) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialData?.nodes || []);
-  const [edges, setEdges, onEdgesChange, onConnect] = useEdgesState(initialData?.edges || []);
+  const onConnect = (params: any) => {
+    setEdges((eds) => addEdge(params, eds));
+  };
 
   const onAddNode = (type: string) => {
-    const id = crypto.randomUUID();
-
     const newNode: MindMapNode = {
-      id: id,
-      type: type,
-      position: { x: 0, y: 0 },
-      data: { label: type },
+      id: crypto.randomUUID(),
+      type,
+      position: { x: 100, y: 100 },
+      data: {
+        label: type.charAt(0).toUpperCase() + type.slice(1),
+        nodeType: type as BaseNodeData['nodeType'],
+      },
     };
 
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nds) => [...nds, newNode]);
   };
 
-  const onAddEdge = (source: string, target: string) => {
-    const id = `e${source}-${target}`;
-
-    const newEdge: MindMapEdge = {
-      id: id,
-      source: source,
-      target: target,
+  // Register the mindmap API for external usage
+  React.useEffect(() => {
+    window.mindmapApi = {
+      deleteNode: (id: string) => {
+        setNodes((nodes) => nodes.filter((node) => node.id !== id));
+        setEdges((edges) => edges.filter((edge) => edge.source !== id && edge.target !== id));
+      },
+      updateNodeData: (id: string, data: Partial<BaseNodeData>) => {
+        setNodes((nodes) =>
+          nodes.map((node) =>
+            node.id === id
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    ...data,
+                  },
+                }
+              : node
+          )
+        );
+      },
+      updateEdge: (id: string, data: Partial<BaseNodeData>) => {
+        setEdges((edges) =>
+          edges.map((edge) =>
+            edge.id === id
+              ? {
+                  ...edge,
+                  ...data,
+                }
+              : edge
+          )
+        );
+      },
     };
-
-    setEdges((eds) => eds.concat(newEdge));
-  };
-
-  window.mindmapApi = {
-    deleteNode: (id: string) => {
-      setNodes((nds) => nds.filter((node) => node.id !== id));
-      setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id));
-    },
-    updateNodeData: (id: string, data: Partial<BaseNodeData>) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id === id) {
-            return { ...node, data: { ...node.data, ...data } };
-          }
-          return node;
-        })
-      );
-    },
-    updateEdge: (id: string, data: Partial<EdgeData>) => {
-      setEdges((eds) =>
-        eds.map((edge) => {
-          if (edge.id === id) {
-            return { ...edge, data: { ...edge.data, ...data } };
-          }
-          return edge;
-        })
-      );
-    },
-  };
+  }, [setNodes, setEdges]);
 
   return (
-    <div className="h-full w-full flex">
-      <ComponentsSidebar onAddNode={onAddNode} />
-      <div className="h-full w-full">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          className="bg-mindmap-background"
-          fitView
-        >
-          <Controls />
-          <Background color="#aaa" variant="dots" />
-        </ReactFlow>
-      </div>
+    <div className="w-full h-screen">
+      <SidebarProvider>
+        <ComponentsSidebar onAddNode={onAddNode} />
+      </SidebarProvider>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        fitView
+        className="bg-background"
+      >
+        <Background variant="lines" />
+        <Controls />
+      </ReactFlow>
     </div>
   );
 };
