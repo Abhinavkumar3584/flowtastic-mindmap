@@ -38,9 +38,11 @@ import {
 import { saveMindMap, loadMindMap, getAllMindMaps, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeSettings } from './EdgeSettings';
+import SectionNode from './node-components/SectionNode';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
+  section: SectionNode
 };
 
 const initialNodes: MindMapNode[] = [

@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
