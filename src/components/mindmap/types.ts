@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -37,8 +37,6 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
-  borderRadius?: number;
-  [key: string]: unknown;
 }
 
 export interface EdgeData {
@@ -51,7 +49,6 @@ export interface EdgeData {
     strokeDasharray?: string;
     stroke?: string;
   };
-  [key: string]: unknown;
 }
 
 export type MindMapData = {
