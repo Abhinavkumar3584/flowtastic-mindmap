@@ -8,6 +8,7 @@ import { BaseNodeData, FontSize, NodeContent, LegendPosition } from "./types";
 import { Plus, Trash, Check } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const strokeColors = ['black', 'red', 'green', 'blue', 'orange', 'black'];
 const backgroundColors = ['white', 'pink', 'lightgreen', 'lightblue', 'lightyellow', 'transparent'];
@@ -93,6 +94,8 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
     });
   };
 
+  const canHaveCheckbox = data.nodeType === 'topic' || data.nodeType === 'subtopic' || data.nodeType === 'paragraph';
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -119,6 +122,19 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
                     placeholder="Enter label"
                   />
                 </div>
+
+                {canHaveCheckbox && (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="hasCheckbox" 
+                      checked={data.hasCheckbox}
+                      onCheckedChange={(checked) => handleChange({ hasCheckbox: !!checked })}
+                    />
+                    <Label htmlFor="hasCheckbox" className="text-sm font-medium">
+                      Show checkbox on this node
+                    </Label>
+                  </div>
+                )}
 
                 <div>
                   <h4 className="text-sm font-medium mb-3">Font Size</h4>
