@@ -5,11 +5,13 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
+  ContextMenuSeparator,
+  ContextMenuShortcut
 } from "@/components/ui/context-menu";
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { MindMapNodeProps, BaseNodeData, FontSize, LegendPosition } from './types';
-import { FileText, Check, Copy, Trash2 } from 'lucide-react';
+import { FileText, Check, Copy, Trash2, Clipboard, Scissors, CopyPlus } from 'lucide-react';
 import { NodeLabel } from './node-components/NodeLabel';
 import { NodeContainer } from './node-components/NodeContainer';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -72,26 +74,19 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
   };
 
   const handleCopy = () => {
-    localStorage.setItem('mindmap-copied-node', JSON.stringify(nodeData));
+    window.mindmapApi?.copyNode?.(id);
   };
 
   const handlePaste = () => {
-    const copiedNode = localStorage.getItem('mindmap-copied-node');
-    if (copiedNode) {
-      try {
-        const parsedData = JSON.parse(copiedNode);
-        window.mindmapApi?.updateNodeData(id, parsedData);
-      } catch (e) {
-        console.error('Failed to parse copied node data', e);
-      }
-    }
+    window.mindmapApi?.pasteNode?.(id);
   };
 
   const handleDuplicate = () => {
-    // The actual duplication happens in MindMap component
-    // We just trigger a custom event
-    const event = new CustomEvent('duplicate-node', { detail: { id } });
-    document.dispatchEvent(event);
+    window.mindmapApi?.duplicateNode?.(id);
+  };
+
+  const handleDelete = () => {
+    window.mindmapApi?.deleteNode(id);
   };
 
   const handleCheckboxChange = (checked: boolean) => {
@@ -188,17 +183,29 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           {selected && <NodeSettings data={nodeData} nodeId={id} />}
         </NodeContainer>
       </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem onSelect={() => window.mindmapApi?.deleteNode(id)} className="flex items-center">
-          <Trash2 className="h-4 w-4 mr-2" />
-          Delete
-        </ContextMenuItem>
+      <ContextMenuContent className="w-48">
         <ContextMenuItem onSelect={handleCopy} className="flex items-center">
           <Copy className="h-4 w-4 mr-2" />
           Copy
+          <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
         </ContextMenuItem>
-        <ContextMenuItem onSelect={handlePaste}>Paste</ContextMenuItem>
-        <ContextMenuItem onSelect={handleDuplicate}>Duplicate</ContextMenuItem>
+        <ContextMenuItem onSelect={handlePaste} className="flex items-center">
+          <Clipboard className="h-4 w-4 mr-2" />
+          Paste
+          <ContextMenuShortcut>Ctrl+V</ContextMenuShortcut>
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onSelect={handleDuplicate} className="flex items-center">
+          <CopyPlus className="h-4 w-4 mr-2" />
+          Duplicate
+          <ContextMenuShortcut>Ctrl+D</ContextMenuShortcut>
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onSelect={handleDelete} className="flex items-center text-destructive">
+          <Trash2 className="h-4 w-4 mr-2" />
+          Delete
+          <ContextMenuShortcut>Delete</ContextMenuShortcut>
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );

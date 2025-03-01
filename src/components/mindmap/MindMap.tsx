@@ -35,7 +35,14 @@ export const MindMap = () => {
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
 
   // Node handlers
-  const { deleteNode, updateNodeData, addNode } = useMindMapNodeHandlers({ 
+  const { 
+    deleteNode, 
+    updateNodeData, 
+    addNode,
+    copyNode,
+    pasteNode,
+    duplicateNode
+  } = useMindMapNodeHandlers({ 
     nodes, 
     setNodes 
   });
@@ -69,15 +76,10 @@ export const MindMap = () => {
     deleteNode,
     updateNodeData,
     updateEdge,
+    copyNode,
+    pasteNode,
+    duplicateNode
   };
-
-  // Set up keyboard shortcuts
-  useMindMapKeyboardHandlers({
-    nodes,
-    deleteNode,
-    updateNodeData,
-    addNode,
-  });
 
   // Confirm deletion handler for mind maps
   const handleConfirmDeleteMindMap = () => {

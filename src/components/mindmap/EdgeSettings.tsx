@@ -1,4 +1,3 @@
-
 import React, { useCallback } from "react";
 import {
   Card,
@@ -21,7 +20,8 @@ import {
   StretchHorizontal, 
   DotCircleHorizontal, 
   ChevronDown, 
-  Palette 
+  Palette, 
+  MoreHorizontal 
 } from 'lucide-react';
 
 interface EdgeSettingsProps {
@@ -124,7 +124,7 @@ export function EdgeSettings({ id, data }: EdgeSettingsProps) {
                   <span>Dashed</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStrokeStyleChange('dotted')} className="flex items-center gap-2">
-                  <DotCircleHorizontal className="h-4 w-4" />
+                  <MoreHorizontal className="h-4 w-4" />
                   <span>Dotted</span>
                 </DropdownMenuItem>
                 

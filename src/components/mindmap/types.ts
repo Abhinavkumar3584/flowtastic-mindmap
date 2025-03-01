@@ -71,6 +71,9 @@ declare global {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
       updateEdge: (id: string, data: Partial<EdgeData>) => void;
+      copyNode?: (id: string) => void;
+      pasteNode?: (id: string | null) => void;
+      duplicateNode?: (id: string) => void;
     };
   }
 }
