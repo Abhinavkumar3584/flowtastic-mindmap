@@ -1,4 +1,3 @@
-
 import { useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -13,14 +12,13 @@ import {
   MarkerType,
   NodeTypes,
   Node,
-  OnEdgeClick,
-  OnConnect,
   applyNodeChanges,
-  NodeChange
+  NodeChange,
+  EdgeMouseHandler
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
-import { MindMapNode, BaseNodeData, MindMapEdge, EdgeData } from './types';
+import { MindMapNode, BaseNodeData, MindMapEdge, EdgeData, OnEdgeClick } from './types';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';

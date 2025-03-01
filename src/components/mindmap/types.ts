@@ -1,5 +1,5 @@
 
-import { Node as ReactFlowNode, NodeProps, Edge } from '@xyflow/react';
+import { Node as ReactFlowNode, NodeProps, Edge, EdgeMouseHandler } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -62,6 +62,7 @@ export type MindMapData = {
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
+export type OnEdgeClick = EdgeMouseHandler;
 
 declare global {
   interface Window {

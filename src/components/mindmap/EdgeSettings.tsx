@@ -17,9 +17,9 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { EdgeData } from './types';
 import { 
-  LineSymbolIcon, 
-  DashedLineHorizontalIcon, 
-  DottedLineHorizontalIcon, 
+  Minus, 
+  StretchHorizontal, 
+  DotPattern, 
   ChevronDown, 
   Palette 
 } from 'lucide-react';
@@ -78,15 +78,15 @@ export const EdgeSettings = ({ id, data }: EdgeSettingsProps) => {
         <DropdownMenuContent align="center">
           <DropdownMenuLabel>Stroke Style</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => handleStrokeStyleChange('solid')} className="flex items-center gap-2">
-            <LineSymbolIcon className="h-4 w-4" />
+            <Minus className="h-4 w-4" />
             <span>Solid</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleStrokeStyleChange('dashed')} className="flex items-center gap-2">
-            <DashedLineHorizontalIcon className="h-4 w-4" />
+            <StretchHorizontal className="h-4 w-4" />
             <span>Dashed</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleStrokeStyleChange('dotted')} className="flex items-center gap-2">
-            <DottedLineHorizontalIcon className="h-4 w-4" />
+            <DotPattern className="h-4 w-4" />
             <span>Dotted</span>
           </DropdownMenuItem>
           
