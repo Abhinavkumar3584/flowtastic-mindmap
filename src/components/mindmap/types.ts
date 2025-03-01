@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -37,6 +37,8 @@ export interface BaseNodeData {
     position: LegendPosition;
     color: string;
   };
+  hasCheckbox?: boolean;
+  isChecked?: boolean;
   [key: string]: any;
 }
 
@@ -66,6 +68,7 @@ declare global {
     mindmapApi?: {
       deleteNode: (id: string) => void;
       updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
+      updateEdge: (id: string, data: Partial<EdgeData>) => void;
     };
   }
 }
