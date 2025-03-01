@@ -39,6 +39,7 @@ export interface BaseNodeData {
   };
   hasCheckbox?: boolean;
   isChecked?: boolean;
+  position?: { x: number; y: number };
   [key: string]: any;
 }
 

@@ -1,177 +1,138 @@
 
-import { useState, useEffect } from 'react';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuTrigger, 
+import React, { useCallback } from "react";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator 
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Popover, 
-  PopoverContent, 
-  PopoverTrigger 
-} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { EdgeData } from './types';
 import { 
   Minus, 
   StretchHorizontal, 
-  DotPattern, 
+  DotCircleHorizontal, 
   ChevronDown, 
   Palette 
 } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 
 interface EdgeSettingsProps {
   id: string;
   data: EdgeData;
 }
 
-export const EdgeSettings = ({ id, data }: EdgeSettingsProps) => {
-  const [edgeData, setEdgeData] = useState<EdgeData>(data);
-  
-  useEffect(() => {
-    setEdgeData(data);
-  }, [data]);
-  
-  const handleStrokeWidthChange = (value: number[]) => {
-    const newData = { ...edgeData, strokeWidth: value[0] };
-    setEdgeData(newData);
-    window.mindmapApi?.updateEdge(id, newData);
-  };
-  
-  const handleStrokeStyleChange = (style: 'solid' | 'dashed' | 'dotted') => {
-    const newData = { ...edgeData, strokeStyle: style };
-    setEdgeData(newData);
-    window.mindmapApi?.updateEdge(id, newData);
-  };
-  
-  const handleStrokeColorChange = (color: string) => {
-    const newData = { ...edgeData, strokeColor: color };
-    setEdgeData(newData);
-    window.mindmapApi?.updateEdge(id, newData);
-  };
-  
-  const handleArrowChange = (startOrEnd: 'start' | 'end', enabled: boolean) => {
-    const newData = { 
-      ...edgeData,
-      arrowStart: startOrEnd === 'start' ? enabled : edgeData.arrowStart,
-      arrowEnd: startOrEnd === 'end' ? enabled : edgeData.arrowEnd
-    };
-    setEdgeData(newData);
-    window.mindmapApi?.updateEdge(id, newData);
-  };
-  
+export function EdgeSettings({ id, data }: EdgeSettingsProps) {
+  const handleStrokeWidthChange = useCallback((value: number[]) => {
+    window.mindmapApi?.updateEdge(id, { strokeWidth: value[0] });
+  }, [id]);
+
+  const handleStrokeStyleChange = useCallback((style: string) => {
+    window.mindmapApi?.updateEdge(id, { strokeStyle: style as 'solid' | 'dashed' | 'dotted' });
+  }, [id]);
+
+  const handleArrowChange = useCallback((position: 'start' | 'end', checked: boolean) => {
+    if (position === 'start') {
+      window.mindmapApi?.updateEdge(id, { arrowStart: checked });
+    } else {
+      window.mindmapApi?.updateEdge(id, { arrowEnd: checked });
+    }
+  }, [id]);
+
+  const handleColorChange = useCallback((color: string) => {
+    window.mindmapApi?.updateEdge(id, { strokeColor: color });
+  }, [id]);
+
   return (
-    <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-md p-2 z-50">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex items-center justify-between w-full mb-2">
-            <span>Line Style</span>
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center">
-          <DropdownMenuLabel>Stroke Style</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => handleStrokeStyleChange('solid')} className="flex items-center gap-2">
-            <Minus className="h-4 w-4" />
-            <span>Solid</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleStrokeStyleChange('dashed')} className="flex items-center gap-2">
-            <StretchHorizontal className="h-4 w-4" />
-            <span>Dashed</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleStrokeStyleChange('dotted')} className="flex items-center gap-2">
-            <DotPattern className="h-4 w-4" />
-            <span>Dotted</span>
-          </DropdownMenuItem>
-          
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Arrows</DropdownMenuLabel>
-          <div className="px-2 py-1">
-            <RadioGroup defaultValue={edgeData.arrowStart ? "yes" : "no"} onValueChange={(val) => handleArrowChange('start', val === 'yes')}>
-              <div className="flex items-center space-x-2">
-                <Label>Arrow Start:</Label>
-                <div className="flex space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="yes" id="start-yes" />
-                    <Label htmlFor="start-yes">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="no" id="start-no" />
-                    <Label htmlFor="start-no">No</Label>
-                  </div>
-                </div>
-              </div>
-            </RadioGroup>
+    <Card className="absolute bottom-4 right-4 w-72 shadow-lg z-10">
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Line Width</Label>
+            <Slider
+              defaultValue={[data.strokeWidth || 1]}
+              max={5}
+              min={1}
+              step={1}
+              onValueChange={handleStrokeWidthChange}
+            />
           </div>
-          <div className="px-2 py-1">
-            <RadioGroup defaultValue={edgeData.arrowEnd ? "yes" : "no"} onValueChange={(val) => handleArrowChange('end', val === 'yes')}>
-              <div className="flex items-center space-x-2">
-                <Label>Arrow End:</Label>
-                <div className="flex space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="yes" id="end-yes" />
-                    <Label htmlFor="end-yes">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="no" id="end-no" />
-                    <Label htmlFor="end-no">No</Label>
-                  </div>
-                </div>
-              </div>
-            </RadioGroup>
+
+          <div className="flex items-center justify-between">
+            <Label>Arrow Start</Label>
+            <Switch 
+              checked={data.arrowStart || false}
+              onCheckedChange={(checked) => handleArrowChange('start', checked)}
+            />
           </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      
-      <div className="mb-2">
-        <div className="flex justify-between mb-1">
-          <span className="text-xs">Line Width</span>
-          <span className="text-xs">{edgeData.strokeWidth || 1}px</span>
+
+          <div className="flex items-center justify-between">
+            <Label>Arrow End</Label>
+            <Switch 
+              checked={data.arrowEnd || false}
+              onCheckedChange={(checked) => handleArrowChange('end', checked)}
+            />
+          </div>
+
+          <div className="flex justify-between">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Palette className="h-4 w-4" /> 
+                  Color
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center">
+                <DropdownMenuLabel>Line Color</DropdownMenuLabel>
+                <div className="grid grid-cols-4 gap-1 p-2">
+                  {['black', 'red', 'blue', 'green', 'orange', 'purple', 'pink', 'grey'].map((color) => (
+                    <div
+                      key={color}
+                      onClick={() => handleColorChange(color)}
+                      className="w-6 h-6 rounded-full cursor-pointer"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Minus className="h-4 w-4" /> 
+                  Style
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center">
+                <DropdownMenuLabel>Stroke Style</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => handleStrokeStyleChange('solid')} className="flex items-center gap-2">
+                  <Minus className="h-4 w-4" />
+                  <span>Solid</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStrokeStyleChange('dashed')} className="flex items-center gap-2">
+                  <StretchHorizontal className="h-4 w-4" />
+                  <span>Dashed</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStrokeStyleChange('dotted')} className="flex items-center gap-2">
+                  <DotCircleHorizontal className="h-4 w-4" />
+                  <span>Dotted</span>
+                </DropdownMenuItem>
+                
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-        <Slider 
-          defaultValue={[edgeData.strokeWidth || 1]} 
-          min={1} 
-          max={10} 
-          step={1} 
-          onValueChange={handleStrokeWidthChange} 
-        />
-      </div>
-      
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full flex items-center justify-between">
-            <span>Line Color</span>
-            <div className="flex items-center">
-              <div 
-                className="w-4 h-4 rounded-full mr-2" 
-                style={{ backgroundColor: edgeData.strokeColor || '#000000' }} 
-              />
-              <Palette className="h-4 w-4" />
-            </div>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-64">
-          <div className="grid grid-cols-5 gap-2">
-            {[
-              '#000000', '#FF5757', '#FFD166', '#06D6A0', '#118AB2', 
-              '#073B4C', '#7209B7', '#4361EE', '#4CC9F0', '#F72585'
-            ].map((color) => (
-              <button
-                key={color}
-                className="w-8 h-8 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                style={{ backgroundColor: color }}
-                onClick={() => handleStrokeColorChange(color)}
-              />
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+      </CardContent>
+    </Card>
   );
-};
+}
