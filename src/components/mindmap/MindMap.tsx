@@ -12,6 +12,9 @@ import {
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { SectionNode } from './node-components/SectionNode';
+import { ChecklistNode } from './node-components/ChecklistNode';
+import { TimelineNode } from './node-components/TimelineNode';
+import { ResourceNode } from './node-components/ResourceNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -19,6 +22,7 @@ import { MindMapDeleteDialog } from './MindMapDeleteDialog';
 import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
+import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
@@ -26,6 +30,9 @@ import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
 const nodeTypes: NodeTypes = {
   base: BaseNode,
   section: SectionNode,
+  checklist: ChecklistNode,
+  timeline: TimelineNode,
+  resource: ResourceNode,
 };
 
 export const MindMap = () => {
@@ -33,6 +40,7 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
+  const [showAdvancedSidebar, setShowAdvancedSidebar] = useState(false);
 
   // Node handlers
   const { 
@@ -81,6 +89,11 @@ export const MindMap = () => {
     duplicateNode
   };
 
+  // Toggle between sidebars
+  const toggleSidebar = () => {
+    setShowAdvancedSidebar(!showAdvancedSidebar);
+  };
+
   // Confirm deletion handler for mind maps
   const handleConfirmDeleteMindMap = () => {
     confirmDeleteMindMap(mindMapToDelete);
@@ -90,7 +103,17 @@ export const MindMap = () => {
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
-        <ComponentsSidebar onAddNode={addNode} />
+        {showAdvancedSidebar ? (
+          <AdvancedComponentsSidebar 
+            onAddNode={addNode} 
+            onToggleSidebar={toggleSidebar}
+          />
+        ) : (
+          <ComponentsSidebar 
+            onAddNode={addNode} 
+            onToggleSidebar={toggleSidebar}
+          />
+        )}
         <div className="flex-1 relative">
           <MindMapTopBar
             currentMindMap={currentMindMap}

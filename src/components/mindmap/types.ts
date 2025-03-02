@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -40,6 +40,35 @@ export interface BaseNodeData {
   hasCheckbox?: boolean;
   isChecked?: boolean;
   position?: { x: number; y: number };
+  
+  // Checklist specific properties
+  checklistItems?: Array<{
+    id: string;
+    text: string;
+    isChecked: boolean;
+    priority?: 'low' | 'medium' | 'high';
+  }>;
+  
+  // Timeline specific properties
+  timelineEvents?: Array<{
+    id: string;
+    title: string;
+    date: string;
+    isMilestone: boolean;
+  }>;
+  startDate?: string;
+  endDate?: string;
+  
+  // Resource specific properties
+  resources?: Array<{
+    id: string;
+    title: string;
+    url: string;
+    type: 'pdf' | 'video' | 'website' | 'other';
+    rating?: 1 | 2 | 3 | 4 | 5;
+    tags?: string[];
+  }>;
+  
   [key: string]: any;
 }
 
