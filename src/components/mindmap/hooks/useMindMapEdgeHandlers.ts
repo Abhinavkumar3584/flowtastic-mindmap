@@ -23,8 +23,25 @@ export const useMindMapEdgeHandlers = ({ setEdges }: UseMindMapEdgeHandlersProps
             (newData.arrowStart ? { type: MarkerType.ArrowClosed } : undefined) :
             edge.markerStart;
 
+          // Define edge type based on pathStyle
+          let type = edge.type;
+          if (newData.pathStyle) {
+            switch (newData.pathStyle) {
+              case 'straight': type = 'default'; break;
+              case 'curved': type = 'bezier'; break;
+              case 'step': type = 'step'; break;
+              case 'smoothstep': type = 'smoothstep'; break;
+              // Custom types would need custom implementations
+              case 'loopback': type = 'bezier'; break; 
+              case 'zigzag': type = 'step'; break;
+              case 'wavy': type = 'bezier'; break;
+              default: type = 'default';
+            }
+          }
+
           return {
             ...edge,
+            type,
             markerEnd,
             markerStart,
             data: {
@@ -59,7 +76,8 @@ export const useMindMapEdgeHandlers = ({ setEdges }: UseMindMapEdgeHandlersProps
               strokeStyle: 'solid',
               strokeWidth: 1,
               strokeColor: '#000000',
-              arrowEnd: true
+              arrowEnd: true,
+              pathStyle: 'smoothstep'
             },
             markerEnd: {
               type: MarkerType.ArrowClosed,

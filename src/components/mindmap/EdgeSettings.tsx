@@ -1,3 +1,4 @@
+
 import React, { useCallback } from "react";
 import {
   Card,
@@ -21,7 +22,8 @@ import {
   DotCircleHorizontal, 
   ChevronDown, 
   Palette, 
-  MoreHorizontal 
+  MoreHorizontal,
+  ArrowRight
 } from 'lucide-react';
 
 interface EdgeSettingsProps {
@@ -36,6 +38,12 @@ export function EdgeSettings({ id, data }: EdgeSettingsProps) {
 
   const handleStrokeStyleChange = useCallback((style: string) => {
     window.mindmapApi?.updateEdge(id, { strokeStyle: style as 'solid' | 'dashed' | 'dotted' });
+  }, [id]);
+
+  const handlePathStyleChange = useCallback((style: string) => {
+    window.mindmapApi?.updateEdge(id, { 
+      pathStyle: style as 'straight' | 'curved' | 'step' | 'smoothstep' | 'loopback' | 'zigzag' | 'wavy' 
+    });
   }, [id]);
 
   const handleArrowChange = useCallback((position: 'start' | 'end', checked: boolean) => {
@@ -127,7 +135,41 @@ export function EdgeSettings({ id, data }: EdgeSettingsProps) {
                   <MoreHorizontal className="h-4 w-4" />
                   <span>Dotted</span>
                 </DropdownMenuItem>
-                
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Path Type</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full flex items-center justify-between">
+                  <span>{data.pathStyle || 'straight'}</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full">
+                <DropdownMenuItem onClick={() => handlePathStyleChange('straight')}>
+                  Straight Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('curved')}>
+                  Curved Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('step')}>
+                  Step (Right-Angled) Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('smoothstep')}>
+                  Smooth Step Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('loopback')}>
+                  Loopback Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('zigzag')}>
+                  Zig-Zag Path
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePathStyleChange('wavy')}>
+                  Wavy Path
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

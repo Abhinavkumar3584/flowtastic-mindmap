@@ -47,7 +47,7 @@ export interface EdgeData {
   label?: string;
   arrowStart?: boolean;
   arrowEnd?: boolean;
-  pathStyle?: 'straight' | 'curved' | 'step';
+  pathStyle?: 'straight' | 'curved' | 'step' | 'smoothstep' | 'loopback' | 'zigzag' | 'wavy';
   strokeStyle?: 'solid' | 'dashed' | 'dotted';
   strokeColor?: string;
   strokeWidth?: number;
