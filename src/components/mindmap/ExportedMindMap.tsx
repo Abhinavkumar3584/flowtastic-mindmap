@@ -1,7 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
+import { SectionNode } from './node-components/SectionNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapData, BaseNodeData } from './types';
@@ -24,6 +26,7 @@ import { getAllMindMaps } from '@/utils/mindmapStorage';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
+  section: SectionNode,
 };
 
 export const ExportedMindMap = () => {
