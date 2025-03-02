@@ -1,12 +1,7 @@
-
 import { ExportedMindMap } from "@/components/mindmap/ExportedMindMap";
 
 const Export = () => {
-  return (
-    <div className="w-full h-screen">
-      <ExportedMindMap />
-    </div>
-  );
+  return <ExportedMindMap />;
 };
 
 export default Export;

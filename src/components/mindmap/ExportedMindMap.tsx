@@ -1,11 +1,10 @@
-
 import { useEffect, useState } from 'react';
 import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData, BaseNodeData, MindMapNode } from './types';
+import { MindMapData, BaseNodeData } from './types';
 import {
   Select,
   SelectContent,
@@ -22,7 +21,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getAllMindMaps } from '@/utils/mindmapStorage';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -38,40 +36,6 @@ export const ExportedMindMap = () => {
   useEffect(() => {
     console.log('Available mind maps:', mindMaps);
   }, [mindMaps]);
-
-  // Function to update node data in the exported view
-  const updateNodeData = (id: string, data: Partial<BaseNodeData>) => {
-    if (!mindMapData) return;
-    
-    setMindMapData(prev => {
-      if (!prev) return null;
-      
-      const updatedNodes = prev.nodes.map(node => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: { ...node.data, ...data }
-          };
-        }
-        return node;
-      });
-      
-      return { ...prev, nodes: updatedNodes };
-    });
-  };
-
-  // Initialize the mindmapApi for the exported view (limited functionality)
-  useEffect(() => {
-    window.mindmapApi = {
-      deleteNode: () => {}, // No-op in exported view
-      updateNodeData,
-      updateEdge: () => {}, // No-op in exported view
-    };
-
-    return () => {
-      window.mindmapApi = undefined;
-    };
-  }, [mindMapData]);
 
   const handleRender = () => {
     if (!selectedMap) {
@@ -100,28 +64,6 @@ export const ExportedMindMap = () => {
   const handleNodeClick = (_: React.MouseEvent, node: Node<BaseNodeData>) => {
     if (node.data.content) {
       setSelectedNode(node.data);
-    }
-  };
-
-  // Handle checkbox change in the node detail dialog
-  const handleCheckboxChange = (checked: boolean) => {
-    if (selectedNode && mindMapData) {
-      // Find the node ID
-      const node = mindMapData.nodes.find(n => n.data.label === selectedNode.label);
-      if (node) {
-        updateNodeData(node.id, { isChecked: checked });
-        
-        // Also update the selected node state to reflect changes in the dialog
-        setSelectedNode(prev => {
-          if (!prev) return null;
-          return { ...prev, isChecked: checked };
-        });
-        
-        toast({
-          title: "Updated",
-          description: `${checked ? "Checked" : "Unchecked"} "${selectedNode.label}"`,
-        });
-      }
     }
   };
 
@@ -172,23 +114,6 @@ export const ExportedMindMap = () => {
               Click outside to close
             </DialogDescription>
           </DialogHeader>
-          
-          {selectedNode?.hasCheckbox && (
-            <div className="flex items-center gap-2 mb-4">
-              <Checkbox 
-                id="node-checkbox"
-                checked={selectedNode.isChecked || false}
-                onCheckedChange={handleCheckboxChange}
-              />
-              <label 
-                htmlFor="node-checkbox" 
-                className="text-sm font-medium cursor-pointer"
-              >
-                Mark as completed
-              </label>
-            </div>
-          )}
-          
           {selectedNode?.content?.description && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Description</h3>
