@@ -15,6 +15,10 @@ import { SectionNode } from './node-components/SectionNode';
 import { ChecklistNode } from './node-components/ChecklistNode';
 import { TimelineNode } from './node-components/TimelineNode';
 import { ResourceNode } from './node-components/ResourceNode';
+import { CircleNode } from './node-components/CircleNode';
+import { RectangleNode } from './node-components/RectangleNode';
+import { SquareNode } from './node-components/SquareNode';
+import { TriangleNode } from './node-components/TriangleNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -26,15 +30,13 @@ import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Settings } from 'lucide-react';
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
-import { Settings } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { ShapeSettings } from './settings/ShapeSettings';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -42,6 +44,10 @@ const nodeTypes: NodeTypes = {
   checklist: ChecklistNode,
   timeline: TimelineNode,
   resource: ResourceNode,
+  circle: CircleNode,
+  rectangle: RectangleNode,
+  square: SquareNode,
+  triangle: TriangleNode,
 };
 
 export const MindMap = () => {
@@ -122,6 +128,9 @@ export const MindMap = () => {
 
   const selectedNodeData = getSelectedNodeData();
   const nodeType = selectedNodeData?.nodeType;
+  
+  // Check if the selected node is a shape
+  const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
 
   return (
     <SidebarProvider>
@@ -170,7 +179,7 @@ export const MindMap = () => {
           </ReactFlow>
           
           {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
-          {selectedNode && (nodeType === 'timeline' || nodeType === 'checklist' || nodeType === 'resource') && (
+          {selectedNode && (nodeType === 'timeline' || nodeType === 'checklist' || nodeType === 'resource' || isShapeNode) && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button 
@@ -179,7 +188,10 @@ export const MindMap = () => {
                   size="sm"
                 >
                   <Settings className="h-4 w-4 mr-1" />
-                  {nodeType === 'timeline' ? 'Timeline' : nodeType === 'checklist' ? 'Checklist' : 'Resources'} Settings
+                  {nodeType === 'timeline' ? 'Timeline' : 
+                   nodeType === 'checklist' ? 'Checklist' : 
+                   nodeType === 'resource' ? 'Resources' : 
+                   'Shape'} Settings
                 </Button>
               </DialogTrigger>
               <DialogContent className="w-[90%] max-w-[600px] max-h-[80vh] overflow-y-auto">
@@ -193,6 +205,10 @@ export const MindMap = () => {
                 
                 {nodeType === 'resource' && selectedNodeData && (
                   <ResourceSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {isShapeNode && selectedNodeData && (
+                  <ShapeSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
               </DialogContent>
             </Dialog>

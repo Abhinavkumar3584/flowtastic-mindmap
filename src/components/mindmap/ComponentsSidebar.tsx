@@ -15,6 +15,9 @@ import {
   AlignLeft,
   SquareIcon,
   ChevronRight,
+  Circle,
+  Square,
+  Triangle,
 } from "lucide-react";
 
 interface ComponentsSidebarProps {
@@ -88,6 +91,44 @@ export const ComponentsSidebar = ({
             >
               <SquareIcon className="h-4 w-4" />
               <span>Section</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Shapes</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("circle")}
+            >
+              <Circle className="h-4 w-4" />
+              <span>Circle</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("rectangle")}
+            >
+              <SquareIcon className="h-4 w-4 rotate-90" />
+              <span>Rectangle</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("square")}
+            >
+              <Square className="h-4 w-4" />
+              <span>Square</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("triangle")}
+            >
+              <Triangle className="h-4 w-4" />
+              <span>Triangle</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>
