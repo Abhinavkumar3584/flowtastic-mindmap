@@ -32,6 +32,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
+import { Settings } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -166,18 +169,20 @@ export const MindMap = () => {
             )}
           </ReactFlow>
           
-          {/* Specialized Node Settings Panel */}
+          {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
           {selectedNode && (nodeType === 'timeline' || nodeType === 'checklist' || nodeType === 'resource') && (
-            <Sheet>
-              <SheetTrigger asChild>
+            <Dialog>
+              <DialogTrigger asChild>
                 <Button 
-                  className="absolute right-4 bottom-20 z-10 bg-white shadow-md border"
+                  className="absolute right-4 top-16 z-10 bg-white shadow-md border"
                   variant="outline"
+                  size="sm"
                 >
-                  Edit {nodeType === 'timeline' ? 'Timeline' : nodeType === 'checklist' ? 'Checklist' : 'Resources'}
+                  <Settings className="h-4 w-4 mr-1" />
+                  {nodeType === 'timeline' ? 'Timeline' : nodeType === 'checklist' ? 'Checklist' : 'Resources'} Settings
                 </Button>
-              </SheetTrigger>
-              <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
+              </DialogTrigger>
+              <DialogContent className="w-[90%] max-w-[600px] max-h-[80vh] overflow-y-auto">
                 {nodeType === 'timeline' && selectedNodeData && (
                   <TimelineSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
@@ -189,8 +194,8 @@ export const MindMap = () => {
                 {nodeType === 'resource' && selectedNodeData && (
                   <ResourceSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
-              </SheetContent>
-            </Sheet>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </div>
