@@ -1,5 +1,5 @@
 
-import { ReactNode, CSSProperties } from 'react';
+import { ReactNode } from 'react';
 import { NodeResizer } from '@xyflow/react';
 import { BaseNodeData } from '../types';
 
@@ -9,8 +9,6 @@ interface NodeContainerProps {
   selected: boolean;
   children: ReactNode;
   onDoubleClick: () => void;
-  customStyle?: CSSProperties;
-  forceAspectRatio?: boolean;
 }
 
 export const NodeContainer = ({
@@ -19,8 +17,6 @@ export const NodeContainer = ({
   selected,
   children,
   onDoubleClick,
-  customStyle = {},
-  forceAspectRatio = false,
 }: NodeContainerProps) => {
   return (
     <div 
@@ -36,8 +32,7 @@ export const NodeContainer = ({
         opacity: nodeData.opacity || 1,
         textAlign: nodeData.textAlign || 'center',
         padding: '4px',
-        margin: '4px',
-        ...customStyle
+        margin: '4px'
       }}
       onDoubleClick={onDoubleClick}
     >
@@ -48,7 +43,6 @@ export const NodeContainer = ({
           isVisible={selected}
           lineClassName="border-mindmap-primary"
           handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          keepAspectRatio={forceAspectRatio}
         />
       )}
       {children}
