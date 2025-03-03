@@ -55,6 +55,9 @@ export interface BaseNodeData {
     title: string;
     date: string;
     isMilestone: boolean;
+    color?: string;
+    description?: string;
+    isCompleted?: boolean;
   }>;
   startDate?: string;
   endDate?: string;
@@ -67,6 +70,7 @@ export interface BaseNodeData {
     type: 'pdf' | 'video' | 'website' | 'other';
     rating?: 1 | 2 | 3 | 4 | 5;
     tags?: string[];
+    description?: string;
   }>;
   
   [key: string]: any;

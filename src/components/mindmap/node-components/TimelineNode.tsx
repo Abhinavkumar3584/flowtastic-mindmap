@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Handle, Position, NodeResizer } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import { format } from 'date-fns';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
@@ -63,12 +63,20 @@ export const TimelineNode: React.FC<MindMapNodeProps> = ({
             >
               <div 
                 className={`w-3 h-3 rounded-full -ml-[7px] ${
-                  event.isMilestone ? 'bg-red-500' : 'bg-blue-500'
+                  event.isCompleted ? 'opacity-50' : ''
                 }`}
+                style={{ 
+                  backgroundColor: event.color || (event.isMilestone ? '#ef4444' : '#3b82f6')
+                }}
               ></div>
               <div className="ml-2">
-                <div className="text-xs font-medium">{event.title}</div>
+                <div className={`text-xs font-medium ${event.isCompleted ? 'line-through text-gray-400' : ''}`}>
+                  {event.title}
+                </div>
                 <div className="text-[10px] text-gray-500">{formatDate(event.date)}</div>
+                {event.description && (
+                  <div className="text-[10px] text-gray-600 max-w-[180px] truncate">{event.description}</div>
+                )}
               </div>
             </div>
           ))}

@@ -26,6 +26,12 @@ import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TimelineSettings } from './settings/TimelineSettings';
+import { ChecklistSettings } from './settings/ChecklistSettings';
+import { ResourceSettings } from './settings/ResourceSettings';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -41,6 +47,7 @@ export const MindMap = () => {
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
   const [showAdvancedSidebar, setShowAdvancedSidebar] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // Node handlers
   const { 
@@ -100,6 +107,19 @@ export const MindMap = () => {
     setMindMapToDelete(null);
   };
 
+  // Handle node click to show node settings
+  const onNodeClick = (_: React.MouseEvent, node: any) => {
+    setSelectedNode(node.id);
+  };
+
+  // Get the selected node data
+  const getSelectedNodeData = () => {
+    return nodes.find(node => node.id === selectedNode)?.data;
+  };
+
+  const selectedNodeData = getSelectedNodeData();
+  const nodeType = selectedNodeData?.nodeType;
+
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
@@ -130,6 +150,7 @@ export const MindMap = () => {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onEdgeClick={onEdgeClick}
+            onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             fitView
           >
@@ -144,6 +165,33 @@ export const MindMap = () => {
               />
             )}
           </ReactFlow>
+          
+          {/* Specialized Node Settings Panel */}
+          {selectedNode && (nodeType === 'timeline' || nodeType === 'checklist' || nodeType === 'resource') && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button 
+                  className="absolute right-4 bottom-20 z-10 bg-white shadow-md border"
+                  variant="outline"
+                >
+                  Edit {nodeType === 'timeline' ? 'Timeline' : nodeType === 'checklist' ? 'Checklist' : 'Resources'}
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
+                {nodeType === 'timeline' && selectedNodeData && (
+                  <TimelineSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'checklist' && selectedNodeData && (
+                  <ChecklistSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'resource' && selectedNodeData && (
+                  <ResourceSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
       </div>
 

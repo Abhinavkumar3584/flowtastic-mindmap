@@ -8,9 +8,7 @@ import { MindMapNodeProps, BaseNodeData } from '../types';
 export const ChecklistNode: React.FC<MindMapNodeProps> = ({ 
   id, 
   data, 
-  selected,
-  xPos,
-  yPos 
+  selected 
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   
