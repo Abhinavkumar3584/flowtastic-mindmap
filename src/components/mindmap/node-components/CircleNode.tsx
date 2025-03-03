@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import React from 'react';
+import { Handle, Position, NodeResizer } from '@xyflow/react';
 import { Settings } from 'lucide-react';
-import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,43 +12,79 @@ export const CircleNode: React.FC<MindMapNodeProps> = ({
   data, 
   selected 
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  
-  const handleDoubleClick = () => {
-    setIsEditing(true);
+  // Calculate styles with rotation
+  const rotationStyle = {
+    transform: data.rotation ? `rotate(${data.rotation}deg)` : 'none',
+    backgroundColor: data.backgroundColor || 'white',
+    borderColor: data.strokeColor || 'black',
+    borderWidth: data.strokeWidth !== undefined ? `${data.strokeWidth}px` : '1px',
+    borderStyle: data.strokeStyle || 'solid',
+    opacity: data.opacity || 1,
+    boxShadow: data.shadow?.enabled 
+      ? `${data.shadow.offsetX || 3}px ${data.shadow.offsetY || 3}px ${data.shadow.blur || 5}px ${data.shadow.color || 'rgba(0,0,0,0.3)'}`
+      : 'none',
+    fontFamily: data.fontFamily || 'sans-serif',
+    fontSize: data.fontSize === 'xs' ? '0.75rem' : 
+              data.fontSize === 's' ? '0.875rem' : 
+              data.fontSize === 'l' ? '1.25rem' : 
+              data.fontSize === 'xl' ? '1.5rem' : '1rem',
+    // Add a glow effect if enabled
+    filter: data.glow?.enabled 
+      ? `drop-shadow(0 0 ${data.glow.blur || 8}px ${data.glow.color || '#9b87f5'})` 
+      : 'none',
+    zIndex: data.zIndex || 0,
+    borderRadius: '50%',
+    aspectRatio: data.aspectRatio ? '1 / 1' : 'auto',
   };
 
   return (
-    <NodeContainer 
-      nodeStyle="min-w-[100px] min-h-[100px] rounded-full flex items-center justify-center"
-      nodeData={data}
-      selected={selected}
-      onDoubleClick={handleDoubleClick}
+    <div 
+      className="relative"
+      style={{ zIndex: data.zIndex || 0 }}
     >
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
-      
-      <div className="w-full h-full p-2 flex items-center justify-center relative">
-        <div className="text-center">{data.label || 'Circle'}</div>
+      <div className={`min-w-[100px] min-h-[100px] flex items-center justify-center`}>
+        <NodeResizer 
+          minWidth={60}
+          minHeight={60}
+          isVisible={selected}
+          lineClassName="border-mindmap-primary"
+          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+          keepAspectRatio={data.aspectRatio !== false} // Default to true for circles
+        />
         
-        {/* Settings button in top right corner */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
-            >
-              <Settings className="h-3 w-3" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[80vh] overflow-y-auto">
-            <ShapeSettings nodeId={id} data={data} />
-          </DialogContent>
-        </Dialog>
+        <Handle type="target" position={Position.Top} />
+        <Handle type="source" position={Position.Bottom} />
+        <Handle type="target" position={Position.Left} />
+        <Handle type="source" position={Position.Right} />
+        
+        <div 
+          className="w-full h-full flex items-center justify-center relative"
+          style={rotationStyle}
+        >
+          <div 
+            className="text-center w-full h-full flex items-center justify-center p-2"
+            style={{ textAlign: data.textAlign || 'center' }}
+          >
+            {data.label || 'Circle'}
+          </div>
+          
+          {/* Settings button in top right corner */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90 z-10"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+              <ShapeSettings nodeId={id} data={data} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
-    </NodeContainer>
+    </div>
   );
 };
