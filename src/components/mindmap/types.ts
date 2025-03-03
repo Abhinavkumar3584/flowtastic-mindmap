@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -40,6 +40,21 @@ export interface BaseNodeData {
   hasCheckbox?: boolean;
   isChecked?: boolean;
   position?: { x: number; y: number };
+  rotation?: number;
+  aspectRatio?: boolean;
+  shadow?: {
+    enabled: boolean;
+    color?: string;
+    blur?: number;
+    offsetX?: number;
+    offsetY?: number;
+  };
+  glow?: {
+    enabled: boolean;
+    color?: string;
+    blur?: number;
+  };
+  zIndex?: number;
   
   // Checklist specific properties
   checklistItems?: Array<{
