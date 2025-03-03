@@ -108,7 +108,6 @@ export type MindMapData = {
   name?: string;
 };
 
-// Fix the type definition to avoid the error
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
