@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
-import { MindMapNodeProps } from '../types';
 import { 
   ContextMenu, 
   ContextMenuContent, 
@@ -78,13 +77,62 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
             handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
           />
 
+          <Handle
+            type="source"
+            position={Position.Top}
+            id="top"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="target"
+            position={Position.Top}
+            id="top-target"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="source"
+            position={Position.Right}
+            id="right"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="target"
+            position={Position.Right}
+            id="right-target"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id="bottom"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="target"
+            position={Position.Bottom}
+            id="bottom-target"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="source"
+            position={Position.Left}
+            id="left"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+          <Handle
+            type="target"
+            position={Position.Left}
+            id="left-target"
+            className="w-3 h-3 !bg-mindmap-primary"
+          />
+
           {isSelected && (
             <Sheet>
               <SheetTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="absolute top-2 right-2 z-50"
+                  className="absolute top-2 right-2 z-50 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -165,55 +213,6 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
               </SheetContent>
             </Sheet>
           )}
-          
-          <Handle
-            type="source"
-            position={Position.Top}
-            id="top"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="target"
-            position={Position.Top}
-            id="top-target"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="source"
-            position={Position.Right}
-            id="right"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="target"
-            position={Position.Right}
-            id="right-target"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id="bottom"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="target"
-            position={Position.Bottom}
-            id="bottom-target"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="source"
-            position={Position.Left}
-            id="left"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
-          <Handle
-            type="target"
-            position={Position.Left}
-            id="left-target"
-            className="w-3 h-3 !bg-mindmap-primary"
-          />
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48">

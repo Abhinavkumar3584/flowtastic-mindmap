@@ -11,10 +11,11 @@ import {
 import { NodeSettings } from './NodeSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { MindMapNodeProps, BaseNodeData, FontSize, LegendPosition } from './types';
-import { FileText, Check, Copy, Trash2, Clipboard, Scissors, CopyPlus } from 'lucide-react';
+import { FileText, Check, Copy, Trash2, Clipboard, Scissors, CopyPlus, Settings } from 'lucide-react';
 import { NodeLabel } from './node-components/NodeLabel';
 import { NodeContainer } from './node-components/NodeContainer';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 const getFontSize = (size: FontSize | undefined): number => {
   switch (size) {
@@ -180,6 +181,16 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
             />
           </div>
           
+          {selected && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="absolute top-0 right-0 -translate-y-full h-6 w-6 p-0 bg-white/70 hover:bg-white/90 rounded-full"
+              onClick={() => {}}
+            >
+              <Settings className="h-3 w-3" />
+            </Button>
+          )}
           {selected && <NodeSettings data={nodeData} nodeId={id} />}
         </NodeContainer>
       </ContextMenuTrigger>

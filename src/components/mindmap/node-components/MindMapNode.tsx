@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { NodeConnectors } from '../NodeConnectors';
 import { MindMapSettings } from '../settings/MindMapSettings';
+import { Handle, Position } from '@xyflow/react';
 
 export const MindMapNode: React.FC<MindMapNodeProps> = ({ 
   id, 
@@ -36,24 +37,33 @@ export const MindMapNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={() => {}}
     >
-      <NodeConnectors />
+      <Handle type="target" position={Position.Top} />
+      <Handle type="source" position={Position.Top} />
+      <Handle type="target" position={Position.Right} />
+      <Handle type="source" position={Position.Right} />
+      <Handle type="target" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} />
+      <Handle type="target" position={Position.Left} />
+      <Handle type="source" position={Position.Left} />
       
       <div className="w-full h-full p-2 relative">
-        {/* Settings button in top right corner */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
-            >
-              <Settings className="h-3 w-3" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[80vh] overflow-y-auto">
-            <MindMapSettings nodeId={id} data={data} />
-          </DialogContent>
-        </Dialog>
+        {/* Settings button in top right corner - only visible when selected */}
+        {selected && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+              <MindMapSettings nodeId={id} data={data} />
+            </DialogContent>
+          </Dialog>
+        )}
         
         {/* Center label */}
         <div className="absolute inset-0 flex items-center justify-center">
