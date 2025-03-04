@@ -44,6 +44,7 @@ import { ShapeSettings } from './settings/ShapeSettings';
 import { FlashcardSettings } from './settings/FlashcardSettings';
 import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
+import { NodeConnectors } from './NodeConnectors';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -115,7 +116,7 @@ export const MindMap = () => {
     duplicateNode
   };
 
-  // Toggle between sidebars
+  // Toggle between sidebars - MODIFIED to cycle in the correct order
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');

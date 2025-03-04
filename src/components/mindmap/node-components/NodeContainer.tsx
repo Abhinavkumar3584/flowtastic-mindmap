@@ -2,6 +2,7 @@
 import { ReactNode, CSSProperties } from 'react';
 import { NodeResizer } from '@xyflow/react';
 import { BaseNodeData } from '../types';
+import { NodeConnectors } from '../NodeConnectors';
 
 interface NodeContainerProps {
   nodeStyle: string;
@@ -43,6 +44,10 @@ export const NodeContainer = ({
       }}
       onDoubleClick={onDoubleClick}
     >
+      {/* Add 4-sided connectors to every node */}
+      <NodeConnectors />
+      
+      {/* Show NodeResizer for all nodes except title */}
       {nodeData.nodeType !== 'title' && (
         <NodeResizer 
           minWidth={100}

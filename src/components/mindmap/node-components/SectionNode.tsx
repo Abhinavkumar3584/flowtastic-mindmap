@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { MindMapNodeProps } from '../types';
 
 // Border colors for sections
 const borderColors = [

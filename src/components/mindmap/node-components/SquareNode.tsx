@@ -7,6 +7,7 @@ import { MindMapNodeProps } from '../types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ShapeSettings } from '../settings/ShapeSettings';
+import { NodeConnectors } from '../NodeConnectors';
 
 export const SquareNode: React.FC<MindMapNodeProps> = ({ 
   id, 
@@ -39,7 +40,7 @@ export const SquareNode: React.FC<MindMapNodeProps> = ({
     ...rotationStyle,
     ...shadowStyle,
     ...glowStyle,
-    aspectRatio: data.aspectRatio !== false ? '1 / 1' : 'auto', // Force 1:1 aspect ratio by default
+    aspectRatio: data.aspectRatio !== false ? '1 / 1' : 'auto', // Force 1:1 aspect ratio by default for squares
   };
 
   return (
@@ -51,11 +52,6 @@ export const SquareNode: React.FC<MindMapNodeProps> = ({
       customStyle={combinedStyle}
       forceAspectRatio={data.aspectRatio !== false}
     >
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
-      
       <div className="w-full h-full p-2 flex items-center justify-center relative">
         <div className="text-center">{data.label || 'Square'}</div>
         
