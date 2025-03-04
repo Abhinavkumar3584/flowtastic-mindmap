@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { FileText, Video, Globe, Star, ExternalLink, Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ResourceSettings } from '../settings/ResourceSettings';
-import { NodeConnectors } from '../NodeConnectors';
 
 export const ResourceNode: React.FC<MindMapNodeProps> = ({ 
   id, 
@@ -55,8 +53,6 @@ export const ResourceNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={handleDoubleClick}
     >
-      <NodeConnectors />
-      
       <div className="w-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Resources'}</div>
         

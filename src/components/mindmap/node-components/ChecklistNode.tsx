@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
@@ -60,15 +59,6 @@ export const ChecklistNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={handleDoubleClick}
     >
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Top} />
-      <Handle type="target" position={Position.Right} />
-      <Handle type="source" position={Position.Right} />
-      <Handle type="target" position={Position.Bottom} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Left} />
-      
       <div className="w-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Checklist'}</div>
         

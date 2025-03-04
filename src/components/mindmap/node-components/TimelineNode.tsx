@@ -1,14 +1,12 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
-import { Calendar, Clock, Settings } from 'lucide-react';
+import { Calendar, Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { TimelineSettings } from '../settings/TimelineSettings';
-import { NodeConnectors } from '../NodeConnectors';
 
 export const TimelineNode: React.FC<MindMapNodeProps> = ({ 
   id, 
@@ -62,15 +60,6 @@ export const TimelineNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={handleDoubleClick}
     >
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Top} />
-      <Handle type="target" position={Position.Right} />
-      <Handle type="source" position={Position.Right} />
-      <Handle type="target" position={Position.Bottom} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Left} />
-      
       <div className="w-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Timeline'}</div>
         

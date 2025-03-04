@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
@@ -52,11 +51,6 @@ export const RectangleNode: React.FC<MindMapNodeProps> = ({
       customStyle={combinedStyle}
       forceAspectRatio={false}
     >
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
-      
       <div className="w-full h-full p-2 flex items-center justify-center relative">
         <div className="text-center">{data.label || 'Rectangle'}</div>
         

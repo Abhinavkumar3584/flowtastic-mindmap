@@ -5,7 +5,6 @@ import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { NodeConnectors } from '../NodeConnectors';
 import { QuizSettings } from '../settings/QuizSettings';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -62,8 +61,6 @@ export const QuizNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={() => {}}
     >
-      <NodeConnectors />
-      
       <div className="w-full h-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Quiz'}</div>
         

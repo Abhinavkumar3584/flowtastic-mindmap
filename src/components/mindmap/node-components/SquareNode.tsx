@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ShapeSettings } from '../settings/ShapeSettings';
-import { NodeConnectors } from '../NodeConnectors';
 
 export const SquareNode: React.FC<MindMapNodeProps> = ({ 
   id, 

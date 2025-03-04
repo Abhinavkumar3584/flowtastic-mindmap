@@ -45,7 +45,7 @@ export const NodeContainer = ({
       onDoubleClick={onDoubleClick}
     >
       {/* Add 4-sided connectors to every node */}
-      <NodeConnectors />
+      {showConnectors && <NodeConnectors />}
       
       {/* Show NodeResizer for all nodes except title */}
       {nodeData.nodeType !== 'title' && (

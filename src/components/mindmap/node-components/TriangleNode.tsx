@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { Settings } from 'lucide-react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
@@ -57,11 +56,6 @@ export const TriangleNode: React.FC<MindMapNodeProps> = ({
             ...glowStyle,
           }}
         />
-        
-        <Handle type="target" position={Position.Top} style={{top: '0%'}} />
-        <Handle type="source" position={Position.Bottom} style={{bottom: '0%'}} />
-        <Handle type="target" position={Position.Left} style={{left: '25%'}} />
-        <Handle type="source" position={Position.Right} style={{right: '25%'}} />
         
         <div className="w-full h-full p-2 flex items-center justify-center relative z-10">
           <div className="text-center">{data.label || 'Triangle'}</div>
