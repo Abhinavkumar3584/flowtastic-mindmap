@@ -11,6 +11,7 @@ interface NodeContainerProps {
   onDoubleClick: () => void;
   customStyle?: CSSProperties;
   forceAspectRatio?: boolean;
+  showConnectors?: boolean;
 }
 
 export const NodeContainer = ({
@@ -21,6 +22,7 @@ export const NodeContainer = ({
   onDoubleClick,
   customStyle = {},
   forceAspectRatio = false,
+  showConnectors = true,
 }: NodeContainerProps) => {
   return (
     <div 

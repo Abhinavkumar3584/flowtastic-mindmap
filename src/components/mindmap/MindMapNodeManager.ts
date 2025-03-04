@@ -47,6 +47,20 @@ const getNodeType = (nodeType: string): string => {
       return 'timeline';
     case 'resource':
       return 'resource';
+    case 'circle':
+      return 'circle';
+    case 'rectangle':
+      return 'rectangle';
+    case 'square':
+      return 'square';
+    case 'triangle':
+      return 'triangle';
+    case 'flashcard':
+      return 'flashcard';
+    case 'quiz':
+      return 'quiz';
+    case 'mindmap':
+      return 'mindmap';
     default:
       return 'base';
   }
@@ -71,6 +85,20 @@ const getDefaultLabel = (nodeType: string): string => {
       return 'Study Timeline';
     case 'resource':
       return 'Study Resources';
+    case 'flashcard':
+      return 'Flashcards';
+    case 'quiz':
+      return 'Quiz';
+    case 'mindmap':
+      return 'Mind Map';
+    case 'circle':
+      return 'Circle';
+    case 'rectangle':
+      return 'Rectangle';
+    case 'square':
+      return 'Square';
+    case 'triangle':
+      return 'Triangle';
     default:
       return nodeType.charAt(0).toUpperCase() + nodeType.slice(1);
   }
@@ -106,6 +134,37 @@ const getTypeSpecificData = (nodeType: string): Partial<BaseNodeData> => {
         resources: [
           { id: '1', title: 'Course Textbook', url: 'https://example.com/textbook', type: 'pdf', rating: 5, tags: ['essential', 'reference'] },
           { id: '2', title: 'Tutorial Video', url: 'https://example.com/video', type: 'video', rating: 4, tags: ['helpful'] }
+        ]
+      };
+    case 'flashcard':
+      return {
+        flashcards: [
+          { id: '1', question: 'What is a mindmap?', answer: 'A visual diagram used to organize information', category: 'General', difficulty: 'easy' },
+          { id: '2', question: 'How do flashcards help learning?', answer: 'They use active recall to strengthen memory', category: 'Education', difficulty: 'medium' }
+        ]
+      };
+    case 'quiz':
+      return {
+        questions: [
+          { 
+            id: '1', 
+            text: 'What is the main benefit of mind mapping?', 
+            options: [
+              { id: 'a', text: 'Visual organization of ideas', isCorrect: true },
+              { id: 'b', text: 'Faster typing speed', isCorrect: false },
+              { id: 'c', text: 'Reduced eye strain', isCorrect: false }
+            ],
+            explanation: 'Mind mapping helps visualize connections between ideas',
+            difficulty: 'easy'
+          }
+        ]
+      };
+    case 'mindmap':
+      return {
+        branches: [
+          { id: '1', label: 'Main Idea', color: '#4299e1' },
+          { id: '2', label: 'Sub-topic 1', color: '#48bb78' },
+          { id: '3', label: 'Sub-topic 2', color: '#ed8936' }
         ]
       };
     default:

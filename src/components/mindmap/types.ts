@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -86,6 +86,37 @@ export interface BaseNodeData {
     rating?: 1 | 2 | 3 | 4 | 5;
     tags?: string[];
     description?: string;
+  }>;
+  
+  // Flashcard specific properties
+  flashcards?: Array<{
+    id: string;
+    question: string;
+    answer: string;
+    category?: string;
+    difficulty?: 'easy' | 'medium' | 'hard';
+    status?: 'new' | 'learning' | 'review' | 'mastered';
+  }>;
+  
+  // Quiz specific properties
+  questions?: Array<{
+    id: string;
+    text: string;
+    options: Array<{
+      id: string;
+      text: string;
+      isCorrect: boolean;
+    }>;
+    explanation?: string;
+    difficulty?: 'easy' | 'medium' | 'hard';
+  }>;
+  
+  // Mindmap specific properties
+  branches?: Array<{
+    id: string;
+    label: string;
+    children?: Array<string>; // IDs of child nodes
+    color?: string;
   }>;
   
   [key: string]: any;

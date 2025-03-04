@@ -19,6 +19,9 @@ import { CircleNode } from './node-components/CircleNode';
 import { RectangleNode } from './node-components/RectangleNode';
 import { SquareNode } from './node-components/SquareNode';
 import { TriangleNode } from './node-components/TriangleNode';
+import { FlashcardNode } from './node-components/FlashcardNode';
+import { QuizNode } from './node-components/QuizNode';
+import { MindMapNode } from './node-components/MindMapNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -27,6 +30,7 @@ import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
+import { EducationSidebar } from './EducationSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
@@ -37,6 +41,9 @@ import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
 import { ShapeSettings } from './settings/ShapeSettings';
+import { FlashcardSettings } from './settings/FlashcardSettings';
+import { QuizSettings } from './settings/QuizSettings';
+import { MindMapSettings } from './settings/MindMapSettings';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -48,6 +55,9 @@ const nodeTypes: NodeTypes = {
   rectangle: RectangleNode,
   square: SquareNode,
   triangle: TriangleNode,
+  flashcard: FlashcardNode,
+  quiz: QuizNode,
+  mindmap: MindMapNode,
 };
 
 export const MindMap = () => {
@@ -55,7 +65,7 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
-  const [showAdvancedSidebar, setShowAdvancedSidebar] = useState(false);
+  const [sidebarMode, setSidebarMode] = useState<'basic' | 'advanced' | 'education'>('basic');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // Node handlers
@@ -106,8 +116,14 @@ export const MindMap = () => {
   };
 
   // Toggle between sidebars
-  const toggleSidebar = () => {
-    setShowAdvancedSidebar(!showAdvancedSidebar);
+  const handleToggleSidebar = () => {
+    if (sidebarMode === 'basic') {
+      setSidebarMode('advanced');
+    } else if (sidebarMode === 'advanced') {
+      setSidebarMode('education');
+    } else {
+      setSidebarMode('basic');
+    }
   };
 
   // Confirm deletion handler for mind maps
@@ -132,20 +148,40 @@ export const MindMap = () => {
   // Check if the selected node is a shape
   const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
 
+  // Check if the selected node is an education node
+  const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
+
+  // Render the appropriate sidebar based on mode
+  const renderSidebar = () => {
+    switch (sidebarMode) {
+      case 'advanced':
+        return (
+          <AdvancedComponentsSidebar 
+            onAddNode={addNode} 
+            onToggleSidebar={handleToggleSidebar}
+          />
+        );
+      case 'education':
+        return (
+          <EducationSidebar 
+            onAddNode={addNode} 
+            onToggleSidebar={handleToggleSidebar}
+          />
+        );
+      default:
+        return (
+          <ComponentsSidebar 
+            onAddNode={addNode} 
+            onToggleSidebar={handleToggleSidebar}
+          />
+        );
+    }
+  };
+
   return (
     <SidebarProvider>
       <div className="w-full h-screen flex">
-        {showAdvancedSidebar ? (
-          <AdvancedComponentsSidebar 
-            onAddNode={addNode} 
-            onToggleSidebar={toggleSidebar}
-          />
-        ) : (
-          <ComponentsSidebar 
-            onAddNode={addNode} 
-            onToggleSidebar={toggleSidebar}
-          />
-        )}
+        {renderSidebar()}
         <div className="flex-1 relative">
           <MindMapTopBar
             currentMindMap={currentMindMap}
@@ -179,7 +215,13 @@ export const MindMap = () => {
           </ReactFlow>
           
           {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
-          {selectedNode && (nodeType === 'timeline' || nodeType === 'checklist' || nodeType === 'resource' || isShapeNode) && (
+          {selectedNode && (
+            nodeType === 'timeline' || 
+            nodeType === 'checklist' || 
+            nodeType === 'resource' || 
+            isShapeNode ||
+            isEducationNode
+          ) && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button 
@@ -191,6 +233,9 @@ export const MindMap = () => {
                   {nodeType === 'timeline' ? 'Timeline' : 
                    nodeType === 'checklist' ? 'Checklist' : 
                    nodeType === 'resource' ? 'Resources' : 
+                   nodeType === 'flashcard' ? 'Flashcards' :
+                   nodeType === 'quiz' ? 'Quiz' :
+                   nodeType === 'mindmap' ? 'Mind Map' :
                    'Shape'} Settings
                 </Button>
               </DialogTrigger>
@@ -209,6 +254,18 @@ export const MindMap = () => {
                 
                 {isShapeNode && selectedNodeData && (
                   <ShapeSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+
+                {nodeType === 'flashcard' && selectedNodeData && (
+                  <FlashcardSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'quiz' && selectedNodeData && (
+                  <QuizSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'mindmap' && selectedNodeData && (
+                  <MindMapSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
               </DialogContent>
             </Dialog>
