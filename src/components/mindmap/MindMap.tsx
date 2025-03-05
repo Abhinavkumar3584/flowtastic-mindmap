@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import {
   ReactFlow,
@@ -15,10 +14,7 @@ import { SectionNode } from './node-components/SectionNode';
 import { ChecklistNode } from './node-components/ChecklistNode';
 import { TimelineNode } from './node-components/TimelineNode';
 import { ResourceNode } from './node-components/ResourceNode';
-import { CircleNode } from './node-components/CircleNode';
-import { RectangleNode } from './node-components/RectangleNode';
 import { SquareNode } from './node-components/SquareNode';
-import { TriangleNode } from './node-components/TriangleNode';
 import { FlashcardNode } from './node-components/FlashcardNode';
 import { QuizNode } from './node-components/QuizNode';
 import { MindMapNode } from './node-components/MindMapNode';
@@ -52,10 +48,7 @@ const nodeTypes: NodeTypes = {
   checklist: ChecklistNode,
   timeline: TimelineNode,
   resource: ResourceNode,
-  circle: CircleNode,
-  rectangle: RectangleNode,
   square: SquareNode,
-  triangle: TriangleNode,
   flashcard: FlashcardNode,
   quiz: QuizNode,
   mindmap: MindMapNode,
@@ -69,7 +62,6 @@ export const MindMap = () => {
   const [sidebarMode, setSidebarMode] = useState<'basic' | 'advanced' | 'education'>('basic');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  // Node handlers
   const { 
     deleteNode, 
     updateNodeData, 
@@ -82,12 +74,10 @@ export const MindMap = () => {
     setNodes 
   });
 
-  // Edge handlers
   const { selectedEdge, updateEdge, onConnect, onEdgeClick } = useMindMapEdgeHandlers({
     setEdges
   });
 
-  // Storage handlers
   const {
     handleExport,
     createNewMindMap,
@@ -106,7 +96,6 @@ export const MindMap = () => {
     initialNodes
   });
 
-  // Assign API to window for global access
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
@@ -116,7 +105,6 @@ export const MindMap = () => {
     duplicateNode
   };
 
-  // Toggle between sidebars - MODIFIED to cycle in the correct order
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');
@@ -127,18 +115,15 @@ export const MindMap = () => {
     }
   };
 
-  // Confirm deletion handler for mind maps
   const handleConfirmDeleteMindMap = () => {
     confirmDeleteMindMap(mindMapToDelete);
     setMindMapToDelete(null);
   };
 
-  // Handle node click to show node settings
   const onNodeClick = (_: React.MouseEvent, node: any) => {
     setSelectedNode(node.id);
   };
 
-  // Get the selected node data
   const getSelectedNodeData = () => {
     return nodes.find(node => node.id === selectedNode)?.data;
   };
@@ -146,13 +131,10 @@ export const MindMap = () => {
   const selectedNodeData = getSelectedNodeData();
   const nodeType = selectedNodeData?.nodeType;
   
-  // Check if the selected node is a shape
-  const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
+  const isShapeNode = nodeType === 'square';
 
-  // Check if the selected node is an education node
   const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
 
-  // Render the appropriate sidebar based on mode
   const renderSidebar = () => {
     switch (sidebarMode) {
       case 'advanced':
@@ -215,7 +197,6 @@ export const MindMap = () => {
             )}
           </ReactFlow>
           
-          {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
           {selectedNode && (
             nodeType === 'timeline' || 
             nodeType === 'checklist' || 

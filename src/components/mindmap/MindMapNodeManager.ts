@@ -1,4 +1,3 @@
-
 import { BaseNodeData } from './types';
 
 export const addNode = (
@@ -47,14 +46,8 @@ const getNodeType = (nodeType: string): string => {
       return 'timeline';
     case 'resource':
       return 'resource';
-    case 'circle':
-      return 'circle';
-    case 'rectangle':
-      return 'rectangle';
     case 'square':
       return 'square';
-    case 'triangle':
-      return 'triangle';
     case 'flashcard':
       return 'flashcard';
     case 'quiz':
@@ -91,14 +84,8 @@ const getDefaultLabel = (nodeType: string): string => {
       return 'Quiz';
     case 'mindmap':
       return 'Mind Map';
-    case 'circle':
-      return 'Circle';
-    case 'rectangle':
-      return 'Rectangle';
     case 'square':
       return 'Square';
-    case 'triangle':
-      return 'Triangle';
     default:
       return nodeType.charAt(0).toUpperCase() + nodeType.slice(1);
   }
