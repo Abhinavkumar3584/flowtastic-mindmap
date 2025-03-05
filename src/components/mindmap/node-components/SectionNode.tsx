@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { NodeResizer } from '@xyflow/react';
 import { 
   ContextMenu, 
   ContextMenuContent, 
@@ -17,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MindMapNodeProps } from '../types';
-import { NodeConnectors } from '../NodeConnectors';
+import { NodeContainer } from './NodeContainer';
 
 // Border colors for sections
 const borderColors = [
@@ -59,29 +58,29 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
     setNodeData({ ...nodeData, ...updates });
   };
 
+  const handleDoubleClick = () => {
+    // This can be implemented if needed
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div
-          className="min-w-[200px] min-h-[100px] relative"
-          style={{
+        <NodeContainer
+          nodeStyle="min-w-[200px] min-h-[100px] relative"
+          nodeData={{
+            ...nodeData,
             backgroundColor: 'transparent',
-            border: `${nodeData.strokeWidth || 1}px ${nodeData.strokeStyle || 'dashed'} ${nodeData.strokeColor || '#000'}`,
+            strokeColor: nodeData.strokeColor || '#000',
+            strokeWidth: nodeData.strokeWidth || 1,
+            strokeStyle: nodeData.strokeStyle || 'dashed',
+          }}
+          selected={isSelected}
+          onDoubleClick={handleDoubleClick}
+          customStyle={{
             borderRadius: `${nodeData.borderRadius || 4}px`,
             padding: '8px'
           }}
         >
-          <NodeResizer 
-            minWidth={200}
-            minHeight={100}
-            isVisible={isSelected}
-            lineClassName="border-mindmap-primary"
-            handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          />
-
-          {/* Add NodeConnectors for consistent 4-sided connections */}
-          <NodeConnectors />
-
           {isSelected && (
             <Sheet>
               <SheetTrigger asChild>
@@ -169,7 +168,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
               </SheetContent>
             </Sheet>
           )}
-        </div>
+        </NodeContainer>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48">
         <ContextMenuItem onSelect={handleCopy} className="flex items-center">

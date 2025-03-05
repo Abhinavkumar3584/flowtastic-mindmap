@@ -1,67 +1,82 @@
 
-import { NodeCheckbox } from './NodeCheckbox';
-import { NodeLabel } from './NodeLabel';
-import { ContentIndicator } from './ContentIndicator';
-import { LegendIndicator } from './LegendIndicator';
+import { useState, useRef, useEffect } from 'react';
 import { BaseNodeData } from '../types';
-import { getFontSize } from '../utils/fontSizeUtils';
 
 interface NodeContentProps {
   nodeData: BaseNodeData;
   id: string;
   label: string;
   isEditing: boolean;
-  onLabelChange: (value: string) => void;
+  onLabelChange: (label: string) => void;
   onBlur: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
 }
 
-export const NodeContent = ({
+export const NodeContent: React.FC<NodeContentProps> = ({
   nodeData,
   id,
   label,
   isEditing,
   onLabelChange,
   onBlur,
-  onKeyDown
-}: NodeContentProps) => {
-  const hasContent = !!(nodeData.content?.title || nodeData.content?.description || (nodeData.content?.links && nodeData.content.links.length > 0));
-  const fontSize = getFontSize(nodeData.fontSize as FontSize);
-  const showCheckbox = nodeData.hasCheckbox && nodeData.nodeType !== 'title' && nodeData.nodeType !== 'section';
-  const isChecked = nodeData.isChecked || false;
+  onKeyDown,
+}) => {
+  const [editValue, setEditValue] = useState(label);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleCheckboxChange = (checked: boolean) => {
-    window.mindmapApi?.updateNodeData(id, { isChecked: checked });
+  useEffect(() => {
+    setEditValue(label);
+  }, [label]);
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditValue(e.target.value);
+    onLabelChange(e.target.value);
   };
 
-  return (
-    <div className="w-full h-full flex items-center justify-center relative">
-      {hasContent && <ContentIndicator />}
+  const getFontClassName = (fontSize?: 'xs' | 's' | 'm' | 'l' | 'xl') => {
+    switch (fontSize) {
+      case 'xs': return 'text-xs';
+      case 's': return 'text-sm';
+      case 'l': return 'text-lg';
+      case 'xl': return 'text-xl';
+      case 'm':
+      default: return 'text-base';
+    }
+  };
 
-      {nodeData.legend?.enabled && (
-        <LegendIndicator 
-          enabled={nodeData.legend.enabled}
-          position={nodeData.legend.position}
-          color={nodeData.legend.color}
-        />
-      )}
-
-      {showCheckbox && (
-        <NodeCheckbox 
-          isChecked={isChecked} 
-          onChange={handleCheckboxChange} 
-        />
-      )}
-
-      <NodeLabel
-        label={label}
-        fontSize={fontSize}
-        fontFamily={nodeData.fontFamily}
-        isEditing={isEditing}
-        onLabelChange={onLabelChange}
+  if (isEditing) {
+    return (
+      <textarea
+        ref={textareaRef}
+        value={editValue}
+        onChange={handleInputChange}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
+        className="w-full h-full bg-transparent outline-none resize-none text-center"
+        style={{
+          fontFamily: nodeData.fontFamily,
+          fontSize: nodeData.fontSize,
+        }}
       />
+    );
+  }
+
+  return (
+    <div 
+      className={`text-center break-words ${getFontClassName(nodeData.fontSize)}`}
+      style={{
+        fontFamily: nodeData.fontFamily,
+        textAlign: nodeData.textAlign || 'center',
+      }}
+    >
+      {label || 'New Node'}
     </div>
   );
 };

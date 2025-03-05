@@ -58,20 +58,22 @@ export const ResourceNode: React.FC<MindMapNodeProps> = ({
         <div className="font-semibold text-sm mb-2">{data.label || 'Resources'}</div>
         
         {/* Settings button in top right corner */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
-            >
-              <Settings className="h-3 w-3" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[80vh] overflow-y-auto">
-            <ResourceSettings nodeId={id} data={data} />
-          </DialogContent>
-        </Dialog>
+        {selected && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+              <ResourceSettings nodeId={id} data={data} />
+            </DialogContent>
+          </Dialog>
+        )}
         
         {/* Resource list */}
         <ul className="space-y-2 text-left">

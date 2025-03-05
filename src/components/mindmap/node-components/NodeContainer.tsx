@@ -47,7 +47,7 @@ export const NodeContainer = ({
       {/* Add 4-sided connectors to every node */}
       {showConnectors && <NodeConnectors />}
       
-      {/* Show NodeResizer for all nodes */}
+      {/* Show NodeResizer for all nodes with consistent behavior */}
       <NodeResizer 
         minWidth={100}
         minHeight={40}
