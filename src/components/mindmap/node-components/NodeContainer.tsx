@@ -47,17 +47,15 @@ export const NodeContainer = ({
       {/* Add 4-sided connectors to every node */}
       {showConnectors && <NodeConnectors />}
       
-      {/* Show NodeResizer for all nodes except title */}
-      {nodeData.nodeType !== 'title' && (
-        <NodeResizer 
-          minWidth={100}
-          minHeight={40}
-          isVisible={selected}
-          lineClassName="border-mindmap-primary"
-          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          keepAspectRatio={forceAspectRatio}
-        />
-      )}
+      {/* Show NodeResizer for all nodes */}
+      <NodeResizer 
+        minWidth={100}
+        minHeight={40}
+        isVisible={selected}
+        lineClassName="border-mindmap-primary"
+        handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        keepAspectRatio={forceAspectRatio}
+      />
       {children}
     </div>
   );

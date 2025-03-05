@@ -38,8 +38,6 @@ export const RectangleNode: React.FC<MindMapNodeProps> = ({
     ...rotationStyle,
     ...shadowStyle,
     ...glowStyle,
-    // For rectangle, we don't force aspect ratio by default
-    aspectRatio: data.aspectRatio === true ? '2 / 1' : 'auto', 
   };
 
   return (

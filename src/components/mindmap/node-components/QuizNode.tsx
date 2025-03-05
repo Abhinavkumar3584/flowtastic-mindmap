@@ -60,6 +60,7 @@ export const QuizNode: React.FC<MindMapNodeProps> = ({
       nodeData={data}
       selected={selected}
       onDoubleClick={() => {}}
+      forceAspectRatio={false}
     >
       <div className="w-full h-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Quiz'}</div>

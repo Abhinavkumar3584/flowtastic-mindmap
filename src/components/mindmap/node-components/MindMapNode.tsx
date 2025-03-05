@@ -34,6 +34,7 @@ export const MindMapNode: React.FC<MindMapNodeProps> = ({
       nodeData={data}
       selected={selected}
       onDoubleClick={() => {}}
+      forceAspectRatio={true}
     >
       <div className="w-full h-full p-2 relative">
         {/* Settings button in top right corner - only visible when selected */}
