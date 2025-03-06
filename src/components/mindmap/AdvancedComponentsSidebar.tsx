@@ -1,158 +1,99 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Sidebar, SidebarClose, SidebarContent } from '@/components/ui/sidebar';
-import { 
-  Box, Circle, Square, Triangle, 
-  FileText, CheckSquare, Clock, Library,
-  Lightbulb, Image, NotepadText, ListTodo, Trello
-} from 'lucide-react';
-import { BaseNodeData } from './types';
+import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+} from "@/components/ui/sidebar";
+import {
+  CheckSquare,
+  Clock,
+  BookOpen,
+  ChevronLeft,
+  GraduationCap
+} from "lucide-react";
 
 interface AdvancedComponentsSidebarProps {
-  onAddNode: (type: BaseNodeData['nodeType'], data?: Partial<BaseNodeData>) => void;
+  onAddNode: (type: string) => void;
   onToggleSidebar: () => void;
 }
 
-export const AdvancedComponentsSidebar: React.FC<AdvancedComponentsSidebarProps> = ({ 
+export const AdvancedComponentsSidebar = ({ 
   onAddNode,
-  onToggleSidebar
-}) => {
+  onToggleSidebar,
+}: AdvancedComponentsSidebarProps) => {
   return (
-    <Sidebar defaultWidth={280} minWidth={200} maxWidth={400}>
-      <SidebarContent className="p-4 flex flex-col h-full">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold">Advanced Components</h2>
-          <SidebarClose>
-            <Button variant="ghost" size="sm" onClick={onToggleSidebar}>
-              Next →
+    <Sidebar variant="floating" className="w-64">
+      <SidebarHeader className="border-b">
+        <div className="px-2 py-4 flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-semibold">Advanced Tools</h2>
+            <p className="text-sm text-gray-500">Educational components</p>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            onClick={onToggleSidebar}
+            title="Basic Components"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Study Components</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("checklist")}
+            >
+              <CheckSquare className="h-4 w-4" />
+              <span>Checklist</span>
             </Button>
-          </SidebarClose>
-        </div>
-
-        <div className="space-y-6 flex-1 overflow-y-auto">
-          <div>
-            <h3 className="font-medium mb-2 text-sm text-gray-600">Shapes</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('rectangle')}
-              >
-                <Box className="h-6 w-6 mb-1" />
-                <span className="text-xs">Rectangle</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('circle')}
-              >
-                <Circle className="h-6 w-6 mb-1" />
-                <span className="text-xs">Circle</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('square')}
-              >
-                <Square className="h-6 w-6 mb-1" />
-                <span className="text-xs">Square</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('triangle')}
-              >
-                <Triangle className="h-6 w-6 mb-1" />
-                <span className="text-xs">Triangle</span>
-              </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("timeline")}
+            >
+              <Clock className="h-4 w-4" />
+              <span>Timeline</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("resource")}
+            >
+              <BookOpen className="h-4 w-4" />
+              <span>Resource</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Features</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
+            <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+              <p className="mb-2">These educational components help with:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Tracking study progress</li>
+                <li>Planning exam preparation</li>
+                <li>Organizing study resources</li>
+                <li>Creating complete syllabus maps</li>
+              </ul>
             </div>
-          </div>
-
-          <div>
-            <h3 className="font-medium mb-2 text-sm text-gray-600">Education</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('checklist')}
-              >
-                <CheckSquare className="h-6 w-6 mb-1" />
-                <span className="text-xs">Checklist</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('timeline')}
-              >
-                <Clock className="h-6 w-6 mb-1" />
-                <span className="text-xs">Timeline</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('resource')}
-              >
-                <Library className="h-6 w-6 mb-1" />
-                <span className="text-xs">Resources</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('mindmap')}
-              >
-                <Lightbulb className="h-6 w-6 mb-1" />
-                <span className="text-xs">Mind Map</span>
-              </Button>
+            
+            <div className="flex items-center gap-2 mt-2 p-2 bg-blue-50 rounded border border-blue-100">
+              <GraduationCap className="h-4 w-4 text-blue-500" />
+              <span className="text-xs text-blue-700">Perfect for exam preparation</span>
             </div>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2 text-sm text-gray-600">New Components</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('action')}
-              >
-                <ListTodo className="h-6 w-6 mb-1" />
-                <span className="text-xs">Action</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('note')}
-              >
-                <NotepadText className="h-6 w-6 mb-1" />
-                <span className="text-xs">Note</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('image')}
-              >
-                <Image className="h-6 w-6 mb-1" />
-                <span className="text-xs">Image</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col"
-                onClick={() => onAddNode('process')}
-              >
-                <Trello className="h-6 w-6 mb-1" />
-                <span className="text-xs">Process</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto py-2 flex-col cols-span-2 w-full"
-                onClick={() => onAddNode('concept')}
-              >
-                <Lightbulb className="h-6 w-6 mb-1" />
-                <span className="text-xs">Concept</span>
-              </Button>
-            </div>
-          </div>
-        </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );

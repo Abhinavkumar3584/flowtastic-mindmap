@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap' | 'action' | 'note' | 'image' | 'process' | 'concept';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -118,43 +118,6 @@ export interface BaseNodeData {
     children?: Array<string>; // IDs of child nodes
     color?: string;
   }>;
-
-  // Action Node specific properties
-  actionStatus?: 'pending' | 'in-progress' | 'completed';
-  priorityLevel?: 'low' | 'medium' | 'high';
-  dueDate?: string;
-  actionNotes?: string;
-  
-  // Note Node specific properties
-  noteCategory?: 'general' | 'idea' | 'question' | 'important';
-  isPinned?: boolean;
-  noteContent?: string;
-  noteTags?: string[];
-  
-  // Image Node specific properties
-  imageUrl?: string;
-  imageCaption?: string;
-  imageAltText?: string;
-  imageBorder?: boolean;
-  imageAspectRatio?: 'auto' | 'square' | 'wide' | 'tall';
-  imageEffect?: 'none' | 'grayscale' | 'sepia' | 'blur';
-  
-  // Process Node specific properties
-  processSteps?: Array<{
-    id: string;
-    label: string;
-    isCompleted: boolean;
-    description?: string;
-  }>;
-  showProcessDescriptions?: boolean;
-  processColor?: string;
-  
-  // Concept Node specific properties
-  conceptType?: 'idea' | 'theory' | 'principle' | 'method';
-  conceptKeywords?: string[];
-  conceptDescription?: string;
-  showBulbIcon?: boolean;
-  relatedConcepts?: string[];
   
   [key: string]: any;
 }

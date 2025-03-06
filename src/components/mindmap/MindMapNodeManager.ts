@@ -61,16 +61,6 @@ const getNodeType = (nodeType: string): string => {
       return 'quiz';
     case 'mindmap':
       return 'mindmap';
-    case 'action':
-      return 'action';
-    case 'note':
-      return 'note';
-    case 'image':
-      return 'image';
-    case 'process':
-      return 'process';
-    case 'concept':
-      return 'concept';
     default:
       return 'base';
   }
@@ -109,16 +99,6 @@ const getDefaultLabel = (nodeType: string): string => {
       return 'Square';
     case 'triangle':
       return 'Triangle';
-    case 'action':
-      return 'Action Item';
-    case 'note':
-      return 'Note';
-    case 'image':
-      return 'Image';
-    case 'process':
-      return 'Process';
-    case 'concept':
-      return 'Concept';
     default:
       return nodeType.charAt(0).toUpperCase() + nodeType.slice(1);
   }
@@ -186,46 +166,6 @@ const getTypeSpecificData = (nodeType: string): Partial<BaseNodeData> => {
           { id: '2', label: 'Sub-topic 1', color: '#48bb78' },
           { id: '3', label: 'Sub-topic 2', color: '#ed8936' }
         ]
-      };
-    case 'action':
-      return {
-        actionStatus: 'pending',
-        priorityLevel: 'medium',
-        dueDate: nextWeek.toISOString(),
-        actionNotes: ''
-      };
-    case 'note':
-      return {
-        noteCategory: 'general',
-        isPinned: false,
-        noteContent: 'Add your notes here...',
-        noteTags: []
-      };
-    case 'image':
-      return {
-        imageUrl: '',
-        imageCaption: 'Image caption',
-        imageAltText: 'Image description',
-        imageBorder: true,
-        imageAspectRatio: 'auto'
-      };
-    case 'process':
-      return {
-        processSteps: [
-          { id: '1', label: 'Step 1', isCompleted: false },
-          { id: '2', label: 'Step 2', isCompleted: false },
-          { id: '3', label: 'Step 3', isCompleted: false }
-        ],
-        showProcessDescriptions: false,
-        processColor: '#3b82f6'
-      };
-    case 'concept':
-      return {
-        conceptType: 'idea',
-        conceptKeywords: ['keyword1', 'keyword2'],
-        conceptDescription: 'Describe your concept here...',
-        showBulbIcon: true,
-        relatedConcepts: []
       };
     default:
       return {};
