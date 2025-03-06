@@ -39,9 +39,16 @@ export const useMindMapEdgeHandlers = ({ setEdges }: UseMindMapEdgeHandlersProps
             }
           }
 
+          // Set animated property based on strokeStyle
+          // Only animate if not 'solid'
+          const animated = newData.strokeStyle !== undefined
+            ? newData.strokeStyle !== 'solid'
+            : edge.data?.strokeStyle !== 'solid';
+
           return {
             ...edge,
             type,
+            animated,
             markerEnd,
             markerStart,
             data: {
@@ -70,14 +77,14 @@ export const useMindMapEdgeHandlers = ({ setEdges }: UseMindMapEdgeHandlersProps
         addEdge(
           {
             ...params,
-            type: 'smoothstep',
-            animated: true,
+            type: 'default', // Changed from 'smoothstep' to 'default' for straight lines by default
+            animated: false, // Set to false initially for solid lines
             data: {
               strokeStyle: 'solid',
               strokeWidth: 1,
               strokeColor: '#000000',
               arrowEnd: true,
-              pathStyle: 'smoothstep'
+              pathStyle: 'straight'
             },
             markerEnd: {
               type: MarkerType.ArrowClosed,
