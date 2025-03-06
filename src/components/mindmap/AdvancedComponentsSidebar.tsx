@@ -13,7 +13,9 @@ import {
   Clock,
   BookOpen,
   ChevronLeft,
-  GraduationCap
+  GraduationCap,
+  StickyNote,
+  Lightbulb
 } from "lucide-react";
 
 interface AdvancedComponentsSidebarProps {
@@ -72,6 +74,22 @@ export const AdvancedComponentsSidebar = ({
               <BookOpen className="h-4 w-4" />
               <span>Resource</span>
             </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("note")}
+            >
+              <StickyNote className="h-4 w-4" />
+              <span>Note</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("concept")}
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Concept</span>
+            </Button>
           </SidebarGroupContent>
         </SidebarGroup>
         
@@ -85,6 +103,8 @@ export const AdvancedComponentsSidebar = ({
                 <li>Planning exam preparation</li>
                 <li>Organizing study resources</li>
                 <li>Creating complete syllabus maps</li>
+                <li>Taking quick notes during study</li>
+                <li>Defining key concepts clearly</li>
               </ul>
             </div>
             

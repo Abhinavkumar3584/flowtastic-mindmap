@@ -61,6 +61,10 @@ const getNodeType = (nodeType: string): string => {
       return 'quiz';
     case 'mindmap':
       return 'mindmap';
+    case 'note':
+      return 'note';
+    case 'concept':
+      return 'concept';
     default:
       return 'base';
   }
@@ -99,6 +103,10 @@ const getDefaultLabel = (nodeType: string): string => {
       return 'Square';
     case 'triangle':
       return 'Triangle';
+    case 'note':
+      return 'Note';
+    case 'concept':
+      return 'Concept';
     default:
       return nodeType.charAt(0).toUpperCase() + nodeType.slice(1);
   }
@@ -166,6 +174,23 @@ const getTypeSpecificData = (nodeType: string): Partial<BaseNodeData> => {
           { id: '2', label: 'Sub-topic 1', color: '#48bb78' },
           { id: '3', label: 'Sub-topic 2', color: '#ed8936' }
         ]
+      };
+    case 'note':
+      return {
+        noteContent: 'Add your notes here...',
+        noteBgColor: '#FFF9C4',
+        noteTextColor: '#333333',
+        notePinned: false,
+        noteTags: ['important', 'reminder']
+      };
+    case 'concept':
+      return {
+        conceptName: 'New Concept',
+        conceptDefinition: 'Define the concept here...',
+        conceptExamples: ['Example 1', 'Example 2'],
+        conceptRelatedTerms: ['Related term 1', 'Related term 2'],
+        conceptImportance: 'medium',
+        conceptBgColor: '#E3F2FD'
       };
     default:
       return {};

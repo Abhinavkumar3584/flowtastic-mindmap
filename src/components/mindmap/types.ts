@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap' | 'note' | 'concept';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -118,6 +118,21 @@ export interface BaseNodeData {
     children?: Array<string>; // IDs of child nodes
     color?: string;
   }>;
+  
+  // Note specific properties
+  noteContent?: string;
+  noteBgColor?: string;
+  noteTextColor?: string;
+  notePinned?: boolean;
+  noteTags?: string[];
+  
+  // Concept specific properties
+  conceptName?: string;
+  conceptDefinition?: string;
+  conceptExamples?: string[];
+  conceptRelatedTerms?: string[];
+  conceptImportance?: 'low' | 'medium' | 'high';
+  conceptBgColor?: string;
   
   [key: string]: any;
 }
