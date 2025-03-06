@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -21,8 +22,6 @@ import { TriangleNode } from './node-components/TriangleNode';
 import { FlashcardNode } from './node-components/FlashcardNode';
 import { QuizNode } from './node-components/QuizNode';
 import { MindMapNode } from './node-components/MindMapNode';
-import { NoteNode } from './node-components/NoteNode';
-import { ConceptNode } from './node-components/ConceptNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -46,8 +45,6 @@ import { ShapeSettings } from './settings/ShapeSettings';
 import { FlashcardSettings } from './settings/FlashcardSettings';
 import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
-import { NoteSettings } from './settings/NoteSettings';
-import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { historyManager } from '@/utils/historyManager';
 
@@ -64,8 +61,6 @@ const nodeTypes: NodeTypes = {
   flashcard: FlashcardNode,
   quiz: QuizNode,
   mindmap: MindMapNode,
-  note: NoteNode,
-  concept: ConceptNode,
 };
 
 export const MindMap = () => {
@@ -78,6 +73,7 @@ export const MindMap = () => {
 
   // Track changes for history
   useEffect(() => {
+    // Save state to history manager when nodes or edges change
     if (nodes.length > 0 || edges.length > 0) {
       historyManager.saveState(nodes, edges);
     }
@@ -138,7 +134,7 @@ export const MindMap = () => {
     };
   }, [deleteNode, updateNodeData, updateEdge, copyNode, pasteNode, duplicateNode, handleUndo, handleRedo]);
 
-  // Toggle between sidebars
+  // Toggle between sidebars - MODIFIED to cycle in the correct order
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');
@@ -172,8 +168,7 @@ export const MindMap = () => {
   const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
 
   // Check if the selected node is an education node
-  const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap' || 
-                          nodeType === 'note' || nodeType === 'concept';
+  const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
 
   // Register keyboard shortcuts
   useMindMapKeyboardHandlers({
@@ -281,8 +276,6 @@ export const MindMap = () => {
                    nodeType === 'flashcard' ? 'Flashcards' :
                    nodeType === 'quiz' ? 'Quiz' :
                    nodeType === 'mindmap' ? 'Mind Map' :
-                   nodeType === 'note' ? 'Note' :
-                   nodeType === 'concept' ? 'Concept' :
                    'Shape'} Settings
                 </Button>
               </DialogTrigger>
@@ -313,14 +306,6 @@ export const MindMap = () => {
                 
                 {nodeType === 'mindmap' && selectedNodeData && (
                   <MindMapSettings nodeId={selectedNode} data={selectedNodeData} />
-                )}
-                
-                {nodeType === 'note' && selectedNodeData && (
-                  <NoteSettings nodeId={selectedNode} data={selectedNodeData} />
-                )}
-                
-                {nodeType === 'concept' && selectedNodeData && (
-                  <ConceptSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
               </DialogContent>
             </Dialog>
