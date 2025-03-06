@@ -22,6 +22,12 @@ import { TriangleNode } from './node-components/TriangleNode';
 import { FlashcardNode } from './node-components/FlashcardNode';
 import { QuizNode } from './node-components/QuizNode';
 import { MindMapNode } from './node-components/MindMapNode';
+import { ActionNode } from './node-components/ActionNode';
+import { NoteNode } from './node-components/NoteNode';
+import { ImageNode } from './node-components/ImageNode';
+import { ProcessNode } from './node-components/ProcessNode';
+import { ConceptNode } from './node-components/ConceptNode';
+
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -47,6 +53,7 @@ import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { historyManager } from '@/utils/historyManager';
+import { RightPanel } from './right-panel/RightPanel';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -61,6 +68,11 @@ const nodeTypes: NodeTypes = {
   flashcard: FlashcardNode,
   quiz: QuizNode,
   mindmap: MindMapNode,
+  action: ActionNode,
+  note: NoteNode,
+  image: ImageNode,
+  process: ProcessNode,
+  concept: ConceptNode,
 };
 
 export const MindMap = () => {
@@ -310,6 +322,9 @@ export const MindMap = () => {
               </DialogContent>
             </Dialog>
           )}
+          
+          {/* Right panel for new node types */}
+          <RightPanel />
         </div>
       </div>
 
