@@ -47,7 +47,7 @@ export const TriangleNode: React.FC<MindMapNodeProps> = ({
         forceAspectRatio={data.aspectRatio !== false}
       >
         <div 
-          className="triangle absolute top-0 left-0 w-full h-full"
+          className="absolute top-0 left-0 w-full h-full"
           style={{
             clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
             backgroundColor: data.backgroundColor || '#fff',

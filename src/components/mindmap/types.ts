@@ -153,6 +153,8 @@ declare global {
       copyNode?: (id: string) => void;
       pasteNode?: (id: string | null) => void;
       duplicateNode?: (id: string) => void;
+      undo?: () => void;
+      redo?: () => void;
     };
   }
 }
