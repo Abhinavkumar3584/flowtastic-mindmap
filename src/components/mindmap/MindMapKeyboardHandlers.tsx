@@ -1,58 +1,126 @@
 
 import { useEffect } from 'react';
+import { MindMapNode } from './types';
+import { useToast } from '@/hooks/use-toast';
 
-interface UseMindMapKeyboardHandlersProps {
-  selectedNode: string | null;
+interface MindMapKeyboardHandlersProps {
+  nodes: MindMapNode[];
   deleteNode: (id: string) => void;
-  undo: () => void;
-  redo: () => void;
-  save: () => void;
+  updateNodeData: (id: string, data: any) => void;
+  addNode: (type: string, additionalData?: any) => void;
 }
 
 export const useMindMapKeyboardHandlers = ({
-  selectedNode,
+  nodes,
   deleteNode,
-  undo,
-  redo,
-  save
-}: UseMindMapKeyboardHandlersProps) => {
+  updateNodeData,
+  addNode,
+}: MindMapKeyboardHandlersProps) => {
+  const { toast } = useToast();
+
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Ignore key presses when typing in input fields
-      if (event.target instanceof HTMLInputElement || 
-          event.target instanceof HTMLTextAreaElement) {
-        return;
+    // Handle keyboard shortcuts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+C to copy
+      if (e.ctrlKey && e.key === 'c') {
+        const selectedNode = nodes.find(node => node.selected);
+        if (selectedNode) {
+          localStorage.setItem('mindmap-copied-node', JSON.stringify(selectedNode.data));
+          toast({
+            title: "Copied",
+            description: "Node copied to clipboard",
+          });
+        }
       }
       
-      // Delete the selected node when 'Delete' key is pressed
-      if (event.key === 'Delete' && selectedNode) {
-        deleteNode(selectedNode);
+      // Ctrl+V to paste
+      if (e.ctrlKey && e.key === 'v') {
+        const copiedNodeData = localStorage.getItem('mindmap-copied-node');
+        if (copiedNodeData) {
+          try {
+            const data = JSON.parse(copiedNodeData);
+            const selectedNode = nodes.find(node => node.selected);
+            if (selectedNode) {
+              updateNodeData(selectedNode.id, data);
+              toast({
+                title: "Pasted",
+                description: "Node data pasted",
+              });
+            } else {
+              // Create a new node with the copied data
+              addNode(data.nodeType || 'topic', data);
+              toast({
+                title: "Created",
+                description: "New node created from clipboard",
+              });
+            }
+          } catch (e) {
+            console.error('Failed to parse copied node data', e);
+          }
+        }
       }
       
-      // Undo - Ctrl+Z
-      if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
-        event.preventDefault();
-        undo();
-      }
-      
-      // Redo - Ctrl+Y or Ctrl+Shift+Z
-      if ((event.ctrlKey || event.metaKey) && 
-          ((event.key === 'y') || (event.key === 'z' && event.shiftKey))) {
-        event.preventDefault();
-        redo();
-      }
-      
-      // Save - Ctrl+S
-      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-        event.preventDefault();
-        save();
+      // Delete to remove
+      if (e.key === 'Delete') {
+        const selectedNode = nodes.find(node => node.selected);
+        if (selectedNode) {
+          deleteNode(selectedNode.id);
+          toast({
+            title: "Deleted",
+            description: "Node deleted",
+          });
+        }
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-
+    document.addEventListener('keydown', handleKeyDown);
+    
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedNode, deleteNode, undo, redo, save]);
+  }, [nodes, deleteNode, updateNodeData, addNode, toast]);
+
+  useEffect(() => {
+    // Handle node duplication via custom event
+    const handleDuplicateNode = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const nodeId = customEvent.detail.id;
+      const nodeToDuplicate = nodes.find(node => node.id === nodeId);
+      
+      if (nodeToDuplicate) {
+        const newNode = {
+          ...nodeToDuplicate,
+          id: `${nodes.length + 1}`,
+          position: {
+            x: nodeToDuplicate.position.x + 50,
+            y: nodeToDuplicate.position.y + 50
+          },
+          selected: false
+        };
+        
+        // Add the new node
+        addNode(
+          nodeToDuplicate.data.nodeType || 'topic', 
+          {
+            ...nodeToDuplicate.data,
+            position: {
+              x: nodeToDuplicate.position.x + 50,
+              y: nodeToDuplicate.position.y + 50
+            }
+          }
+        );
+        
+        toast({
+          title: "Duplicated",
+          description: "Node has been duplicated",
+        });
+      }
+    };
+    
+    document.addEventListener('duplicate-node', handleDuplicateNode);
+    
+    return () => {
+      document.removeEventListener('duplicate-node', handleDuplicateNode);
+    };
+  }, [nodes, addNode, toast]);
 };

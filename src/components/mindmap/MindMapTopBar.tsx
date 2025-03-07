@@ -1,25 +1,14 @@
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Plus, Trash2, Share2 } from 'lucide-react';
 import {
-  Dropdown,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { 
-  Save, 
-  FilePlus, 
-  FileUp, 
-  Download, 
-  MoreHorizontal, 
-  Trash, 
-  Undo2, 
-  Redo2 
-} from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 import { getAllMindMaps } from '@/utils/mindmapStorage';
 
 interface MindMapTopBarProps {
@@ -29,8 +18,6 @@ interface MindMapTopBarProps {
   createNewMindMap: () => void;
   loadExistingMindMap: (name: string) => void;
   handleDeleteMindMap: (name: string) => void;
-  handleUndo: () => void;
-  handleRedo: () => void;
 }
 
 export const MindMapTopBar: React.FC<MindMapTopBarProps> = ({
@@ -40,118 +27,46 @@ export const MindMapTopBar: React.FC<MindMapTopBarProps> = ({
   createNewMindMap,
   loadExistingMindMap,
   handleDeleteMindMap,
-  handleUndo,
-  handleRedo
 }) => {
-  const [mindMaps, setMindMaps] = useState<string[]>([]);
-
-  const handleOpenMindMapDropdown = () => {
-    const maps = getAllMindMaps();
-    setMindMaps(maps);
-  };
-
   return (
-    <div className="flex items-center justify-between p-2 border-b bg-white">
-      <div className="flex items-center">
-        <Button variant="default" size="sm" onClick={saveCurrentMindMap} className="mr-2">
-          <Save className="h-4 w-4 mr-1" />
-          Save{currentMindMap ? '' : ' As'}
-        </Button>
-        <Button variant="outline" size="sm" onClick={createNewMindMap} className="mr-2">
-          <FilePlus className="h-4 w-4 mr-1" />
-          New
-        </Button>
-        
-        <Dropdown>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" onClick={handleOpenMindMapDropdown}>
-              <FileUp className="h-4 w-4 mr-1" />
-              Open
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Open Mind Map</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {mindMaps.length === 0 ? (
-              <DropdownMenuItem disabled>No mind maps saved</DropdownMenuItem>
-            ) : (
-              mindMaps.map((name) => (
-                <DropdownMenuItem key={name} onClick={() => loadExistingMindMap(name)}>
-                  {name}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="ml-auto h-8 w-8"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteMindMap(name);
-                    }}
-                  >
-                    <Trash className="h-4 w-4 text-red-500" />
-                  </Button>
-                </DropdownMenuItem>
-              ))
-            )}
-          </DropdownMenuContent>
-        </Dropdown>
-      </div>
-
-      <div className="text-lg font-medium">
-        {currentMindMap || 'Untitled Mind Map'}
-      </div>
-
-      <div className="flex items-center">
-        {/* Undo/Redo buttons */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleUndo} 
-          className="mr-2"
-          title="Undo (Ctrl+Z)"
-        >
-          <Undo2 className="h-4 w-4" />
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleRedo} 
-          className="mr-2"
-          title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
-        >
-          <Redo2 className="h-4 w-4" />
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleExport} 
-          className="mr-2"
-          disabled={!currentMindMap}
-        >
-          <Download className="h-4 w-4 mr-1" />
-          Export
-        </Button>
-        <Dropdown>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleExport} disabled={!currentMindMap}>
-              Export as PDF
+    <div className="absolute top-4 right-4 z-10 flex gap-2">
+      <Button onClick={saveCurrentMindMap}>
+        Save
+      </Button>
+      <Button onClick={handleExport} variant="outline">
+        <Share2 className="mr-2 h-4 w-4" />
+        Export
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            Load Mind Map
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {getAllMindMaps().map((name) => (
+            <DropdownMenuItem
+              key={name}
+              className="flex items-center justify-between group"
+            >
+              <span onClick={() => loadExistingMindMap(name)} className="flex-1 cursor-pointer">
+                {name}
+              </span>
+              <Trash2
+                className="h-4 w-4 text-destructive opacity-0 group-hover:opacity-100 cursor-pointer ml-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteMindMap(name);
+                }}
+              />
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport} disabled={!currentMindMap}>
-              Export as Image
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-500">
-              Clear Canvas
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </Dropdown>
-      </div>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button onClick={createNewMindMap}>
+        <Plus className="mr-2 h-4 w-4" />
+        New
+      </Button>
     </div>
   );
 };

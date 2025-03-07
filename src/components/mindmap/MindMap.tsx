@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -26,7 +26,6 @@ import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
 import { MindMapDeleteDialog } from './MindMapDeleteDialog';
-import { AutoSaveDialog } from './AutoSaveDialog';
 import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
@@ -37,7 +36,7 @@ import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Settings, Undo2, Redo2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
@@ -46,7 +45,6 @@ import { FlashcardSettings } from './settings/FlashcardSettings';
 import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
 import { NodeConnectors } from './NodeConnectors';
-import { historyManager } from '@/utils/historyManager';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -70,14 +68,6 @@ export const MindMap = () => {
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
   const [sidebarMode, setSidebarMode] = useState<'basic' | 'advanced' | 'education'>('basic');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
-
-  // Track changes for history
-  useEffect(() => {
-    // Save state to history manager when nodes or edges change
-    if (nodes.length > 0 || edges.length > 0) {
-      historyManager.saveState(nodes, edges);
-    }
-  }, [nodes, edges]);
 
   // Node handlers
   const { 
@@ -104,11 +94,7 @@ export const MindMap = () => {
     loadExistingMindMap,
     handleDeleteMindMap,
     confirmDeleteMindMap,
-    saveCurrentMindMap,
-    handleUndo,
-    handleRedo,
-    toggleAutoSave,
-    updateAutoSaveInterval
+    saveCurrentMindMap
   } = useMindMapStorage({
     nodes,
     edges,
@@ -121,18 +107,14 @@ export const MindMap = () => {
   });
 
   // Assign API to window for global access
-  useEffect(() => {
-    window.mindmapApi = {
-      deleteNode,
-      updateNodeData,
-      updateEdge,
-      copyNode,
-      pasteNode,
-      duplicateNode,
-      undo: handleUndo,
-      redo: handleRedo
-    };
-  }, [deleteNode, updateNodeData, updateEdge, copyNode, pasteNode, duplicateNode, handleUndo, handleRedo]);
+  window.mindmapApi = {
+    deleteNode,
+    updateNodeData,
+    updateEdge,
+    copyNode,
+    pasteNode,
+    duplicateNode
+  };
 
   // Toggle between sidebars - MODIFIED to cycle in the correct order
   const handleToggleSidebar = () => {
@@ -169,15 +151,6 @@ export const MindMap = () => {
 
   // Check if the selected node is an education node
   const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
-
-  // Register keyboard shortcuts
-  useMindMapKeyboardHandlers({
-    selectedNode,
-    deleteNode,
-    undo: handleUndo,
-    redo: handleRedo,
-    save: saveCurrentMindMap
-  });
 
   // Render the appropriate sidebar based on mode
   const renderSidebar = () => {
@@ -218,19 +191,7 @@ export const MindMap = () => {
             createNewMindMap={createNewMindMap}
             loadExistingMindMap={loadExistingMindMap}
             handleDeleteMindMap={handleDeleteMindMap}
-            handleUndo={handleUndo}
-            handleRedo={handleRedo}
           />
-          
-          {/* Auto-save dialog */}
-          <div className="absolute right-20 top-4 z-10">
-            <AutoSaveDialog 
-              mindMapName={currentMindMap}
-              onToggleAutoSave={toggleAutoSave}
-              onIntervalChange={updateAutoSaveInterval}
-            />
-          </div>
-          
           <ReactFlow
             nodes={nodes}
             edges={edges}

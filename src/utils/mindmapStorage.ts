@@ -1,7 +1,4 @@
-
 import { MindMapData } from '@/components/mindmap/types';
-import { historyManager } from './historyManager';
-import { autoSaveManager } from './autoSave';
 
 export const saveMindMap = (data: MindMapData): boolean => {
   try {
@@ -16,13 +13,6 @@ export const saveMindMap = (data: MindMapData): boolean => {
     
     localStorage.setItem('mindmaps', JSON.stringify(mindmaps));
     console.log('Mind map saved:', data.name);
-    
-    // Update history manager
-    historyManager.setLastSavedState(data.nodes, data.edges);
-    
-    // Update auto-save manager
-    autoSaveManager.updateMindMapData(data);
-    
     return true;
   } catch (error) {
     console.error('Error saving mind map:', error);
@@ -34,23 +24,7 @@ export const loadMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = JSON.parse(mindmapsData);
-    const mindMap = mindmaps[name] || null;
-    
-    if (mindMap) {
-      // Reset history when loading a new mind map
-      historyManager.clear();
-      
-      // Set loaded state as the first history entry
-      if (mindMap.nodes && mindMap.edges) {
-        historyManager.saveState(mindMap.nodes, mindMap.edges);
-        historyManager.setLastSavedState(mindMap.nodes, mindMap.edges);
-      }
-      
-      // Update auto-save
-      autoSaveManager.updateMindMapData(mindMap);
-    }
-    
-    return mindMap;
+    return mindmaps[name] || null;
   } catch (error) {
     console.error('Error loading mind map:', error);
     return null;
