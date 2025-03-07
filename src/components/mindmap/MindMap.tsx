@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -21,7 +21,7 @@ import { SquareNode } from './node-components/SquareNode';
 import { TriangleNode } from './node-components/TriangleNode';
 import { FlashcardNode } from './node-components/FlashcardNode';
 import { QuizNode } from './node-components/QuizNode';
-import { MindMapNode } from './node-components/MindMapNode';
+import { MindMapNode as MindMapNodeComponent } from './node-components/MindMapNode';
 import { NoteNode } from './node-components/NoteNode';
 import { ConceptNode } from './node-components/ConceptNode';
 import { EdgeSettings } from './EdgeSettings';
@@ -49,6 +49,14 @@ import { MindMapSettings } from './settings/MindMapSettings';
 import { NoteSettings } from './settings/NoteSettings';
 import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
+import { mindMapHistory } from '@/utils/mindmapHistory';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  AutoSaveConfig, 
+  initAutoSaveConfig, 
+  shouldAutoSave, 
+  performAutoSave 
+} from '@/utils/mindmapAutoSave';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -62,7 +70,7 @@ const nodeTypes: NodeTypes = {
   triangle: TriangleNode,
   flashcard: FlashcardNode,
   quiz: QuizNode,
-  mindmap: MindMapNode,
+  mindmap: MindMapNodeComponent,
   note: NoteNode,
   concept: ConceptNode,
 };
@@ -74,6 +82,12 @@ export const MindMap = () => {
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
   const [sidebarMode, setSidebarMode] = useState<'basic' | 'advanced' | 'education'>('basic');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [canUndo, setCanUndo] = useState<boolean>(false);
+  const [canRedo, setCanRedo] = useState<boolean>(false);
+  const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
+  const lastChangeRef = useRef<number>(Date.now());
 
   // Node handlers
   const { 
@@ -112,6 +126,85 @@ export const MindMap = () => {
     initialNodes
   });
 
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    const previousState = mindMapHistory.undo(nodes, edges);
+    if (previousState) {
+      setNodes(previousState.nodes);
+      setEdges(previousState.edges);
+      toast({
+        title: "Undo",
+        description: "Previous action undone",
+      });
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, toast]);
+
+  const handleRedo = useCallback(() => {
+    const nextState = mindMapHistory.redo(nodes, edges);
+    if (nextState) {
+      setNodes(nextState.nodes);
+      setEdges(nextState.edges);
+      toast({
+        title: "Redo",
+        description: "Action redone",
+      });
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, toast]);
+
+  const updateUndoRedoState = useCallback(() => {
+    setCanUndo(mindMapHistory.canUndo());
+    setCanRedo(mindMapHistory.canRedo());
+  }, []);
+
+  // Record changes to history
+  useEffect(() => {
+    // Don't record the initial state or states that are a result of undo/redo
+    if (nodes !== initialNodes || edges !== initialEdges) {
+      mindMapHistory.record(nodes, edges);
+      updateUndoRedoState();
+      lastChangeRef.current = Date.now();
+    }
+  }, [nodes, edges, updateUndoRedoState]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    // Clear any existing timer
+    if (autoSaveTimerRef.current) {
+      clearInterval(autoSaveTimerRef.current);
+    }
+
+    // Setup new timer if auto-save is enabled
+    if (autoSaveConfig.enabled) {
+      autoSaveTimerRef.current = setInterval(() => {
+        // Only auto-save if there's a current mind map and changes since last save
+        if (currentMindMap && shouldAutoSave(autoSaveConfig)) {
+          const timeSinceLastChange = Date.now() - lastChangeRef.current;
+          
+          // Only save if there were changes in the last minute
+          if (timeSinceLastChange < 60000) {
+            const newConfig = performAutoSave(
+              { nodes, edges, name: currentMindMap },
+              autoSaveConfig
+            );
+            
+            if (newConfig.lastSaveTime !== autoSaveConfig.lastSaveTime) {
+              setAutoSaveConfig(newConfig);
+              console.log(`Auto-saved mind map: ${currentMindMap}`);
+            }
+          }
+        }
+      }, 5000); // Check every 5 seconds
+    }
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+      }
+    };
+  }, [autoSaveConfig, currentMindMap, nodes, edges]);
+
   // Assign API to window for global access
   window.mindmapApi = {
     deleteNode,
@@ -122,7 +215,7 @@ export const MindMap = () => {
     duplicateNode
   };
 
-  // Toggle between sidebars - MODIFIED to cycle in the correct order
+  // Toggle between sidebars
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');
@@ -197,6 +290,12 @@ export const MindMap = () => {
             createNewMindMap={createNewMindMap}
             loadExistingMindMap={loadExistingMindMap}
             handleDeleteMindMap={handleDeleteMindMap}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            autoSaveConfig={autoSaveConfig}
+            onAutoSaveConfigChange={setAutoSaveConfig}
           />
           <ReactFlow
             nodes={nodes}
