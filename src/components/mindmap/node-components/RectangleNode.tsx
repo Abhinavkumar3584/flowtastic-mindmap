@@ -47,7 +47,7 @@ export const RectangleNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={handleDoubleClick}
       customStyle={combinedStyle}
-      forceAspectRatio={false}
+      forceAspectRatio={data.aspectRatio === true}
     >
       <div className="w-full h-full p-2 flex items-center justify-center relative">
         <div className="text-center">{data.label || 'Rectangle'}</div>
