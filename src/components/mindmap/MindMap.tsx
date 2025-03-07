@@ -22,6 +22,8 @@ import { TriangleNode } from './node-components/TriangleNode';
 import { FlashcardNode } from './node-components/FlashcardNode';
 import { QuizNode } from './node-components/QuizNode';
 import { MindMapNode } from './node-components/MindMapNode';
+import { NoteNode } from './node-components/NoteNode';
+import { ConceptNode } from './node-components/ConceptNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -44,6 +46,8 @@ import { ShapeSettings } from './settings/ShapeSettings';
 import { FlashcardSettings } from './settings/FlashcardSettings';
 import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
+import { NoteSettings } from './settings/NoteSettings';
+import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 
 const nodeTypes: NodeTypes = {
@@ -59,6 +63,8 @@ const nodeTypes: NodeTypes = {
   flashcard: FlashcardNode,
   quiz: QuizNode,
   mindmap: MindMapNode,
+  note: NoteNode,
+  concept: ConceptNode,
 };
 
 export const MindMap = () => {
@@ -221,7 +227,9 @@ export const MindMap = () => {
             nodeType === 'checklist' || 
             nodeType === 'resource' || 
             isShapeNode ||
-            isEducationNode
+            isEducationNode ||
+            nodeType === 'note' ||
+            nodeType === 'concept'
           ) && (
             <Dialog>
               <DialogTrigger asChild>
@@ -237,6 +245,8 @@ export const MindMap = () => {
                    nodeType === 'flashcard' ? 'Flashcards' :
                    nodeType === 'quiz' ? 'Quiz' :
                    nodeType === 'mindmap' ? 'Mind Map' :
+                   nodeType === 'note' ? 'Note' :
+                   nodeType === 'concept' ? 'Concept' :
                    'Shape'} Settings
                 </Button>
               </DialogTrigger>
@@ -267,6 +277,14 @@ export const MindMap = () => {
                 
                 {nodeType === 'mindmap' && selectedNodeData && (
                   <MindMapSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'note' && selectedNodeData && (
+                  <NoteSettings nodeId={selectedNode} data={selectedNodeData} />
+                )}
+                
+                {nodeType === 'concept' && selectedNodeData && (
+                  <ConceptSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
               </DialogContent>
             </Dialog>

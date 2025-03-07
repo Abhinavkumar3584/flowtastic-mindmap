@@ -9,11 +9,15 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import {
-  CheckSquare,
-  Clock,
+  ListTodo,
+  Timer,
+  FileText,
+  ChevronRight,
+  StickyNote,
+  Lightbulb,
   BookOpen,
-  ChevronLeft,
-  GraduationCap
+  GraduationCap,
+  BarChart
 } from "lucide-react";
 
 interface AdvancedComponentsSidebarProps {
@@ -30,30 +34,30 @@ export const AdvancedComponentsSidebar = ({
       <SidebarHeader className="border-b">
         <div className="px-2 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-semibold">Advanced Tools</h2>
-            <p className="text-sm text-gray-500">Educational components</p>
+            <h2 className="text-lg font-semibold">Advanced Components</h2>
+            <p className="text-sm text-gray-500">Specialized node types</p>
           </div>
           <Button 
             variant="ghost" 
             size="sm" 
             className="h-8 w-8 p-0"
             onClick={onToggleSidebar}
-            title="Basic Components"
+            title="Education Components"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Study Components</SidebarGroupLabel>
+          <SidebarGroupLabel>Productivity</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1.5 p-2">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("checklist")}
             >
-              <CheckSquare className="h-4 w-4" />
+              <ListTodo className="h-4 w-4" />
               <span>Checklist</span>
             </Button>
             <Button
@@ -61,7 +65,7 @@ export const AdvancedComponentsSidebar = ({
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("timeline")}
             >
-              <Clock className="h-4 w-4" />
+              <Timer className="h-4 w-4" />
               <span>Timeline</span>
             </Button>
             <Button
@@ -69,32 +73,28 @@ export const AdvancedComponentsSidebar = ({
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("resource")}
             >
-              <BookOpen className="h-4 w-4" />
-              <span>Resource</span>
+              <FileText className="h-4 w-4" />
+              <span>Resources</span>
             </Button>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        
-        <SidebarGroup>
-          <SidebarGroupLabel>Features</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-1.5 p-2">
-            <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-              <p className="mb-2">These educational components help with:</p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li>Tracking study progress</li>
-                <li>Planning exam preparation</li>
-                <li>Organizing study resources</li>
-                <li>Creating complete syllabus maps</li>
-              </ul>
-            </div>
-            
-            <div className="flex items-center gap-2 mt-2 p-2 bg-blue-50 rounded border border-blue-100">
-              <GraduationCap className="h-4 w-4 text-blue-500" />
-              <span className="text-xs text-blue-700">Perfect for exam preparation</span>
-            </div>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("note")}
+            >
+              <StickyNote className="h-4 w-4" />
+              <span>Note</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("concept")}
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Concept</span>
+            </Button>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
-};
+}
