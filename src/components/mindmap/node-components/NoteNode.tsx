@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Handle, Position } from '@xyflow/react';
 import { NodeContainer } from './NodeContainer';
 import { MindMapNodeProps } from '../types';
 import { NodeContextMenu } from './NodeContextMenu';
@@ -34,7 +35,7 @@ export function NoteNode({ data, id, selected }: MindMapNodeProps) {
           backgroundColor: data.noteColor || '#FFFACD',
           minHeight: '100px'
         }}
-        forceAspectRatio={data.aspectRatio === true}
+        forceAspectRatio={false}
       >
         <div className="w-full h-full flex flex-col">
           <div className="flex items-center justify-between mb-2 border-b pb-1">

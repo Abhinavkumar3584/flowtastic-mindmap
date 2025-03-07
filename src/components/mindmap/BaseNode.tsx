@@ -48,7 +48,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
         nodeData={nodeData}
         selected={selected}
         onDoubleClick={handleDoubleClick}
-        forceAspectRatio={nodeData.aspectRatio === true}
+        forceAspectRatio={false} // Allow free resizing by default
       >
         <NodeContent
           nodeData={nodeData}
