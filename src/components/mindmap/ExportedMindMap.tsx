@@ -35,6 +35,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getAllMindMaps } from '@/utils/mindmapStorage';
+import { Badge } from '@/components/ui/badge';
 
 // Define all node types to ensure all components load properly
 const nodeTypes: NodeTypes = {
@@ -104,23 +105,58 @@ export const ExportedMindMap = () => {
     setSelectedNode(node.data);
   };
 
+  const getWorkspaceInfo = () => {
+    if (mindMapData?.workspace?.enabled) {
+      return (
+        <div className="flex items-center gap-2 mt-2">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700">
+            Workspace: {mindMapData.workspace.width}px wide
+          </Badge>
+          <Badge variant="outline" className="bg-green-50 text-green-700">
+            Nodes: {mindMapData.nodes.length}
+          </Badge>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (!mindMapData) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-        <div className="flex gap-4 items-center">
-          <Select value={selectedMap} onValueChange={setSelectedMap}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a mind map" />
-            </SelectTrigger>
-            <SelectContent>
-              {mindMaps.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={handleRender}>Render</Button>
+        <div className="flex flex-col gap-4 items-center max-w-md p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold text-center">Mind Map Export Viewer</h1>
+          <p className="text-gray-500 text-center">
+            Select a mind map to view. Only components within the workspace area (if enabled) will be displayed.
+          </p>
+          
+          <div className="flex gap-4 items-center">
+            <Select value={selectedMap} onValueChange={setSelectedMap}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select a mind map" />
+              </SelectTrigger>
+              <SelectContent>
+                {mindMaps.length > 0 ? (
+                  mindMaps.map((name) => (
+                    <SelectItem key={name} value={name}>
+                      {name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="none" disabled>
+                    No mind maps available
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <Button onClick={handleRender}>Render</Button>
+          </div>
+          
+          {mindMaps.length === 0 && (
+            <p className="text-sm text-red-500 mt-2">
+              No mind maps found. Please create and save a mind map first.
+            </p>
+          )}
         </div>
       </div>
     );
@@ -129,6 +165,13 @@ export const ExportedMindMap = () => {
   return (
     <>
       <div className="w-full h-screen">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+          <Button variant="outline" onClick={() => setMindMapData(null)} className="bg-white">
+            ← Back to selection
+          </Button>
+          {getWorkspaceInfo()}
+        </div>
+        
         <ReactFlow
           nodes={mindMapData.nodes}
           edges={mindMapData.edges}
