@@ -18,7 +18,7 @@ import { NoteNode } from './node-components/NoteNode';
 import { ConceptNode } from './node-components/ConceptNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData, BaseNodeData, MindMapNode, MindMapEdge } from './types';
+import { MindMapData, BaseNodeData } from './types';
 import {
   Select,
   SelectContent,
@@ -35,7 +35,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getAllMindMaps } from '@/utils/mindmapStorage';
-import { WORKSPACE_WIDTH } from './WorkspaceConstants';
 
 // Define all node types to ensure all components load properly
 const nodeTypes: NodeTypes = {
@@ -71,27 +70,6 @@ export const ExportedMindMap = () => {
     console.log('Available mind maps:', mindMaps);
   }, [mindMaps]);
 
-  // Filter nodes to only include those within the workspace area
-  const filterNodesInWorkspace = (nodes: MindMapNode[], edges: MindMapEdge[]): MindMapData => {
-    // Filter nodes based on x position
-    const filteredNodes = nodes.filter(node => 
-      node.position.x >= 0 && node.position.x <= WORKSPACE_WIDTH
-    );
-    
-    // Get IDs of filtered nodes
-    const filteredNodeIds = new Set(filteredNodes.map(node => node.id));
-    
-    // Filter edges to only include those between filtered nodes
-    const filteredEdges = edges.filter(edge => 
-      filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
-    );
-    
-    return {
-      nodes: filteredNodes,
-      edges: filteredEdges
-    };
-  };
-
   const handleRender = () => {
     if (!selectedMap) {
       toast({
@@ -105,11 +83,7 @@ export const ExportedMindMap = () => {
     const data = renderMindMap(selectedMap);
     if (data) {
       console.log('Mind map data loaded:', data);
-      
-      // Filter nodes to only show those in the workspace area
-      const filteredData = filterNodesInWorkspace(data.nodes, data.edges);
-      
-      setMindMapData(filteredData);
+      setMindMapData(data);
       
       toast({
         title: "Success",

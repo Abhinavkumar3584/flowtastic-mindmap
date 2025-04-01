@@ -8,7 +8,6 @@ import {
   useNodesState,
   useEdgesState,
   NodeTypes,
-  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -39,7 +38,7 @@ import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Settings, Maximize2, Minimize2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
@@ -58,8 +57,6 @@ import {
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
-import { WORKSPACE_WIDTH } from './WorkspaceConstants';
-import { MindMapWorkspace } from './MindMapWorkspace';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -88,7 +85,6 @@ export const MindMap = () => {
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
-  const [showWorkspaceOutline, setShowWorkspaceOutline] = useState<boolean>(true);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
@@ -103,8 +99,7 @@ export const MindMap = () => {
     duplicateNode
   } = useMindMapNodeHandlers({ 
     nodes, 
-    setNodes,
-    workspaceWidth: WORKSPACE_WIDTH 
+    setNodes 
   });
 
   // Edge handlers
@@ -161,11 +156,6 @@ export const MindMap = () => {
   const updateUndoRedoState = useCallback(() => {
     setCanUndo(mindMapHistory.canUndo());
     setCanRedo(mindMapHistory.canRedo());
-  }, []);
-
-  // Toggle workspace outline visibility
-  const toggleWorkspaceOutline = useCallback(() => {
-    setShowWorkspaceOutline(prev => !prev);
   }, []);
 
   // Record changes to history
@@ -321,28 +311,6 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
-            
-            {/* Workspace area */}
-            <MindMapWorkspace 
-              visible={showWorkspaceOutline} 
-              width={WORKSPACE_WIDTH} 
-            />
-            
-            {/* Workspace toggle button */}
-            <Panel position="top-right" className="mr-16 mt-16">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleWorkspaceOutline}
-                className="bg-white shadow-md border"
-              >
-                {showWorkspaceOutline ? 
-                  <Minimize2 className="h-4 w-4 mr-1" /> : 
-                  <Maximize2 className="h-4 w-4 mr-1" />
-                }
-                {showWorkspaceOutline ? "Hide Workspace" : "Show Workspace"}
-              </Button>
-            </Panel>
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 
