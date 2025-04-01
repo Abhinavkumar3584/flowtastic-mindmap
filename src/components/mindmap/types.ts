@@ -1,175 +1,116 @@
 
-import { Node as ReactFlowNode, NodeProps, Edge, EdgeMouseHandler } from '@xyflow/react';
+import { Node as ReactFlowNode, Edge, NodeProps } from '@xyflow/react';
 
-export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
-
-export type LegendPosition = 
-  | 'left-top' 
-  | 'left-center' 
-  | 'left-bottom' 
-  | 'right-top' 
-  | 'right-center' 
-  | 'right-bottom';
-
-export interface NodeContent {
-  title?: string;
-  description?: string;
-  links?: Array<{
-    url: string;
-    label: string;
-  }>;
-}
-
+// Define interfaces for different node types
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap' | 'note' | 'concept';
+  nodeType?: string;
+  fontSize?: number;
+  fontWeight?: string;
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
-  strokeStyle?: 'solid' | 'dashed' | 'dotted';
-  fontFamily?: string;
-  fontSize?: FontSize;
-  textAlign?: 'left' | 'center' | 'right';
+  strokeStyle?: string;
   opacity?: number;
-  content?: NodeContent;
-  legend?: {
-    enabled: boolean;
-    position: LegendPosition;
-    color: string;
-  };
-  hasCheckbox?: boolean;
-  isChecked?: boolean;
-  position?: { x: number; y: number };
+  borderRadius?: number;
   rotation?: number;
-  aspectRatio?: boolean;
+  textAlign?: string;
   shadow?: {
     enabled: boolean;
     color?: string;
-    blur?: number;
     offsetX?: number;
     offsetY?: number;
+    blur?: number;
   };
   glow?: {
     enabled: boolean;
     color?: string;
     blur?: number;
   };
-  zIndex?: number;
-  
-  // Checklist specific properties
+  content?: {
+    title?: string;
+    description?: string;
+    links?: { label: string; url: string }[];
+  };
+  // Section node specific data
+  sections?: Array<{
+    id: string;
+    title: string;
+    content: string;
+  }>;
+  // Checklist node specific data
   checklistItems?: Array<{
     id: string;
     text: string;
     isChecked: boolean;
     priority?: 'low' | 'medium' | 'high';
   }>;
-  
-  // Timeline specific properties
+  // Timeline node specific data
   timelineEvents?: Array<{
     id: string;
     title: string;
     date: string;
-    isMilestone: boolean;
+    description?: string;
     color?: string;
-    description?: string;
-    isCompleted?: boolean;
   }>;
-  startDate?: string;
-  endDate?: string;
-  
-  // Resource specific properties
-  resources?: Array<{
-    id: string;
-    title: string;
-    url: string;
-    type: 'pdf' | 'video' | 'website' | 'other';
-    rating?: 1 | 2 | 3 | 4 | 5;
-    tags?: string[];
-    description?: string;
-  }>;
-  
-  // Flashcard specific properties
+  // Shape nodes specific data
+  shapeType?: 'circle' | 'rectangle' | 'square' | 'triangle';
+  // Flashcard node specific data
   flashcards?: Array<{
     id: string;
     question: string;
     answer: string;
-    category?: string;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    status?: 'new' | 'learning' | 'review' | 'mastered';
+    tags?: string[];
   }>;
-  
-  // Quiz specific properties
-  questions?: Array<{
+  // Quiz node specific data
+  quizTitle?: string;
+  quizQuestions?: Array<{
+    id: string;
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    explanation?: string;
+  }>;
+  // MindMap node specific data
+  mapItems?: Array<{
     id: string;
     text: string;
-    options: Array<{
+    children: Array<{
       id: string;
       text: string;
-      isCorrect: boolean;
+      children: any[];
     }>;
-    explanation?: string;
-    difficulty?: 'easy' | 'medium' | 'hard';
   }>;
-  
-  // Mindmap specific properties
-  branches?: Array<{
-    id: string;
-    label: string;
-    children?: Array<string>; // IDs of child nodes
-    color?: string;
-  }>;
-  
-  // Note specific properties
+  // Note node specific data
   noteContent?: string;
   noteColor?: string;
-  pinned?: boolean;
   tags?: string[];
-  
-  // Concept specific properties
+  // Concept node specific data
   definition?: string;
   examples?: string[];
-  relationships?: Array<{
-    id: string;
-    relatedConceptId: string;
-    relationshipType: 'parent' | 'child' | 'related' | 'opposite';
-  }>;
-  importance?: 'low' | 'medium' | 'high';
-  
-  [key: string]: any;
+  relatedConcepts?: string[];
+  isCollapsed?: boolean;
 }
 
+// Edge data interface
 export interface EdgeData {
   label?: string;
-  arrowStart?: boolean;
-  arrowEnd?: boolean;
-  pathStyle?: 'straight' | 'curved' | 'step' | 'smoothstep' | 'loopback' | 'zigzag' | 'wavy';
-  strokeStyle?: 'solid' | 'dashed' | 'dotted';
-  strokeColor?: string;
-  strokeWidth?: number;
-  [key: string]: any;
+  animated?: boolean;
+  style?: {
+    stroke?: string;
+    strokeWidth?: number;
+    strokeDasharray?: string;
+  };
 }
 
-export type MindMapData = {
-  nodes: Array<MindMapNode>;
-  edges: Array<MindMapEdge>;
+// Mind map data structure for storage and retrieval
+export interface MindMapData {
+  nodes: MindMapNode[];
+  edges: MindMapEdge[];
   name?: string;
-};
+}
 
-// Fix the type error by ensuring MindMapNode doesn't try to extend the wrong type
+// Fix the type error by ensuring MindMapNode is properly defined
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
-export type OnEdgeClick = EdgeMouseHandler;
-
-declare global {
-  interface Window {
-    mindmapApi?: {
-      deleteNode: (id: string) => void;
-      updateNodeData: (id: string, data: Partial<BaseNodeData>) => void;
-      updateEdge: (id: string, data: Partial<EdgeData>) => void;
-      copyNode?: (id: string) => void;
-      pasteNode?: (id: string | null) => void;
-      duplicateNode?: (id: string) => void;
-    };
-  }
-}
