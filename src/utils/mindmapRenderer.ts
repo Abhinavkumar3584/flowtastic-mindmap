@@ -50,6 +50,32 @@ const validateEdgeStructure = (edge: any): boolean => {
   return true;
 };
 
+// Map nodeType to actual type for proper rendering
+const getNodeType = (nodeTypeValue: string | undefined): string => {
+  const nodeTypeMap: Record<string, string> = {
+    'title': 'base', 
+    'topic': 'base',
+    'subtopic': 'base',
+    'paragraph': 'base',
+    'section': 'section',
+    'checklist': 'checklist',
+    'timeline': 'timeline',
+    'resource': 'resource',
+    'circle': 'circle',
+    'rectangle': 'rectangle',
+    'square': 'square',
+    'triangle': 'triangle',
+    'flashcard': 'flashcard',
+    'quiz': 'quiz',
+    'mindmap': 'mindmap',
+    'note': 'note',
+    'concept': 'concept'
+  };
+
+  // Return the mapped type or default to 'base' if not found
+  return nodeTypeValue && nodeTypeMap[nodeTypeValue] ? nodeTypeMap[nodeTypeValue] : 'base';
+};
+
 export const renderMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps');
@@ -76,9 +102,9 @@ export const renderMindMap = (name: string): MindMapData | null => {
       
       // Ensure each node has the proper type
       mindMap.nodes = mindMap.nodes.map(node => {
-        // If node.type is missing but data.nodeType exists, set the type
-        if (!node.type && node.data && node.data.nodeType) {
-          node.type = node.data.nodeType;
+        // Set the node type based on data.nodeType
+        if (node.data && node.data.nodeType) {
+          node.type = getNodeType(node.data.nodeType);
         }
         
         // Default to 'base' type if no type is specified
