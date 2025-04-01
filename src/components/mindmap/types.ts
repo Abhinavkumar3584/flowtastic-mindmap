@@ -155,8 +155,8 @@ export type MindMapData = {
   name?: string;
 };
 
-// Fixing the type error by being more specific about the type definition
-export type MindMapNode = ReactFlowNode<BaseNodeData, string>;
+// Fixing the type error by using proper typing for MindMapNode
+export type MindMapNode = ReactFlowNode<BaseNodeData>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 export type OnEdgeClick = EdgeMouseHandler;

@@ -25,26 +25,54 @@ export const NodeContainer = ({
   forceAspectRatio = false,
   showConnectors = true,
 }: NodeContainerProps) => {
+  // Extract styles from nodeData with fallbacks
+  const backgroundColor = nodeData.backgroundColor || '#ffffff';
+  const strokeColor = nodeData.strokeColor || '#d1d5db';
+  const strokeWidth = nodeData.strokeWidth || 1;
+  const strokeStyle = nodeData.strokeStyle || 'solid';
+  const opacity = nodeData.opacity || 1;
+  const textAlign = nodeData.textAlign || 'center';
+
+  // Apply shadow if enabled
+  const shadowStyle = nodeData.shadow?.enabled ? {
+    boxShadow: `${nodeData.shadow.offsetX || 2}px ${nodeData.shadow.offsetY || 2}px ${nodeData.shadow.blur || 4}px ${nodeData.shadow.color || 'rgba(0,0,0,0.3)'}`,
+  } : {};
+  
+  // Apply glow if enabled
+  const glowStyle = nodeData.glow?.enabled ? {
+    filter: `drop-shadow(0 0 ${nodeData.glow.blur || 8}px ${nodeData.glow.color || '#3b82f6'})`,
+  } : {};
+
+  // Combine all styles
+  const combinedStyle: CSSProperties = {
+    backgroundColor,
+    borderColor: strokeColor,
+    borderWidth: strokeWidth,
+    borderStyle: strokeStyle,
+    opacity,
+    textAlign,
+    padding: '4px',
+    margin: '4px',
+    ...shadowStyle,
+    ...glowStyle,
+    ...customStyle,
+  };
+
+  // Add rotation if specified
+  if (nodeData.rotation) {
+    combinedStyle.transform = `rotate(${nodeData.rotation}deg)`;
+  }
+
   return (
     <div 
       className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
                  flex items-center justify-center relative
                  transition-shadow duration-200 ease-in-out
                  ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
-      style={{
-        backgroundColor: nodeData.backgroundColor,
-        borderColor: nodeData.strokeColor,
-        borderWidth: nodeData.strokeWidth,
-        borderStyle: nodeData.strokeStyle,
-        opacity: nodeData.opacity || 1,
-        textAlign: nodeData.textAlign || 'center',
-        padding: '4px',
-        margin: '4px',
-        ...customStyle
-      }}
+      style={combinedStyle}
       onDoubleClick={onDoubleClick}
     >
-      {/* Add 4-sided connectors to every node */}
+      {/* Add connectors to enable connections between nodes */}
       {showConnectors && <NodeConnectors />}
       
       {/* Show NodeResizer for all nodes with consistent behavior */}
