@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -7,8 +8,6 @@ import {
   useNodesState,
   useEdgesState,
   NodeTypes,
-  useReactFlow,
-  useStore,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -58,10 +57,6 @@ import {
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
-import { WorkspaceBoundary } from './WorkspaceBoundary';
-import { WorkspaceToggle } from './WorkspaceToggle';
-import { WorkspaceConfig } from './types';
-import { SafeContentArea } from './SafeContentArea';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -80,13 +75,6 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-const DEFAULT_WORKSPACE_CONFIG: WorkspaceConfig = {
-  enabled: true,
-  width: 800,
-  x: 200,
-  visible: true
-};
-
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -97,13 +85,11 @@ export const MindMap = () => {
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
-  const [workspace, setWorkspace] = useState<WorkspaceConfig>(DEFAULT_WORKSPACE_CONFIG);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
-  const reactFlowInstance = useReactFlow();
-  const { fitView } = reactFlowInstance;
 
+  // Node handlers
   const { 
     deleteNode, 
     updateNodeData, 
@@ -113,14 +99,15 @@ export const MindMap = () => {
     duplicateNode
   } = useMindMapNodeHandlers({ 
     nodes, 
-    setNodes,
-    workspace
+    setNodes 
   });
 
+  // Edge handlers
   const { selectedEdge, updateEdge, onConnect, onEdgeClick } = useMindMapEdgeHandlers({
     setEdges
   });
 
+  // Storage handlers
   const {
     handleExport,
     createNewMindMap,
@@ -136,46 +123,10 @@ export const MindMap = () => {
     currentMindMap,
     setCurrentMindMap,
     setMindMapToDelete,
-    initialNodes,
-    workspace
+    initialNodes
   });
 
-  const handleToggleWorkspace = useCallback(() => {
-    setWorkspace(prev => ({
-      ...prev,
-      enabled: !prev.enabled
-    }));
-  }, []);
-
-  const handleToggleWorkspaceVisibility = useCallback(() => {
-    setWorkspace(prev => ({
-      ...prev,
-      visible: !prev.visible
-    }));
-  }, []);
-
-  const isNodeInWorkspace = useCallback((node: any) => {
-    if (!workspace.enabled) return true;
-    
-    const nodeLeft = node.position.x;
-    const nodeRight = node.position.x + (node.width || 150);
-    
-    return nodeLeft >= workspace.x && nodeRight <= (workspace.x + workspace.width);
-  }, [workspace]);
-
-  const handleAddNode = useCallback((type: any, additionalData = {}) => {
-    if (workspace.enabled) {
-      const workspaceCenterX = workspace.x + (workspace.width / 2);
-      const position = {
-        x: workspaceCenterX - 75,
-        y: 100
-      };
-      addNode(type, { ...additionalData, position });
-    } else {
-      addNode(type, additionalData);
-    }
-  }, [workspace, addNode]);
-
+  // Undo/Redo handlers
   const handleUndo = useCallback(() => {
     const previousState = mindMapHistory.undo(nodes, edges);
     if (previousState) {
@@ -207,7 +158,9 @@ export const MindMap = () => {
     setCanRedo(mindMapHistory.canRedo());
   }, []);
 
+  // Record changes to history
   useEffect(() => {
+    // Don't record the initial state or states that are a result of undo/redo
     if (nodes !== initialNodes || edges !== initialEdges) {
       mindMapHistory.record(nodes, edges);
       updateUndoRedoState();
@@ -215,19 +168,24 @@ export const MindMap = () => {
     }
   }, [nodes, edges, updateUndoRedoState]);
 
+  // Auto-save functionality
   useEffect(() => {
+    // Clear any existing timer
     if (autoSaveTimerRef.current) {
       clearInterval(autoSaveTimerRef.current);
     }
 
+    // Setup new timer if auto-save is enabled
     if (autoSaveConfig.enabled) {
       autoSaveTimerRef.current = setInterval(() => {
+        // Only auto-save if there's a current mind map and changes since last save
         if (currentMindMap && shouldAutoSave(autoSaveConfig)) {
           const timeSinceLastChange = Date.now() - lastChangeRef.current;
           
+          // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
-              { nodes, edges, name: currentMindMap, workspace },
+              { nodes, edges, name: currentMindMap },
               autoSaveConfig
             );
             
@@ -237,7 +195,7 @@ export const MindMap = () => {
             }
           }
         }
-      }, 5000);
+      }, 5000); // Check every 5 seconds
     }
 
     return () => {
@@ -245,8 +203,9 @@ export const MindMap = () => {
         clearInterval(autoSaveTimerRef.current);
       }
     };
-  }, [autoSaveConfig, currentMindMap, nodes, edges, workspace]);
+  }, [autoSaveConfig, currentMindMap, nodes, edges]);
 
+  // Assign API to window for global access
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
@@ -256,6 +215,7 @@ export const MindMap = () => {
     duplicateNode
   };
 
+  // Toggle between sidebars
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');
@@ -266,66 +226,52 @@ export const MindMap = () => {
     }
   };
 
+  // Confirm deletion handler for mind maps
   const handleConfirmDeleteMindMap = () => {
     confirmDeleteMindMap(mindMapToDelete);
     setMindMapToDelete(null);
   };
 
+  // Handle node click to show node settings
   const onNodeClick = (_: React.MouseEvent, node: any) => {
     setSelectedNode(node.id);
   };
 
+  // Get the selected node data
   const getSelectedNodeData = () => {
     return nodes.find(node => node.id === selectedNode)?.data;
   };
 
   const selectedNodeData = getSelectedNodeData();
   const nodeType = selectedNodeData?.nodeType;
-
+  
+  // Check if the selected node is a shape
   const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
 
+  // Check if the selected node is an education node
   const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
 
-  const customExport = useCallback(() => {
-    if (workspace.enabled) {
-      const workspaceNodes = nodes.filter(isNodeInWorkspace);
-      
-      handleExport({ 
-        nodes: workspaceNodes, 
-        edges, 
-        name: currentMindMap,
-        workspace 
-      });
-      
-      toast({
-        title: "Export",
-        description: `Exported ${workspaceNodes.length} nodes within workspace area`,
-      });
-    } else {
-      handleExport({ nodes, edges, name: currentMindMap });
-    }
-  }, [workspace, nodes, edges, currentMindMap, isNodeInWorkspace, handleExport, toast]);
-
+  // Render the appropriate sidebar based on mode
   const renderSidebar = () => {
     switch (sidebarMode) {
       case 'advanced':
         return (
           <AdvancedComponentsSidebar 
-            onAddNode={handleAddNode}
+            onAddNode={addNode} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
       case 'education':
         return (
           <EducationSidebar 
-            onAddNode={handleAddNode}
+            onAddNode={addNode} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
       default:
         return (
           <ComponentsSidebar 
-            onAddNode={handleAddNode}
+            onAddNode={addNode} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
@@ -339,8 +285,8 @@ export const MindMap = () => {
         <div className="flex-1 relative">
           <MindMapTopBar
             currentMindMap={currentMindMap}
-            saveCurrentMindMap={() => saveCurrentMindMap(workspace)}
-            handleExport={customExport}
+            saveCurrentMindMap={saveCurrentMindMap}
+            handleExport={handleExport}
             createNewMindMap={createNewMindMap}
             loadExistingMindMap={loadExistingMindMap}
             handleDeleteMindMap={handleDeleteMindMap}
@@ -350,13 +296,6 @@ export const MindMap = () => {
             canRedo={canRedo}
             autoSaveConfig={autoSaveConfig}
             onAutoSaveConfigChange={setAutoSaveConfig}
-            extraButtons={
-              <WorkspaceToggle 
-                workspace={workspace} 
-                onToggleWorkspace={handleToggleWorkspace}
-                onToggleWorkspaceVisibility={handleToggleWorkspaceVisibility} 
-              />
-            }
           />
           <ReactFlow
             nodes={nodes}
@@ -373,12 +312,6 @@ export const MindMap = () => {
             <MiniMap />
             <Background gap={12} size={1} />
             
-            <WorkspaceBoundary workspace={workspace} />
-            
-            {workspace.enabled && workspace.visible && (
-              <SafeContentArea workspace={workspace} />
-            )}
-            
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 
                 id={selectedEdge} 
@@ -387,6 +320,7 @@ export const MindMap = () => {
             )}
           </ReactFlow>
           
+          {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
           {selectedNode && (
             nodeType === 'timeline' || 
             nodeType === 'checklist' || 
@@ -431,7 +365,7 @@ export const MindMap = () => {
                 {isShapeNode && selectedNodeData && (
                   <ShapeSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
-                
+
                 {nodeType === 'flashcard' && selectedNodeData && (
                   <FlashcardSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}

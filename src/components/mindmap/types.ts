@@ -153,15 +153,7 @@ export type MindMapData = {
   nodes: Array<MindMapNode>;
   edges: Array<MindMapEdge>;
   name?: string;
-  workspace?: WorkspaceConfig;
 };
-
-export interface WorkspaceConfig {
-  enabled: boolean;
-  width: number;
-  x: number; // x-coordinate of the workspace's left edge
-  visible: boolean; // whether to show the workspace boundaries
-}
 
 // Fix the type error by ensuring MindMapNode doesn't try to extend the wrong type
 export type MindMapNode = ReactFlowNode<BaseNodeData>;
