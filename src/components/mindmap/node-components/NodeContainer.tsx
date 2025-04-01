@@ -25,9 +25,6 @@ export const NodeContainer = ({
   forceAspectRatio = false,
   showConnectors = true,
 }: NodeContainerProps) => {
-  // Determine if we should enforce aspect ratio based on node props or parameter
-  const keepAspectRatio = forceAspectRatio || nodeData.aspectRatio === true;
-  
   return (
     <div 
       className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
@@ -57,7 +54,7 @@ export const NodeContainer = ({
         isVisible={selected}
         lineClassName="border-mindmap-primary"
         handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-        keepAspectRatio={keepAspectRatio}
+        keepAspectRatio={forceAspectRatio}
       />
       {children}
     </div>

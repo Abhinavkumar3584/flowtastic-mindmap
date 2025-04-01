@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -23,9 +24,6 @@ import { QuizNode } from './node-components/QuizNode';
 import { MindMapNode as MindMapNodeComponent } from './node-components/MindMapNode';
 import { NoteNode } from './node-components/NoteNode';
 import { ConceptNode } from './node-components/ConceptNode';
-import { TableNode } from './node-components/TableNode';
-import { ChartNode } from './node-components/ChartNode';
-import { KanbanNode } from './node-components/KanbanNode';
 import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
@@ -50,9 +48,6 @@ import { QuizSettings } from './settings/QuizSettings';
 import { MindMapSettings } from './settings/MindMapSettings';
 import { NoteSettings } from './settings/NoteSettings';
 import { ConceptSettings } from './settings/ConceptSettings';
-import { TableSettings } from './settings/TableSettings';
-import { ChartSettings } from './settings/ChartSettings';
-import { KanbanSettings } from './settings/KanbanSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { useToast } from '@/hooks/use-toast';
@@ -78,9 +73,6 @@ const nodeTypes: NodeTypes = {
   mindmap: MindMapNodeComponent,
   note: NoteNode,
   concept: ConceptNode,
-  table: TableNode,
-  chart: ChartNode,
-  kanban: KanbanNode,
 };
 
 export const MindMap = () => {
@@ -168,6 +160,7 @@ export const MindMap = () => {
 
   // Record changes to history
   useEffect(() => {
+    // Don't record the initial state or states that are a result of undo/redo
     if (nodes !== initialNodes || edges !== initialEdges) {
       mindMapHistory.record(nodes, edges);
       updateUndoRedoState();
@@ -177,15 +170,19 @@ export const MindMap = () => {
 
   // Auto-save functionality
   useEffect(() => {
+    // Clear any existing timer
     if (autoSaveTimerRef.current) {
       clearInterval(autoSaveTimerRef.current);
     }
 
+    // Setup new timer if auto-save is enabled
     if (autoSaveConfig.enabled) {
       autoSaveTimerRef.current = setInterval(() => {
+        // Only auto-save if there's a current mind map and changes since last save
         if (currentMindMap && shouldAutoSave(autoSaveConfig)) {
           const timeSinceLastChange = Date.now() - lastChangeRef.current;
           
+          // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
               { nodes, edges, name: currentMindMap },
@@ -198,7 +195,7 @@ export const MindMap = () => {
             }
           }
         }
-      }, 5000);
+      }, 5000); // Check every 5 seconds
     }
 
     return () => {
@@ -208,6 +205,7 @@ export const MindMap = () => {
     };
   }, [autoSaveConfig, currentMindMap, nodes, edges]);
 
+  // Assign API to window for global access
   window.mindmapApi = {
     deleteNode,
     updateNodeData,
@@ -217,6 +215,7 @@ export const MindMap = () => {
     duplicateNode
   };
 
+  // Toggle between sidebars
   const handleToggleSidebar = () => {
     if (sidebarMode === 'basic') {
       setSidebarMode('advanced');
@@ -227,15 +226,18 @@ export const MindMap = () => {
     }
   };
 
+  // Confirm deletion handler for mind maps
   const handleConfirmDeleteMindMap = () => {
     confirmDeleteMindMap(mindMapToDelete);
     setMindMapToDelete(null);
   };
 
+  // Handle node click to show node settings
   const onNodeClick = (_: React.MouseEvent, node: any) => {
     setSelectedNode(node.id);
   };
 
+  // Get the selected node data
   const getSelectedNodeData = () => {
     return nodes.find(node => node.id === selectedNode)?.data;
   };
@@ -243,12 +245,13 @@ export const MindMap = () => {
   const selectedNodeData = getSelectedNodeData();
   const nodeType = selectedNodeData?.nodeType;
   
+  // Check if the selected node is a shape
   const isShapeNode = nodeType === 'circle' || nodeType === 'rectangle' || nodeType === 'square' || nodeType === 'triangle';
 
+  // Check if the selected node is an education node
   const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
 
-  const isNewNode = nodeType === 'table' || nodeType === 'chart' || nodeType === 'kanban';
-
+  // Render the appropriate sidebar based on mode
   const renderSidebar = () => {
     switch (sidebarMode) {
       case 'advanced':
@@ -317,6 +320,7 @@ export const MindMap = () => {
             )}
           </ReactFlow>
           
+          {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
           {selectedNode && (
             nodeType === 'timeline' || 
             nodeType === 'checklist' || 
@@ -324,8 +328,7 @@ export const MindMap = () => {
             isShapeNode ||
             isEducationNode ||
             nodeType === 'note' ||
-            nodeType === 'concept' ||
-            isNewNode
+            nodeType === 'concept'
           ) && (
             <Dialog>
               <DialogTrigger asChild>
@@ -343,9 +346,6 @@ export const MindMap = () => {
                    nodeType === 'mindmap' ? 'Mind Map' :
                    nodeType === 'note' ? 'Note' :
                    nodeType === 'concept' ? 'Concept' :
-                   nodeType === 'table' ? 'Table' :
-                   nodeType === 'chart' ? 'Chart' :
-                   nodeType === 'kanban' ? 'Kanban' :
                    'Shape'} Settings
                 </Button>
               </DialogTrigger>
@@ -384,18 +384,6 @@ export const MindMap = () => {
                 
                 {nodeType === 'concept' && selectedNodeData && (
                   <ConceptSettings nodeId={selectedNode} data={selectedNodeData} />
-                )}
-                
-                {nodeType === 'table' && selectedNodeData && (
-                  <TableSettings nodeId={selectedNode} data={selectedNodeData} />
-                )}
-                
-                {nodeType === 'chart' && selectedNodeData && (
-                  <ChartSettings nodeId={selectedNode} data={selectedNodeData} />
-                )}
-                
-                {nodeType === 'kanban' && selectedNodeData && (
-                  <KanbanSettings nodeId={selectedNode} data={selectedNodeData} />
                 )}
               </DialogContent>
             </Dialog>

@@ -22,7 +22,7 @@ export interface NodeContent {
 
 export interface BaseNodeData {
   label: string;
-  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap' | 'note' | 'concept' | 'table' | 'chart' | 'kanban';
+  nodeType?: 'title' | 'topic' | 'subtopic' | 'paragraph' | 'section' | 'checklist' | 'timeline' | 'resource' | 'circle' | 'rectangle' | 'square' | 'triangle' | 'flashcard' | 'quiz' | 'mindmap' | 'note' | 'concept';
   backgroundColor?: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -135,34 +135,6 @@ export interface BaseNodeData {
   }>;
   importance?: 'low' | 'medium' | 'high';
   
-  // Table specific properties
-  tableData?: Array<Array<string>>;
-  tableHeaders?: string[];
-  showHeaders?: boolean;
-  
-  // Chart specific properties
-  chartType?: 'bar' | 'line' | 'pie' | 'area';
-  chartData?: Array<{
-    name: string;
-    value: number;
-    color?: string;
-  }>;
-  showLegend?: boolean;
-  
-  // Kanban specific properties
-  columns?: Array<{
-    id: string;
-    title: string;
-    cards: Array<{
-      id: string;
-      content: string;
-      color?: string;
-      assignee?: string;
-      dueDate?: string;
-      priority?: 'low' | 'medium' | 'high';
-    }>;
-  }>;
-  
   [key: string]: any;
 }
 
@@ -183,8 +155,8 @@ export type MindMapData = {
   name?: string;
 };
 
-// Fixed type definition to resolve the error
-export type MindMapNode = ReactFlowNode<BaseNodeData>;
+// Fixing the type error by being more specific about the type definition
+export type MindMapNode = ReactFlowNode<BaseNodeData, string>;
 export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 export type OnEdgeClick = EdgeMouseHandler;
