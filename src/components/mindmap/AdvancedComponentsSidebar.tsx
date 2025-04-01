@@ -9,15 +9,14 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import {
-  ListTodo,
-  Timer,
-  FileText,
+  CheckSquare,
+  Clock,
+  Link2,
   ChevronRight,
-  StickyNote,
-  Lightbulb,
-  BookOpen,
-  GraduationCap,
-  BarChart
+  ChevronLeft,
+  Table,
+  BarChart,
+  Trello,
 } from "lucide-react";
 
 interface AdvancedComponentsSidebarProps {
@@ -34,30 +33,30 @@ export const AdvancedComponentsSidebar = ({
       <SidebarHeader className="border-b">
         <div className="px-2 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-semibold">Advanced Components</h2>
-            <p className="text-sm text-gray-500">Specialized node types</p>
+            <h2 className="text-lg font-semibold">Advanced Tools</h2>
+            <p className="text-sm text-gray-500">Specialized mind map components</p>
           </div>
           <Button 
             variant="ghost" 
             size="sm" 
             className="h-8 w-8 p-0"
             onClick={onToggleSidebar}
-            title="Education Components"
+            title="Basic Components"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Productivity</SidebarGroupLabel>
+          <SidebarGroupLabel>Organizational Components</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1.5 p-2">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("checklist")}
             >
-              <ListTodo className="h-4 w-4" />
+              <CheckSquare className="h-4 w-4" />
               <span>Checklist</span>
             </Button>
             <Button
@@ -65,7 +64,7 @@ export const AdvancedComponentsSidebar = ({
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("timeline")}
             >
-              <Timer className="h-4 w-4" />
+              <Clock className="h-4 w-4" />
               <span>Timeline</span>
             </Button>
             <Button
@@ -73,28 +72,42 @@ export const AdvancedComponentsSidebar = ({
               className="w-full justify-start gap-2"
               onClick={() => onAddNode("resource")}
             >
-              <FileText className="h-4 w-4" />
+              <Link2 className="h-4 w-4" />
               <span>Resources</span>
             </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Data Visualization</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1.5 p-2">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
-              onClick={() => onAddNode("note")}
+              onClick={() => onAddNode("table")}
             >
-              <StickyNote className="h-4 w-4" />
-              <span>Note</span>
+              <Table className="h-4 w-4" />
+              <span>Table</span>
             </Button>
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
-              onClick={() => onAddNode("concept")}
+              onClick={() => onAddNode("chart")}
             >
-              <Lightbulb className="h-4 w-4" />
-              <span>Concept</span>
+              <BarChart className="h-4 w-4" />
+              <span>Chart</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("kanban")}
+            >
+              <Trello className="h-4 w-4" />
+              <span>Kanban Board</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
-}
+};
