@@ -1,5 +1,5 @@
 
-import { Node, NodeProps, Edge, EdgeMouseHandler } from '@xyflow/react';
+import { Node as ReactFlowNode, NodeProps, Edge, EdgeMouseHandler } from '@xyflow/react';
 
 export type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -149,21 +149,15 @@ export interface EdgeData {
   [key: string]: any;
 }
 
-export interface WorkspaceSettings {
-  width: number;
-  visible: boolean;
-  enforced: boolean;
-}
-
 export type MindMapData = {
-  nodes: Node[];
-  edges: Edge[];
+  nodes: Array<MindMapNode>;
+  edges: Array<MindMapEdge>;
   name?: string;
-  workspaceSettings?: WorkspaceSettings;
 };
 
-export type MindMapNode = Node;
-export type MindMapEdge = Edge;
+// Fix the type error by ensuring MindMapNode doesn't try to extend the wrong type
+export type MindMapNode = ReactFlowNode<BaseNodeData>;
+export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 export type OnEdgeClick = EdgeMouseHandler;
 
