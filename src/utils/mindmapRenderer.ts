@@ -1,4 +1,5 @@
-import { MindMapData, WorkspaceSettings } from "@/components/mindmap/types";
+
+import { MindMapData } from "@/components/mindmap/types";
 
 // Helper function to ensure safe parsing of JSON data
 const safeJSONParse = (jsonString: string, fallback: any = {}): any => {
@@ -75,19 +76,6 @@ const getNodeType = (nodeTypeValue: string | undefined): string => {
   return nodeTypeValue && nodeTypeMap[nodeTypeValue] ? nodeTypeMap[nodeTypeValue] : 'base';
 };
 
-// Check if node is within workspace boundaries
-const isNodeInWorkspaceArea = (node: any, workspaceSettings: WorkspaceSettings): boolean => {
-  if (!workspaceSettings || !workspaceSettings.visible) {
-    return true; // If workspace is not active, include all nodes
-  }
-  
-  const halfWidth = workspaceSettings.width / 2;
-  const nodeX = node.position.x;
-  
-  // Check if node is within the workspace boundaries
-  return nodeX >= -halfWidth && nodeX <= halfWidth;
-};
-
 export const renderMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps');
@@ -104,12 +92,6 @@ export const renderMindMap = (name: string): MindMapData | null => {
       return null;
     }
     
-    // Extract workspace settings
-    const workspaceSettings = mindMap.workspaceSettings || {
-      width: 800,
-      visible: false
-    };
-    
     // Validate and fix nodes if necessary
     if (!Array.isArray(mindMap.nodes)) {
       console.error('Invalid nodes array in mind map:', name);
@@ -117,9 +99,6 @@ export const renderMindMap = (name: string): MindMapData | null => {
     } else {
       // Filter out invalid nodes
       mindMap.nodes = mindMap.nodes.filter(node => validateNodeStructure(node));
-      
-      // Filter nodes based on workspace boundaries
-      mindMap.nodes = mindMap.nodes.filter(node => isNodeInWorkspaceArea(node, workspaceSettings));
       
       // Ensure each node has the proper type
       mindMap.nodes = mindMap.nodes.map(node => {
@@ -144,20 +123,10 @@ export const renderMindMap = (name: string): MindMapData | null => {
     } else {
       // Filter out invalid edges
       mindMap.edges = mindMap.edges.filter(edge => validateEdgeStructure(edge));
-      
-      // Only keep edges where both source and target nodes are within the workspace
-      const nodeIds = new Set(mindMap.nodes.map(node => node.id));
-      mindMap.edges = mindMap.edges.filter(edge => 
-        nodeIds.has(edge.source) && nodeIds.has(edge.target)
-      );
     }
 
     console.log('Successfully loaded mind map:', mindMap);
-    
-    return {
-      ...mindMap,
-      workspaceSettings
-    };
+    return mindMap;
   } catch (error) {
     console.error('Error rendering mind map:', error);
     return null;

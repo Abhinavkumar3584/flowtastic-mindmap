@@ -8,7 +8,6 @@ import {
   useNodesState,
   useEdgesState,
   NodeTypes,
-  ReactFlowProvider
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -58,8 +57,6 @@ import {
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
-import { WorkspaceArea } from './WorkspaceArea';
-import { WorkspaceSettings } from './types';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -78,7 +75,7 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-const MindMapContent = () => {
+export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
@@ -88,10 +85,6 @@ const MindMapContent = () => {
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
-  const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>({
-    width: 800,
-    visible: true
-  });
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
@@ -130,9 +123,7 @@ const MindMapContent = () => {
     currentMindMap,
     setCurrentMindMap,
     setMindMapToDelete,
-    initialNodes,
-    workspaceSettings,
-    setWorkspaceSettings
+    initialNodes
   });
 
   // Undo/Redo handlers
@@ -167,21 +158,6 @@ const MindMapContent = () => {
     setCanRedo(mindMapHistory.canRedo());
   }, []);
 
-  // Update workspace settings
-  const handleWorkspaceWidthChange = useCallback((width: number) => {
-    setWorkspaceSettings(prev => ({
-      ...prev,
-      width
-    }));
-  }, []);
-
-  const handleWorkspaceVisibilityChange = useCallback((visible: boolean) => {
-    setWorkspaceSettings(prev => ({
-      ...prev,
-      visible
-    }));
-  }, []);
-
   // Record changes to history
   useEffect(() => {
     // Don't record the initial state or states that are a result of undo/redo
@@ -209,7 +185,7 @@ const MindMapContent = () => {
           // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
-              { nodes, edges, name: currentMindMap, workspaceSettings },
+              { nodes, edges, name: currentMindMap },
               autoSaveConfig
             );
             
@@ -227,7 +203,7 @@ const MindMapContent = () => {
         clearInterval(autoSaveTimerRef.current);
       }
     };
-  }, [autoSaveConfig, currentMindMap, nodes, edges, workspaceSettings]);
+  }, [autoSaveConfig, currentMindMap, nodes, edges]);
 
   // Assign API to window for global access
   window.mindmapApi = {
@@ -342,13 +318,6 @@ const MindMapContent = () => {
                 data={edges.find(edge => edge.id === selectedEdge)?.data || {}} 
               />
             )}
-            
-            <WorkspaceArea
-              width={workspaceSettings.width}
-              visible={workspaceSettings.visible}
-              onWidthChange={handleWorkspaceWidthChange}
-              onVisibilityChange={handleWorkspaceVisibilityChange}
-            />
           </ReactFlow>
           
           {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
@@ -428,13 +397,5 @@ const MindMapContent = () => {
         confirmDeleteMindMap={handleConfirmDeleteMindMap}
       />
     </SidebarProvider>
-  );
-};
-
-export const MindMap = () => {
-  return (
-    <ReactFlowProvider>
-      <MindMapContent />
-    </ReactFlowProvider>
   );
 };
