@@ -1,5 +1,5 @@
 
-import { MindMapData } from "@/components/mindmap/types";
+import { MindMapData, WorkspaceSettings } from "@/components/mindmap/types";
 
 // Helper function to ensure safe parsing of JSON data
 const safeJSONParse = (jsonString: string, fallback: any = {}): any => {
@@ -76,6 +76,33 @@ const getNodeType = (nodeTypeValue: string | undefined): string => {
   return nodeTypeValue && nodeTypeMap[nodeTypeValue] ? nodeTypeMap[nodeTypeValue] : 'base';
 };
 
+// Filter nodes to only include those inside the workspace area
+const filterNodesByWorkspace = (nodes: any[], workspaceSettings: WorkspaceSettings | undefined, viewportWidth: number): any[] => {
+  if (!workspaceSettings || !workspaceSettings.enforced) {
+    return nodes;
+  }
+  
+  // Calculate workspace boundaries
+  const workspaceWidth = workspaceSettings.width;
+  const workspaceLeft = (viewportWidth - workspaceWidth) / 2;
+  const workspaceRight = workspaceLeft + workspaceWidth;
+  
+  return nodes.filter(node => {
+    const nodeWidth = node.width || 150; // Default width if not specified
+    const nodeRight = node.position.x + nodeWidth;
+    
+    // Only include nodes that are entirely within the workspace
+    return node.position.x >= workspaceLeft && nodeRight <= workspaceRight;
+  });
+};
+
+// Filter edges to only include those connecting nodes inside the workspace
+const filterEdgesByWorkspace = (edges: any[], includedNodeIds: Set<string>): any[] => {
+  return edges.filter(edge => 
+    includedNodeIds.has(edge.source) && includedNodeIds.has(edge.target)
+  );
+};
+
 export const renderMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps');
@@ -92,6 +119,10 @@ export const renderMindMap = (name: string): MindMapData | null => {
       return null;
     }
     
+    // Get workspace settings
+    const workspaceSettings = mindMap.workspaceSettings;
+    const viewportWidth = window.innerWidth;
+    
     // Validate and fix nodes if necessary
     if (!Array.isArray(mindMap.nodes)) {
       console.error('Invalid nodes array in mind map:', name);
@@ -99,6 +130,11 @@ export const renderMindMap = (name: string): MindMapData | null => {
     } else {
       // Filter out invalid nodes
       mindMap.nodes = mindMap.nodes.filter(node => validateNodeStructure(node));
+      
+      // Filter nodes by workspace if enforced
+      if (workspaceSettings && workspaceSettings.enforced) {
+        mindMap.nodes = filterNodesByWorkspace(mindMap.nodes, workspaceSettings, viewportWidth);
+      }
       
       // Ensure each node has the proper type
       mindMap.nodes = mindMap.nodes.map(node => {
@@ -123,6 +159,12 @@ export const renderMindMap = (name: string): MindMapData | null => {
     } else {
       // Filter out invalid edges
       mindMap.edges = mindMap.edges.filter(edge => validateEdgeStructure(edge));
+      
+      // Filter edges to only include those connecting nodes inside the workspace
+      if (workspaceSettings && workspaceSettings.enforced) {
+        const includedNodeIds = new Set(mindMap.nodes.map(node => node.id));
+        mindMap.edges = filterEdgesByWorkspace(mindMap.edges, includedNodeIds);
+      }
     }
 
     console.log('Successfully loaded mind map:', mindMap);

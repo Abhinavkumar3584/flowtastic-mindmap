@@ -2,12 +2,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
   MiniMap,
   Controls,
   Background,
   useNodesState,
   useEdgesState,
   NodeTypes,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -57,6 +59,8 @@ import {
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
+import { WorkspaceArea } from './WorkspaceArea';
+import { WorkspaceSettings } from './types';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -75,7 +79,14 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-export const MindMap = () => {
+// Default workspace settings
+const defaultWorkspaceSettings: WorkspaceSettings = {
+  width: 800,
+  visible: true,
+  enforced: true
+};
+
+const MindMapFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
@@ -85,9 +96,11 @@ export const MindMap = () => {
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
+  const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultWorkspaceSettings);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
+  const reactFlowInstance = useReactFlow();
 
   // Node handlers
   const { 
@@ -123,8 +136,77 @@ export const MindMap = () => {
     currentMindMap,
     setCurrentMindMap,
     setMindMapToDelete,
-    initialNodes
+    initialNodes,
+    workspaceSettings,
+    setWorkspaceSettings
   });
+
+  // Enforce workspace constraints
+  useEffect(() => {
+    if (workspaceSettings.enforced && nodes.length > 0) {
+      const workspaceLeft = (window.innerWidth - workspaceSettings.width) / 2;
+      const workspaceRight = workspaceLeft + workspaceSettings.width;
+      
+      let nodesUpdated = false;
+      
+      const updatedNodes = nodes.map(node => {
+        if (node.position.x < workspaceLeft) {
+          nodesUpdated = true;
+          return {
+            ...node,
+            position: {
+              ...node.position,
+              x: workspaceLeft + 10 // Add some padding
+            }
+          };
+        }
+        
+        // Check right edge considering node width
+        const nodeWidth = node.width || 150; // Default width if not specified
+        if (node.position.x + nodeWidth > workspaceRight) {
+          nodesUpdated = true;
+          return {
+            ...node,
+            position: {
+              ...node.position,
+              x: workspaceRight - nodeWidth - 10 // Add some padding
+            }
+          };
+        }
+        
+        return node;
+      });
+      
+      if (nodesUpdated) {
+        setNodes(updatedNodes);
+      }
+    }
+  }, [nodes, workspaceSettings, setNodes]);
+
+  // Modify addNode to respect workspace boundaries
+  const addNodeWithinWorkspace = useCallback((type: any, additionalData: any = {}) => {
+    if (workspaceSettings.enforced) {
+      // Get viewport center
+      const { x, y, zoom } = reactFlowInstance.getViewport();
+      
+      // Calculate workspace boundaries
+      const workspaceLeft = (window.innerWidth - workspaceSettings.width) / 2;
+      const workspaceRight = workspaceLeft + workspaceSettings.width;
+      const viewportCenter = (workspaceLeft + workspaceRight) / 2;
+      
+      // Ensure node is placed within workspace boundaries
+      const screenPosition = { x: viewportCenter, y: window.innerHeight / 2 };
+      const flowPosition = reactFlowInstance.screenToFlowPosition(screenPosition);
+      
+      // Call the original addNode with adjusted position
+      addNode(type, {
+        ...additionalData,
+        position: flowPosition
+      });
+    } else {
+      addNode(type, additionalData);
+    }
+  }, [addNode, workspaceSettings, reactFlowInstance]);
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
@@ -185,7 +267,7 @@ export const MindMap = () => {
           // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
-              { nodes, edges, name: currentMindMap },
+              { nodes, edges, name: currentMindMap, workspaceSettings },
               autoSaveConfig
             );
             
@@ -203,7 +285,7 @@ export const MindMap = () => {
         clearInterval(autoSaveTimerRef.current);
       }
     };
-  }, [autoSaveConfig, currentMindMap, nodes, edges]);
+  }, [autoSaveConfig, currentMindMap, nodes, edges, workspaceSettings]);
 
   // Assign API to window for global access
   window.mindmapApi = {
@@ -257,21 +339,21 @@ export const MindMap = () => {
       case 'advanced':
         return (
           <AdvancedComponentsSidebar 
-            onAddNode={addNode} 
+            onAddNode={addNodeWithinWorkspace} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
       case 'education':
         return (
           <EducationSidebar 
-            onAddNode={addNode} 
+            onAddNode={addNodeWithinWorkspace} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
       default:
         return (
           <ComponentsSidebar 
-            onAddNode={addNode} 
+            onAddNode={addNodeWithinWorkspace} 
             onToggleSidebar={handleToggleSidebar}
           />
         );
@@ -296,6 +378,8 @@ export const MindMap = () => {
             canRedo={canRedo}
             autoSaveConfig={autoSaveConfig}
             onAutoSaveConfigChange={setAutoSaveConfig}
+            workspaceSettings={workspaceSettings}
+            onWorkspaceSettingsChange={setWorkspaceSettings}
           />
           <ReactFlow
             nodes={nodes}
@@ -311,6 +395,7 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
+            <WorkspaceArea settings={workspaceSettings} />
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 
@@ -397,5 +482,14 @@ export const MindMap = () => {
         confirmDeleteMindMap={handleConfirmDeleteMindMap}
       />
     </SidebarProvider>
+  );
+};
+
+// Wrap with ReactFlowProvider to avoid zustand provider error
+export const MindMap = () => {
+  return (
+    <ReactFlowProvider>
+      <MindMapFlow />
+    </ReactFlowProvider>
   );
 };
