@@ -20,7 +20,7 @@ import {
   Plus, 
   FolderOpen, 
   Trash2, 
-  FileExport, 
+  FileUp, 
   Undo2, 
   Redo2,
   Settings,
@@ -178,7 +178,7 @@ export const MindMapTopBar: React.FC<MindMapTopBarProps> = ({
           onClick={handleExport}
           disabled={!currentMindMap}
         >
-          <FileExport className="h-4 w-4 mr-1" />
+          <FileUp className="h-4 w-4 mr-1" />
           Export
         </Button>
 

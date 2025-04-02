@@ -156,15 +156,14 @@ export interface WorkspaceSettings {
 }
 
 export type MindMapData = {
-  nodes: Array<MindMapNode>;
-  edges: Array<MindMapEdge>;
+  nodes: Node[];
+  edges: Edge[];
   name?: string;
   workspaceSettings?: WorkspaceSettings;
 };
 
-// Fix the type by not extending the incorrect type
 export type MindMapNode = Node;
-export type MindMapEdge = Edge<EdgeData>;
+export type MindMapEdge = Edge;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 export type OnEdgeClick = EdgeMouseHandler;
 

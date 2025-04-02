@@ -11,8 +11,8 @@ import {
   Edge,
   useNodesState,
   useEdgesState,
-  NodeTypes,
   useReactFlow,
+  NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { renderMindMap } from '@/utils/mindmapRenderer';
@@ -33,6 +33,7 @@ import { ConceptNode } from './node-components/ConceptNode';
 import { MindMapData, WorkspaceSettings } from './types';
 import { Button } from '@/components/ui/button';
 import { Download, Printer } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -108,24 +109,20 @@ const ExportFlow = () => {
     if (background) (background as HTMLElement).style.display = 'none';
 
     // Use html2canvas library for screenshot
-    import('html2canvas').then((html2canvasModule) => {
-      const html2canvas = html2canvasModule.default;
+    html2canvas(reactFlowContainer, {
+      backgroundColor: '#f9fafb',
+      scale: 2
+    }).then((canvas) => {
+      // Create download link
+      const link = document.createElement('a');
+      link.download = `${mapName || 'mindmap'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
       
-      html2canvas(reactFlowContainer, {
-        backgroundColor: '#f9fafb',
-        scale: 2
-      }).then((canvas) => {
-        // Create download link
-        const link = document.createElement('a');
-        link.download = `${mapName || 'mindmap'}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        
-        // Restore the hidden elements
-        if (controls) (controls as HTMLElement).style.display = '';
-        if (minimap) (minimap as HTMLElement).style.display = '';
-        if (background) (background as HTMLElement).style.display = '';
-      });
+      // Restore the hidden elements
+      if (controls) (controls as HTMLElement).style.display = '';
+      if (minimap) (minimap as HTMLElement).style.display = '';
+      if (background) (background as HTMLElement).style.display = '';
     });
   };
 

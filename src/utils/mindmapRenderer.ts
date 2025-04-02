@@ -162,7 +162,7 @@ export const renderMindMap = (name: string): MindMapData | null => {
       
       // Filter edges to only include those connecting nodes inside the workspace
       if (workspaceSettings && workspaceSettings.enforced) {
-        const includedNodeIds = new Set(mindMap.nodes.map(node => node.id));
+        const includedNodeIds = new Set(mindMap.nodes.map((node: any) => node.id));
         mindMap.edges = filterEdgesByWorkspace(mindMap.edges, includedNodeIds);
       }
     }
