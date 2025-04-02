@@ -1,19 +1,24 @@
 
 import React from 'react';
-import { useReactFlow } from '@xyflow/react';
 import { WorkspaceSettings } from './types';
 
 interface WorkspaceAreaProps {
   settings: WorkspaceSettings;
+  viewport?: {
+    x: number;
+    y: number;
+    zoom: number;
+  };
 }
 
-export const WorkspaceArea: React.FC<WorkspaceAreaProps> = ({ settings }) => {
-  const { x, y, zoom } = useReactFlow().getViewport();
-  
-  if (!settings.enabled || !settings.visible) {
+export const WorkspaceArea: React.FC<WorkspaceAreaProps> = ({ settings, viewport }) => {
+  // If viewport is not provided via props, render nothing
+  if (!viewport || !settings.enabled || !settings.visible) {
     return null;
   }
 
+  const { x, y, zoom } = viewport;
+  
   // Calculate position and dimensions based on zoom level and pan
   const width = settings.width;
   const height = settings.height || window.innerHeight;

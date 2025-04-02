@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -395,7 +394,10 @@ export const MindMap = () => {
             <Background gap={12} size={1} />
             
             {/* Workspace Area */}
-            <WorkspaceArea settings={workspaceSettings} />
+            <WorkspaceArea 
+              settings={workspaceSettings} 
+              viewport={reactFlowInstance.getViewport()} 
+            />
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 

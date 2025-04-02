@@ -169,6 +169,19 @@ export type MindMapEdge = Edge<EdgeData>;
 export type MindMapNodeProps = NodeProps<BaseNodeData>;
 export type OnEdgeClick = EdgeMouseHandler;
 
+// Add this interface for MindMapStorage props
+export interface UseMindMapStorageProps {
+  nodes: MindMapNode[];
+  edges: MindMapEdge[];
+  setNodes: (nodes: MindMapNode[]) => void;
+  setEdges: (edges: MindMapEdge[]) => void;
+  currentMindMap: string;
+  setCurrentMindMap: (name: string) => void;
+  setMindMapToDelete: (name: string | null) => void;
+  initialNodes: MindMapNode[];
+  workspaceSettings: WorkspaceSettings;
+}
+
 declare global {
   interface Window {
     mindmapApi?: {
