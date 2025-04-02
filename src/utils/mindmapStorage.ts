@@ -40,7 +40,8 @@ export const saveMindMap = (data: MindMapData): boolean => {
     mindmaps[data.name] = {
       nodes: processedNodes,
       edges: data.edges,
-      name: data.name
+      name: data.name,
+      workspaceSettings: data.workspaceSettings
     };
     
     localStorage.setItem('mindmaps', JSON.stringify(mindmaps));

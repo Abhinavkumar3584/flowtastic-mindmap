@@ -1,3 +1,4 @@
+
 import { MindMap } from "@/components/mindmap/MindMap";
 
 const Index = () => {

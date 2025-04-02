@@ -1,6 +1,12 @@
 
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
+import {
+  ReactFlow,
+  Background,
+  NodeTypes,
+  Node,
+  ReactFlowProvider
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { SectionNode } from './node-components/SectionNode';
@@ -18,7 +24,7 @@ import { NoteNode } from './node-components/NoteNode';
 import { ConceptNode } from './node-components/ConceptNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData, BaseNodeData } from './types';
+import { MindMapData, BaseNodeData, WorkspaceSettings } from './types';
 import {
   Select,
   SelectContent,
@@ -59,19 +65,28 @@ const nodeTypes: NodeTypes = {
   paragraph: BaseNode,
 };
 
-export const ExportedMindMap = () => {
+const ExportedMindMapContent = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
 
+  // Get map name from URL if present
   useEffect(() => {
-    console.log('Available mind maps:', mindMaps);
+    const params = new URLSearchParams(window.location.search);
+    const mapName = params.get('name');
+    
+    if (mapName && mindMaps.includes(mapName)) {
+      setSelectedMap(mapName);
+      handleRender(mapName);
+    }
   }, [mindMaps]);
 
-  const handleRender = () => {
-    if (!selectedMap) {
+  const handleRender = (mapName?: string) => {
+    const nameToRender = mapName || selectedMap;
+    
+    if (!nameToRender) {
       toast({
         title: "Error",
         description: "Please select a mind map to render",
@@ -80,20 +95,20 @@ export const ExportedMindMap = () => {
       return;
     }
 
-    const data = renderMindMap(selectedMap);
+    const data = renderMindMap(nameToRender);
     if (data) {
       console.log('Mind map data loaded:', data);
       setMindMapData(data);
       
       toast({
         title: "Success",
-        description: `Loaded mind map: ${selectedMap}`,
+        description: `Loaded mind map: ${nameToRender}`,
       });
     } else {
-      console.error('Failed to load mind map:', selectedMap);
+      console.error('Failed to load mind map:', nameToRender);
       toast({
         title: "Error",
-        description: `Failed to load mind map: ${selectedMap}`,
+        description: `Failed to load mind map: ${nameToRender}`,
         variant: "destructive",
       });
     }
@@ -120,11 +135,46 @@ export const ExportedMindMap = () => {
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleRender}>Render</Button>
+          <Button onClick={() => handleRender()}>Render</Button>
         </div>
       </div>
     );
   }
+
+  // Calculate optimal viewport settings based on workspace
+  const calculateViewport = () => {
+    const workspaceSettings = mindMapData.workspaceSettings || { width: 800, visible: false };
+    
+    // If there are no nodes, return default settings
+    if (!mindMapData.nodes.length) {
+      return { x: 0, y: 0, zoom: 1 };
+    }
+    
+    // Calculate the optimal zoom level based on the workspace width
+    const padding = 20; // Add some padding to ensure everything is visible
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    
+    // Calculate default zoom
+    let zoom = 1;
+    
+    // If workspace is defined and active, center the view on the workspace
+    if (workspaceSettings.visible) {
+      const halfWorkspaceWidth = workspaceSettings.width / 2;
+      zoom = Math.min((containerWidth - padding * 2) / workspaceSettings.width, 1);
+      
+      return { 
+        x: (containerWidth / 2) - (halfWorkspaceWidth * zoom), 
+        y: padding, 
+        zoom 
+      };
+    }
+    
+    // Default return
+    return { x: 0, y: 0, zoom: 1 };
+  };
+
+  const viewport = calculateViewport();
 
   return (
     <>
@@ -134,10 +184,11 @@ export const ExportedMindMap = () => {
           edges={mindMapData.edges}
           nodeTypes={nodeTypes}
           onNodeClick={handleNodeClick}
-          fitView
+          defaultViewport={viewport}
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
+          fitView={!mindMapData.workspaceSettings?.visible}
         >
           <Background gap={12} size={1} />
         </ReactFlow>
@@ -243,5 +294,13 @@ export const ExportedMindMap = () => {
         </DialogContent>
       </Dialog>
     </>
+  );
+};
+
+export const ExportedMindMap = () => {
+  return (
+    <ReactFlowProvider>
+      <ExportedMindMapContent />
+    </ReactFlowProvider>
   );
 };

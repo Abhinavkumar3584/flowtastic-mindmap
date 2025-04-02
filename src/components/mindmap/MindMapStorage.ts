@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { saveMindMap, loadMindMap, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapNode, MindMapEdge } from './types';
+import { MindMapNode, MindMapEdge, WorkspaceSettings } from './types';
 
 interface UseMindMapStorageProps {
   nodes: MindMapNode[];
@@ -13,6 +13,8 @@ interface UseMindMapStorageProps {
   setCurrentMindMap: React.Dispatch<React.SetStateAction<string>>;
   setMindMapToDelete: React.Dispatch<React.SetStateAction<string | null>>;
   initialNodes: MindMapNode[];
+  workspaceSettings: WorkspaceSettings;
+  setWorkspaceSettings: React.Dispatch<React.SetStateAction<WorkspaceSettings>>;
 }
 
 export const useMindMapStorage = ({
@@ -23,7 +25,9 @@ export const useMindMapStorage = ({
   currentMindMap,
   setCurrentMindMap,
   setMindMapToDelete,
-  initialNodes
+  initialNodes,
+  workspaceSettings,
+  setWorkspaceSettings
 }: UseMindMapStorageProps) => {
   const { toast } = useToast();
 
@@ -48,7 +52,8 @@ export const useMindMapStorage = ({
     const success = saveMindMap({
       nodes: initialNodes,
       edges: [],
-      name
+      name,
+      workspaceSettings
     });
 
     if (success) {
@@ -66,7 +71,7 @@ export const useMindMapStorage = ({
         variant: "destructive",
       });
     }
-  }, [initialNodes, setNodes, setEdges, setCurrentMindMap, toast]);
+  }, [initialNodes, setNodes, setEdges, setCurrentMindMap, toast, workspaceSettings]);
 
   const loadExistingMindMap = useCallback((name: string) => {
     const data = loadMindMap(name);
@@ -74,6 +79,12 @@ export const useMindMapStorage = ({
       setNodes(data.nodes);
       setEdges(data.edges);
       setCurrentMindMap(name);
+      
+      // Load workspace settings if available
+      if (data.workspaceSettings) {
+        setWorkspaceSettings(data.workspaceSettings);
+      }
+      
       toast({
         title: "Success",
         description: `Loaded mind map: ${name}`,
@@ -85,7 +96,7 @@ export const useMindMapStorage = ({
         variant: "destructive",
       });
     }
-  }, [setNodes, setEdges, setCurrentMindMap, toast]);
+  }, [setNodes, setEdges, setCurrentMindMap, setWorkspaceSettings, toast]);
 
   const handleDeleteMindMap = useCallback((name: string) => {
     setMindMapToDelete(name);
@@ -119,19 +130,29 @@ export const useMindMapStorage = ({
       const name = prompt('Enter a name for the mind map:');
       if (!name) return;
       setCurrentMindMap(name);
-      saveMindMap({ nodes, edges, name });
+      saveMindMap({ 
+        nodes, 
+        edges, 
+        name,
+        workspaceSettings
+      });
       toast({
         title: "Success",
         description: `Saved mind map as: ${name}`,
       });
     } else {
-      saveMindMap({ nodes, edges, name: currentMindMap });
+      saveMindMap({ 
+        nodes, 
+        edges, 
+        name: currentMindMap,
+        workspaceSettings
+      });
       toast({
         title: "Success",
         description: `Saved changes to: ${currentMindMap}`,
       });
     }
-  }, [nodes, edges, currentMindMap, setCurrentMindMap, toast]);
+  }, [nodes, edges, currentMindMap, workspaceSettings, setCurrentMindMap, toast]);
 
   return {
     handleExport,
