@@ -18,7 +18,7 @@ import { NoteNode } from './node-components/NoteNode';
 import { ConceptNode } from './node-components/ConceptNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapData, BaseNodeData } from './types';
+import { MindMapData, BaseNodeData, WorkspaceSettings } from './types';
 import {
   Select,
   SelectContent,
@@ -59,6 +59,13 @@ const nodeTypes: NodeTypes = {
   paragraph: BaseNode,
 };
 
+// Default workspace settings if none are found in the mindmap
+const defaultWorkspaceSettings: WorkspaceSettings = {
+  enabled: true,
+  width: 1200,
+  visible: false,
+};
+
 export const ExportedMindMap = () => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
@@ -83,6 +90,48 @@ export const ExportedMindMap = () => {
     const data = renderMindMap(selectedMap);
     if (data) {
       console.log('Mind map data loaded:', data);
+      
+      // Filter out nodes that are outside the workspace area if workspace is enabled
+      const workspaceSettings = data.workspaceSettings || defaultWorkspaceSettings;
+      
+      if (workspaceSettings.enabled) {
+        // Calculate workspace boundaries
+        const workspaceWidth = workspaceSettings.width;
+        const workspaceHeight = workspaceSettings.height || window.innerHeight;
+        
+        // Center workspace horizontally
+        const workspaceLeft = -workspaceWidth / 2;
+        const workspaceRight = workspaceWidth / 2;
+        const workspaceTop = 0;
+        const workspaceBottom = workspaceHeight;
+        
+        // Filter nodes within workspace
+        const nodesInWorkspace = data.nodes.filter(node => {
+          const nodeX = node.position.x;
+          const nodeY = node.position.y;
+          const nodeWidth = node.width || 150; // Default width
+          const nodeHeight = node.height || 50; // Default height
+          
+          // Check if the node is at least partially within the workspace boundaries
+          return (
+            nodeX + nodeWidth > workspaceLeft &&
+            nodeX < workspaceRight &&
+            nodeY + nodeHeight > workspaceTop &&
+            nodeY < workspaceBottom
+          );
+        });
+        
+        // Filter edges that connect nodes in the workspace
+        const nodeIdsInWorkspace = new Set(nodesInWorkspace.map(node => node.id));
+        const edgesInWorkspace = data.edges.filter(edge => 
+          nodeIdsInWorkspace.has(edge.source) && nodeIdsInWorkspace.has(edge.target)
+        );
+        
+        // Update the data with filtered nodes and edges
+        data.nodes = nodesInWorkspace;
+        data.edges = edgesInWorkspace;
+      }
+      
       setMindMapData(data);
       
       toast({
