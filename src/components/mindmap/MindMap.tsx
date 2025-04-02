@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -7,7 +8,6 @@ import {
   useNodesState,
   useEdgesState,
   NodeTypes,
-  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
@@ -38,7 +38,7 @@ import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Settings, Eye, EyeOff } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
@@ -49,8 +49,6 @@ import { MindMapSettings } from './settings/MindMapSettings';
 import { NoteSettings } from './settings/NoteSettings';
 import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
-import { WorkspaceArea } from './WorkspaceArea';
-import { WorkspaceSettings } from './types';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -77,13 +75,6 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-// Default workspace settings
-const defaultWorkspaceSettings: WorkspaceSettings = {
-  enabled: true,
-  width: 1200, // Default width for the workspace
-  visible: true, // Show the workspace boundary by default
-};
-
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -94,9 +85,7 @@ export const MindMap = () => {
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
-  const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultWorkspaceSettings);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reactFlowInstance = useReactFlow();
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
 
@@ -134,8 +123,7 @@ export const MindMap = () => {
     currentMindMap,
     setCurrentMindMap,
     setMindMapToDelete,
-    initialNodes,
-    workspaceSettings
+    initialNodes
   });
 
   // Undo/Redo handlers
@@ -170,22 +158,6 @@ export const MindMap = () => {
     setCanRedo(mindMapHistory.canRedo());
   }, []);
 
-  // Toggle workspace visibility
-  const toggleWorkspaceVisibility = () => {
-    setWorkspaceSettings(prev => ({
-      ...prev,
-      visible: !prev.visible
-    }));
-  };
-
-  // Update workspace settings
-  const updateWorkspaceSettings = (settings: Partial<WorkspaceSettings>) => {
-    setWorkspaceSettings(prev => ({
-      ...prev,
-      ...settings
-    }));
-  };
-
   // Record changes to history
   useEffect(() => {
     // Don't record the initial state or states that are a result of undo/redo
@@ -213,7 +185,7 @@ export const MindMap = () => {
           // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
-              { nodes, edges, name: currentMindMap, workspaceSettings },
+              { nodes, edges, name: currentMindMap },
               autoSaveConfig
             );
             
@@ -231,29 +203,7 @@ export const MindMap = () => {
         clearInterval(autoSaveTimerRef.current);
       }
     };
-  }, [autoSaveConfig, currentMindMap, nodes, edges, workspaceSettings]);
-
-  // Load workspace settings when loading a mind map
-  useEffect(() => {
-    if (currentMindMap) {
-      try {
-        const mindmapsData = localStorage.getItem('mindmaps');
-        if (mindmapsData) {
-          const mindmaps = JSON.parse(mindmapsData);
-          const mindMap = mindmaps[currentMindMap];
-          
-          if (mindMap && mindMap.workspaceSettings) {
-            setWorkspaceSettings(mindMap.workspaceSettings);
-          } else {
-            // If no workspace settings found in the loaded mind map, use defaults
-            setWorkspaceSettings(defaultWorkspaceSettings);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading workspace settings:', error);
-      }
-    }
-  }, [currentMindMap]);
+  }, [autoSaveConfig, currentMindMap, nodes, edges]);
 
   // Assign API to window for global access
   window.mindmapApi = {
@@ -347,37 +297,6 @@ export const MindMap = () => {
             autoSaveConfig={autoSaveConfig}
             onAutoSaveConfigChange={setAutoSaveConfig}
           />
-          <div className="absolute right-4 top-16 z-10 flex space-x-2">
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={toggleWorkspaceVisibility}
-              className="bg-white shadow-md border"
-            >
-              {workspaceSettings.visible ? (
-                <EyeOff className="h-4 w-4 mr-1" />
-              ) : (
-                <Eye className="h-4 w-4 mr-1" />
-              )}
-              {workspaceSettings.visible ? 'Hide' : 'Show'} Workspace
-            </Button>
-            
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const width = prompt("Enter workspace width (in pixels):", workspaceSettings.width.toString());
-                if (width && !isNaN(Number(width))) {
-                  updateWorkspaceSettings({ width: Number(width) });
-                }
-              }}
-              className="bg-white shadow-md border"
-            >
-              <Settings className="h-4 w-4 mr-1" />
-              Workspace Width
-            </Button>
-          </div>
-          
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -392,12 +311,6 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
-            
-            {/* Workspace Area */}
-            <WorkspaceArea 
-              settings={workspaceSettings} 
-              viewport={reactFlowInstance.getViewport()} 
-            />
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 
@@ -420,7 +333,7 @@ export const MindMap = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <Button 
-                  className="absolute right-4 top-28 z-10 bg-white shadow-md border"
+                  className="absolute right-4 top-16 z-10 bg-white shadow-md border"
                   variant="outline"
                   size="sm"
                 >

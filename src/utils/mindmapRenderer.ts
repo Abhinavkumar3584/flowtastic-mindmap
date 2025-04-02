@@ -1,5 +1,5 @@
 
-import { MindMapData, WorkspaceSettings } from "@/components/mindmap/types";
+import { MindMapData } from "@/components/mindmap/types";
 
 // Helper function to ensure safe parsing of JSON data
 const safeJSONParse = (jsonString: string, fallback: any = {}): any => {
@@ -76,13 +76,6 @@ const getNodeType = (nodeTypeValue: string | undefined): string => {
   return nodeTypeValue && nodeTypeMap[nodeTypeValue] ? nodeTypeMap[nodeTypeValue] : 'base';
 };
 
-// Default workspace settings if none are found
-const defaultWorkspaceSettings: WorkspaceSettings = {
-  enabled: true,
-  width: 1200,
-  visible: false,
-};
-
 export const renderMindMap = (name: string): MindMapData | null => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps');
@@ -132,19 +125,8 @@ export const renderMindMap = (name: string): MindMapData | null => {
       mindMap.edges = mindMap.edges.filter(edge => validateEdgeStructure(edge));
     }
 
-    // Get workspace settings or use defaults
-    const workspaceSettings = mindMap.workspaceSettings || defaultWorkspaceSettings;
-    
-    // Include workspace settings in the returned data
-    const result: MindMapData = {
-      nodes: mindMap.nodes,
-      edges: mindMap.edges,
-      name: name,
-      workspaceSettings: workspaceSettings
-    };
-
-    console.log('Successfully loaded mind map:', result);
-    return result;
+    console.log('Successfully loaded mind map:', mindMap);
+    return mindMap;
   } catch (error) {
     console.error('Error rendering mind map:', error);
     return null;

@@ -1,13 +1,7 @@
-
-import { ReactFlowProvider } from '@xyflow/react';
 import { MindMap } from "@/components/mindmap/MindMap";
 
 const Index = () => {
-  return (
-    <ReactFlowProvider>
-      <MindMap />
-    </ReactFlowProvider>
-  );
+  return <MindMap />;
 };
 
 export default Index;
