@@ -40,7 +40,9 @@ export const saveMindMap = (data: MindMapData): boolean => {
     mindmaps[data.name] = {
       nodes: processedNodes,
       edges: data.edges,
-      name: data.name
+      name: data.name,
+      examCategory: data.examCategory || '',
+      subExamName: data.subExamName || ''
     };
     
     localStorage.setItem('mindmaps', JSON.stringify(mindmaps));
@@ -105,5 +107,49 @@ export const deleteMindMap = (name: string): boolean => {
   } catch (error) {
     console.error('Error deleting mind map:', error);
     return false;
+  }
+};
+
+export const getMindMapsByExamCategory = (category: string): MindMapData[] => {
+  try {
+    const mindmapsData = localStorage.getItem('mindmaps') || '{}';
+    const mindmaps = safeJSONParse(mindmapsData, {});
+    
+    return Object.values(mindmaps)
+      .filter((mindmap: any) => mindmap.examCategory === category)
+      .map((mindmap: any) => ({
+        ...mindmap,
+        nodes: mindmap.nodes || [],
+        edges: mindmap.edges || []
+      }));
+  } catch (error) {
+    console.error('Error getting mind maps by category:', error);
+    return [];
+  }
+};
+
+export const getMindMapBySubExam = (category: string, subExam: string): MindMapData | null => {
+  try {
+    const mindmapsData = localStorage.getItem('mindmaps') || '{}';
+    const mindmaps = safeJSONParse(mindmapsData, {});
+    
+    const mindmap = Object.values(mindmaps).find((mindmap: any) => 
+      mindmap.examCategory === category && 
+      mindmap.subExamName && 
+      mindmap.subExamName.toLowerCase() === subExam.toLowerCase()
+    );
+    
+    if (!mindmap) {
+      return null;
+    }
+    
+    return {
+      ...mindmap,
+      nodes: mindmap.nodes || [],
+      edges: mindmap.edges || []
+    };
+  } catch (error) {
+    console.error('Error finding mind map by sub-exam:', error);
+    return null;
   }
 };

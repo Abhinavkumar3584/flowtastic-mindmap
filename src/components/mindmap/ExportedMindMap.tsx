@@ -59,16 +59,24 @@ const nodeTypes: NodeTypes = {
   paragraph: BaseNode,
 };
 
-export const ExportedMindMap = () => {
+interface ExportedMindMapProps {
+  predefinedMindMap?: MindMapData;
+  containerHeight?: string;
+}
+
+export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }: ExportedMindMapProps) => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
 
+  // If a predefined mind map is provided, use it
   useEffect(() => {
-    console.log('Available mind maps:', mindMaps);
-  }, [mindMaps]);
+    if (predefinedMindMap) {
+      setMindMapData(predefinedMindMap);
+    }
+  }, [predefinedMindMap]);
 
   const handleRender = () => {
     if (!selectedMap) {
@@ -99,12 +107,13 @@ export const ExportedMindMap = () => {
     }
   };
 
-  const handleNodeClick = (_: React.MouseEvent, node: Node<BaseNodeData>) => {
+  const handleNodeClick = (_: React.MouseEvent, node: any) => {
     console.log('Node clicked:', node);
     setSelectedNode(node.data);
   };
 
-  if (!mindMapData) {
+  // Render selection UI if no mind map data is available yet
+  if (!mindMapData && !predefinedMindMap) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
         <div className="flex gap-4 items-center">
@@ -128,10 +137,10 @@ export const ExportedMindMap = () => {
 
   return (
     <>
-      <div className="w-full h-screen">
+      <div className="w-full" style={{ height: containerHeight }}>
         <ReactFlow
-          nodes={mindMapData.nodes}
-          edges={mindMapData.edges}
+          nodes={mindMapData?.nodes || []}
+          edges={mindMapData?.edges || []}
           nodeTypes={nodeTypes}
           onNodeClick={handleNodeClick}
           fitView
@@ -146,14 +155,14 @@ export const ExportedMindMap = () => {
       <Dialog open={!!selectedNode} onOpenChange={() => setSelectedNode(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{selectedNode?.content?.title || selectedNode?.label}</DialogTitle>
+            <DialogTitle>{selectedNode?.label}</DialogTitle>
             <DialogDescription>
               Click outside to close
             </DialogDescription>
           </DialogHeader>
           
           {/* Display node content based on node type */}
-          {selectedNode?.content?.description && (
+          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content.description && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Description</h3>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -162,11 +171,11 @@ export const ExportedMindMap = () => {
             </div>
           )}
           
-          {selectedNode?.content?.links && selectedNode.content.links.length > 0 && (
+          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content.links && selectedNode.content.links.length > 0 && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Links</h3>
               <div className="space-y-2">
-                {selectedNode.content.links.map((link, index) => (
+                {selectedNode.content.links.map((link: any, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <a
                       href={link.url}
@@ -183,11 +192,11 @@ export const ExportedMindMap = () => {
           )}
           
           {/* Display specialized content based on node type */}
-          {selectedNode?.nodeType === 'checklist' && selectedNode.checklistItems && (
+          {selectedNode?.nodeType === 'checklist' && (selectedNode as any).checklistItems && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Checklist Items</h3>
               <ul className="space-y-1">
-                {selectedNode.checklistItems.map(item => (
+                {(selectedNode as any).checklistItems.map((item: any) => (
                   <li key={item.id} className="flex items-center gap-2">
                     <input type="checkbox" checked={item.isChecked} readOnly className="h-4 w-4" />
                     <span className={item.isChecked ? 'line-through text-gray-500' : ''}>{item.text}</span>
@@ -206,15 +215,15 @@ export const ExportedMindMap = () => {
             </div>
           )}
           
-          {selectedNode?.nodeType === 'note' && selectedNode.noteContent && (
+          {selectedNode?.nodeType === 'note' && (selectedNode as any).noteContent && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Note Content</h3>
-              <div className="p-3 rounded" style={{ backgroundColor: selectedNode.noteColor || '#fffacd' }}>
-                <p className="whitespace-pre-wrap">{selectedNode.noteContent}</p>
+              <div className="p-3 rounded" style={{ backgroundColor: (selectedNode as any).noteColor || '#fffacd' }}>
+                <p className="whitespace-pre-wrap">{(selectedNode as any).noteContent}</p>
               </div>
-              {selectedNode.tags && selectedNode.tags.length > 0 && (
+              {(selectedNode as any).tags && (selectedNode as any).tags.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {selectedNode.tags.map((tag, index) => (
+                  {(selectedNode as any).tags.map((tag: string, index: number) => (
                     <span key={index} className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
                       {tag}
                     </span>
@@ -224,15 +233,15 @@ export const ExportedMindMap = () => {
             </div>
           )}
           
-          {selectedNode?.nodeType === 'concept' && selectedNode.definition && (
+          {selectedNode?.nodeType === 'concept' && (selectedNode as any).definition && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Concept Definition</h3>
-              <p className="text-sm whitespace-pre-wrap">{selectedNode.definition}</p>
-              {selectedNode.examples && selectedNode.examples.length > 0 && (
+              <p className="text-sm whitespace-pre-wrap">{(selectedNode as any).definition}</p>
+              {(selectedNode as any).examples && (selectedNode as any).examples.length > 0 && (
                 <div className="mt-2">
                   <h4 className="font-medium">Examples:</h4>
                   <ul className="list-disc list-inside">
-                    {selectedNode.examples.map((example, index) => (
+                    {(selectedNode as any).examples.map((example: string, index: number) => (
                       <li key={index} className="text-sm">{example}</li>
                     ))}
                   </ul>

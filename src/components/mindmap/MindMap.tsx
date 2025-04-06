@@ -28,6 +28,7 @@ import { EdgeSettings } from './EdgeSettings';
 import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
 import { MindMapDeleteDialog } from './MindMapDeleteDialog';
+import { MindMapSaveDialog } from './MindMapSaveDialog';
 import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
@@ -51,6 +52,7 @@ import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { useToast } from '@/hooks/use-toast';
+import { ExamCategory } from './types';
 import { 
   AutoSaveConfig, 
   initAutoSaveConfig, 
@@ -114,7 +116,10 @@ export const MindMap = () => {
     loadExistingMindMap,
     handleDeleteMindMap,
     confirmDeleteMindMap,
-    saveCurrentMindMap
+    saveCurrentMindMap,
+    openSaveDialog,
+    isSaveDialogOpen,
+    setIsSaveDialogOpen
   } = useMindMapStorage({
     nodes,
     edges,
@@ -157,6 +162,11 @@ export const MindMap = () => {
     setCanUndo(mindMapHistory.canUndo());
     setCanRedo(mindMapHistory.canRedo());
   }, []);
+
+  // Handle saving mind map with exam category and sub-exam
+  const handleSaveMindMap = useCallback((name: string, examCategory: ExamCategory, subExamName: string) => {
+    saveCurrentMindMap(name, examCategory, subExamName);
+  }, [saveCurrentMindMap]);
 
   // Record changes to history
   useEffect(() => {
@@ -285,7 +295,7 @@ export const MindMap = () => {
         <div className="flex-1 relative">
           <MindMapTopBar
             currentMindMap={currentMindMap}
-            saveCurrentMindMap={saveCurrentMindMap}
+            onSave={openSaveDialog}
             handleExport={handleExport}
             createNewMindMap={createNewMindMap}
             loadExistingMindMap={loadExistingMindMap}
@@ -391,10 +401,19 @@ export const MindMap = () => {
         </div>
       </div>
 
+      {/* Mind Map Delete Dialog */}
       <MindMapDeleteDialog
         mindMapToDelete={mindMapToDelete}
         setMindMapToDelete={setMindMapToDelete}
         confirmDeleteMindMap={handleConfirmDeleteMindMap}
+      />
+
+      {/* Mind Map Save Dialog */}
+      <MindMapSaveDialog 
+        open={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        onSave={handleSaveMindMap}
+        currentName={currentMindMap}
       />
     </SidebarProvider>
   );

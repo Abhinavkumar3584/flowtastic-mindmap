@@ -1,18 +1,18 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { saveMindMap, loadMindMap, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
-import { MindMapNode, MindMapEdge } from './types';
+import { MindMapData, ExamCategory } from './types';
 
 interface UseMindMapStorageProps {
-  nodes: MindMapNode[];
-  edges: MindMapEdge[];
-  setNodes: React.Dispatch<React.SetStateAction<MindMapNode[]>>;
-  setEdges: React.Dispatch<React.SetStateAction<MindMapEdge[]>>;
+  nodes: any[];
+  edges: any[];
+  setNodes: React.Dispatch<React.SetStateAction<any[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<any[]>>;
   currentMindMap: string;
   setCurrentMindMap: React.Dispatch<React.SetStateAction<string>>;
   setMindMapToDelete: React.Dispatch<React.SetStateAction<string | null>>;
-  initialNodes: MindMapNode[];
+  initialNodes: any[];
 }
 
 export const useMindMapStorage = ({
@@ -26,6 +26,7 @@ export const useMindMapStorage = ({
   initialNodes
 }: UseMindMapStorageProps) => {
   const { toast } = useToast();
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
 
   const handleExport = useCallback(() => {
     if (!currentMindMap) {
@@ -114,24 +115,33 @@ export const useMindMapStorage = ({
     }
   }, [currentMindMap, initialNodes, setNodes, setEdges, setCurrentMindMap, toast]);
 
-  const saveCurrentMindMap = useCallback(() => {
-    if (!currentMindMap) {
-      const name = prompt('Enter a name for the mind map:');
-      if (!name) return;
+  const openSaveDialog = useCallback(() => {
+    setIsSaveDialogOpen(true);
+  }, []);
+
+  const saveCurrentMindMap = useCallback((name: string, examCategory: ExamCategory, subExamName: string) => {
+    const success = saveMindMap({ 
+      nodes, 
+      edges, 
+      name,
+      examCategory,
+      subExamName
+    });
+    
+    if (success) {
       setCurrentMindMap(name);
-      saveMindMap({ nodes, edges, name });
       toast({
         title: "Success",
-        description: `Saved mind map as: ${name}`,
+        description: `Saved mind map: ${name} under ${examCategory} - ${subExamName}`,
       });
     } else {
-      saveMindMap({ nodes, edges, name: currentMindMap });
       toast({
-        title: "Success",
-        description: `Saved changes to: ${currentMindMap}`,
+        title: "Error",
+        description: "Failed to save mind map",
+        variant: "destructive",
       });
     }
-  }, [nodes, edges, currentMindMap, setCurrentMindMap, toast]);
+  }, [nodes, edges, setCurrentMindMap, toast]);
 
   return {
     handleExport,
@@ -139,6 +149,9 @@ export const useMindMapStorage = ({
     loadExistingMindMap,
     handleDeleteMindMap,
     confirmDeleteMindMap,
-    saveCurrentMindMap
+    saveCurrentMindMap,
+    openSaveDialog,
+    isSaveDialogOpen,
+    setIsSaveDialogOpen
   };
 };
