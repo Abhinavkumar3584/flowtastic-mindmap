@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -58,6 +57,10 @@ import {
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
 
+interface MindMapProps {
+  initialMapToLoad?: string | null;
+}
+
 const nodeTypes: NodeTypes = {
   base: BaseNode,
   section: SectionNode,
@@ -75,7 +78,7 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-export const MindMap = () => {
+export const MindMap = ({ initialMapToLoad }: MindMapProps = {}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
@@ -125,6 +128,13 @@ export const MindMap = () => {
     setMindMapToDelete,
     initialNodes
   });
+
+  // Effect to load initial mind map if specified in URL
+  useEffect(() => {
+    if (initialMapToLoad && !currentMindMap) {
+      loadExistingMindMap(initialMapToLoad);
+    }
+  }, [initialMapToLoad, currentMindMap, loadExistingMindMap]);
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
