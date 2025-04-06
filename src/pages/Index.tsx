@@ -1,8 +1,7 @@
-
-import Home from './Home';
+import { MindMap } from "@/components/mindmap/MindMap";
 
 const Index = () => {
-  return <Home />;
+  return <MindMap />;
 };
 
 export default Index;
