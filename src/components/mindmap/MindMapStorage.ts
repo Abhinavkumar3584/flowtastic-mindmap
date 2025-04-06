@@ -1,5 +1,5 @@
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { saveMindMap, loadMindMap, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapNode, MindMapEdge } from './types';
@@ -26,7 +26,6 @@ export const useMindMapStorage = ({
   initialNodes
 }: UseMindMapStorageProps) => {
   const { toast } = useToast();
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const handleExport = useCallback(() => {
     if (!currentMindMap) {
@@ -115,34 +114,24 @@ export const useMindMapStorage = ({
     }
   }, [currentMindMap, initialNodes, setNodes, setEdges, setCurrentMindMap, toast]);
 
-  // Updated to handle the save dialog
   const saveCurrentMindMap = useCallback(() => {
-    setShowSaveDialog(true);
-  }, []);
-
-  const handleSaveWithCategories = useCallback((name: string, examCategory: string, examSubcategory: string) => {
-    const success = saveMindMap({
-      nodes, 
-      edges, 
-      name,
-      examCategory,
-      examSubcategory
-    });
-    
-    if (success) {
+    if (!currentMindMap) {
+      const name = prompt('Enter a name for the mind map:');
+      if (!name) return;
       setCurrentMindMap(name);
+      saveMindMap({ nodes, edges, name });
       toast({
         title: "Success",
-        description: `Saved mind map: ${name}`,
+        description: `Saved mind map as: ${name}`,
       });
     } else {
+      saveMindMap({ nodes, edges, name: currentMindMap });
       toast({
-        title: "Error",
-        description: "Failed to save mind map",
-        variant: "destructive",
+        title: "Success",
+        description: `Saved changes to: ${currentMindMap}`,
       });
     }
-  }, [nodes, edges, setCurrentMindMap, toast]);
+  }, [nodes, edges, currentMindMap, setCurrentMindMap, toast]);
 
   return {
     handleExport,
@@ -150,9 +139,6 @@ export const useMindMapStorage = ({
     loadExistingMindMap,
     handleDeleteMindMap,
     confirmDeleteMindMap,
-    saveCurrentMindMap,
-    showSaveDialog,
-    setShowSaveDialog,
-    handleSaveWithCategories
+    saveCurrentMindMap
   };
 };

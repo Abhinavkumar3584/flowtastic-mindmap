@@ -1,42 +1,61 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Link, useNavigate } from "react-router-dom";
-import { MindMapData, EXAM_CATEGORIES } from "@/components/mindmap/types";
-import { getMindMapsByCategory } from "@/utils/mindmapStorage";
-import { FileText, Plus } from "lucide-react";
+
+// Mock data for exams
+const examsData = {
+  UPSC: [
+    { id: 1, name: "Civil Services Examination (CSE)", icon: "📚" },
+    { id: 2, name: "Combined Defence Services (CDS)", icon: "🛡️" },
+    { id: 3, name: "National Defence Academy (NDA)", icon: "🎖️" },
+    { id: 4, name: "Engineering Services Examination", icon: "🔧" },
+    { id: 5, name: "Combined Medical Services", icon: "🏥" },
+    { id: 6, name: "Indian Forest Service", icon: "🌳" },
+  ],
+  SSC: [
+    { id: 1, name: "Combined Graduate Level (CGL)", icon: "🎓" },
+    { id: 2, name: "Combined Higher Secondary Level (CHSL)", icon: "📝" },
+    { id: 3, name: "Junior Engineer (JE)", icon: "⚙️" },
+    { id: 4, name: "Multi Tasking Staff (MTS)", icon: "👷" },
+    { id: 5, name: "Stenographer Grade C & D", icon: "⌨️" },
+  ],
+  Banking: [
+    { id: 1, name: "SBI PO", icon: "🏦" },
+    { id: 2, name: "SBI Clerk", icon: "💼" },
+    { id: 3, name: "IBPS PO", icon: "📊" },
+    { id: 4, name: "IBPS Clerk", icon: "📋" },
+    { id: 5, name: "RBI Grade B", icon: "💰" },
+    { id: 6, name: "RBI Assistant", icon: "📈" },
+    { id: 7, name: "NABARD", icon: "🌾" },
+  ],
+  Railways: [
+    { id: 1, name: "RRB NTPC", icon: "🚂" },
+    { id: 2, name: "RRB Group D", icon: "🛤️" },
+    { id: 3, name: "RRB ALP", icon: "🚆" },
+    { id: 4, name: "RRB JE", icon: "🔌" },
+  ],
+  Teaching: [
+    { id: 1, name: "CTET", icon: "👨‍🏫" },
+    { id: 2, name: "STET", icon: "👩‍🏫" },
+    { id: 3, name: "KVS", icon: "🏫" },
+    { id: 4, name: "NVS", icon: "🏫" },
+    { id: 5, name: "DSSSB", icon: "📕" },
+  ],
+  Defence: [
+    { id: 1, name: "AFCAT", icon: "✈️" },
+    { id: 2, name: "CDS", icon: "🎖️" },
+    { id: 3, name: "CAPF", icon: "🛡️" },
+    { id: 4, name: "Indian Navy", icon: "⚓" },
+    { id: 5, name: "Indian Army", icon: "🪖" },
+  ],
+};
 
 const ExamsData = () => {
-  const [activeTab, setActiveTab] = useState(EXAM_CATEGORIES[0]);
-  const [mindMaps, setMindMaps] = useState<MindMapData[]>([]);
-  const navigate = useNavigate();
-
-  // Load mind maps when the active tab changes
-  useEffect(() => {
-    const maps = getMindMapsByCategory(activeTab);
-    setMindMaps(maps);
-  }, [activeTab]);
-
-  // Get unique subcategories to display as cards
-  const uniqueSubcategories = Array.from(
-    new Set(mindMaps.map(map => map.examSubcategory))
-  ).filter(Boolean) as string[];
-
-  const handleExamCardClick = (subcategory: string) => {
-    // Find the mind map with this subcategory
-    const mindMap = mindMaps.find(map => map.examSubcategory === subcategory);
-    if (mindMap) {
-      navigate(`/?map=${encodeURIComponent(mindMap.name)}`);
-    }
-  };
-
-  const handleCreateNewMindMap = () => {
-    navigate('/');
-  };
+  const examCategories = Object.keys(examsData);
+  const [activeTab, setActiveTab] = useState(examCategories[0]);
 
   return (
     <div className="container mx-auto p-4">
@@ -54,7 +73,7 @@ const ExamsData = () => {
               onValueChange={setActiveTab}
             >
               <TabsList className="flex flex-col space-y-1 h-auto bg-transparent">
-                {EXAM_CATEGORIES.map((category) => (
+                {examCategories.map((category) => (
                   <TabsTrigger
                     key={category}
                     value={category}
@@ -76,46 +95,24 @@ const ExamsData = () => {
         {/* Right content area with sub-exams */}
         <div className="md:w-3/4">
           <div className="bg-white shadow-md rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-lg">{activeTab} Exams</h2>
-              <Button onClick={handleCreateNewMindMap} size="sm" className="flex items-center gap-1">
-                <Plus className="h-4 w-4" />
-                Create New Mind Map
-              </Button>
-            </div>
+            <h2 className="font-semibold mb-4 text-lg">{activeTab} Exams</h2>
             <Separator className="mb-4" />
             
-            {uniqueSubcategories.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {uniqueSubcategories.map((subcategory) => (
-                  <Card 
-                    key={subcategory} 
-                    className="hover:shadow-lg transition-all duration-200 animate-fade-in cursor-pointer"
-                    onClick={() => handleExamCardClick(subcategory)}
-                  >
-                    <CardContent className="flex items-center p-4">
-                      <div className="text-2xl mr-3">
-                        <FileText className="h-6 w-6 text-blue-500" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{subcategory}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>No mind maps created for this category yet.</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={handleCreateNewMindMap}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {examsData[activeTab as keyof typeof examsData].map((exam) => (
+                <Card 
+                  key={exam.id} 
+                  className="hover:shadow-lg transition-all duration-200 animate-fade-in"
                 >
-                  Create Your First Mind Map
-                </Button>
-              </div>
-            )}
+                  <CardContent className="flex items-center p-4">
+                    <div className="text-2xl mr-3">{exam.icon}</div>
+                    <div>
+                      <p className="font-medium">{exam.name}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </div>
