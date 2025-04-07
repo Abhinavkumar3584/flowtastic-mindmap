@@ -7,34 +7,47 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
+// Check if we have Clerk authentication
+const hasClerk = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && 
+                 import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== "pk_test_placeholder";
+
 const AdminSignup = () => {
-  const { signUp, isLoaded } = useSignUp();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Only use Clerk hooks if we have Clerk
+  const clerkSignUp = hasClerk ? useSignUp() : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
 
     try {
       setIsLoading(true);
-      await signUp.create({
-        emailAddress: email,
-        password,
-        firstName,
-        lastName
-      });
-
-      // Send email verification
-      await signUp.prepareEmailAddressVerification({
-        strategy: 'email_code',
-      });
       
-      toast.success('Signup successful! Please verify your email.');
+      if (hasClerk && clerkSignUp) {
+        // Use Clerk authentication if available
+        await clerkSignUp.create({
+          emailAddress: email,
+          password,
+          firstName,
+          lastName
+        });
+
+        // Send email verification
+        await clerkSignUp.prepareEmailAddressVerification({
+          strategy: 'email_code',
+        });
+        
+        toast.success('Signup successful! Please verify your email.');
+      } else {
+        // In development mode without Clerk
+        toast.success('Development mode: Account created successfully');
+      }
+      
       navigate('/admin');
     } catch (error) {
       console.error('Error during signup:', error);
@@ -49,7 +62,14 @@ const AdminSignup = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Admin Signup</CardTitle>
-          <CardDescription className="text-center">Create a new admin account</CardDescription>
+          <CardDescription className="text-center">
+            Create a new admin account
+            {!hasClerk && (
+              <p className="text-xs mt-2 text-amber-600">
+                Running in development mode. No real account will be created.
+              </p>
+            )}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -7,28 +7,39 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
+// Check if we have Clerk authentication
+const hasClerk = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && 
+                 import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== "pk_test_placeholder";
+
 const AdminLogin = () => {
-  const { signIn, isLoaded } = useSignIn();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Only use Clerk hooks if we have Clerk
+  const clerkSignIn = hasClerk ? useSignIn() : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
 
     try {
       setIsLoading(true);
-      await signIn.create({
-        identifier: email,
-        password,
-      });
-
-      const { status } = signIn;
       
-      if (status === 'complete') {
-        toast.success('Login successful');
+      if (hasClerk && clerkSignIn) {
+        // Use Clerk authentication if available
+        await clerkSignIn.signIn.create({
+          identifier: email,
+          password,
+        });
+
+        if (clerkSignIn.signIn.status === 'complete') {
+          toast.success('Login successful');
+          navigate('/admin/dashboard');
+        }
+      } else {
+        // In development mode without Clerk, allow any login
+        toast.success('Development mode: Login successful');
         navigate('/admin/dashboard');
       }
     } catch (error) {
@@ -44,7 +55,14 @@ const AdminLogin = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
-          <CardDescription className="text-center">Enter your credentials to access the admin dashboard</CardDescription>
+          <CardDescription className="text-center">
+            Enter your credentials to access the admin dashboard
+            {!hasClerk && (
+              <p className="text-xs mt-2 text-amber-600">
+                Running in development mode. Any credentials will work.
+              </p>
+            )}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
