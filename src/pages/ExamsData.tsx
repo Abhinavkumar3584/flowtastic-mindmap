@@ -170,7 +170,8 @@ const ExamsData = () => {
           <div className="h-[calc(100vh-200px)]">
             <ExportedMindMap 
               predefinedMindMap={mindMapData} 
-              containerHeight="100%" 
+              containerHeight="100%"
+              showBackground={false} 
             />
           </div>
         </div>

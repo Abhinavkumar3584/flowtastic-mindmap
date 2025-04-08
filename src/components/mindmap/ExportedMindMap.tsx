@@ -62,9 +62,14 @@ const nodeTypes: NodeTypes = {
 interface ExportedMindMapProps {
   predefinedMindMap?: MindMapData;
   containerHeight?: string;
+  showBackground?: boolean;
 }
 
-export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }: ExportedMindMapProps) => {
+export const ExportedMindMap = ({ 
+  predefinedMindMap, 
+  containerHeight = "100vh", 
+  showBackground = false 
+}: ExportedMindMapProps) => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
@@ -148,7 +153,7 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
           nodesConnectable={false}
           elementsSelectable={true}
         >
-          <Background gap={12} size={1} />
+          {showBackground && <Background gap={12} size={1} />}
         </ReactFlow>
       </div>
 

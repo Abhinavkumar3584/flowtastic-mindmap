@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -59,6 +58,7 @@ import {
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
+import { BoundedArea } from './BoundedArea';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -75,6 +75,13 @@ const nodeTypes: NodeTypes = {
   mindmap: MindMapNodeComponent,
   note: NoteNode,
   concept: ConceptNode,
+};
+
+// Define the bounds for valid content (in pixels)
+// These dimensions ensure content will fit nicely on web and mobile
+const CONTENT_BOUNDS = {
+  width: 800,  // Standard width that works well on most screens
+  height: 1500, // Tall enough for scrollable content
 };
 
 export const MindMap = () => {
@@ -131,42 +138,42 @@ export const MindMap = () => {
     initialNodes
   });
 
-  // Undo/Redo handlers
-  const handleUndo = useCallback(() => {
-    const previousState = mindMapHistory.undo(nodes, edges);
-    if (previousState) {
-      setNodes(previousState.nodes);
-      setEdges(previousState.edges);
-      toast({
-        title: "Undo",
-        description: "Previous action undone",
-      });
-      updateUndoRedoState();
-    }
-  }, [nodes, edges, setNodes, setEdges, toast]);
+  // Add a state to track nodes within bounds
+  const [nodesWithinBounds, setNodesWithinBounds] = useState<string[]>([]);
+  
+  // Check if nodes are within bounds before saving
+  const checkNodesWithinBounds = useCallback(() => {
+    // Get nodes that are within the content boundaries
+    const validNodeIds = nodes.filter(node => {
+      // Calculate node center position
+      const centerX = node.position.x + (node.width || 0) / 2;
+      const centerY = node.position.y + (node.height || 0) / 2;
+      
+      // Check if node center is within bounds
+      return (
+        Math.abs(centerX) <= CONTENT_BOUNDS.width / 2 &&
+        Math.abs(centerY) <= CONTENT_BOUNDS.height / 2
+      );
+    }).map(node => node.id);
+    
+    setNodesWithinBounds(validNodeIds);
+    return validNodeIds;
+  }, [nodes]);
 
-  const handleRedo = useCallback(() => {
-    const nextState = mindMapHistory.redo(nodes, edges);
-    if (nextState) {
-      setNodes(nextState.nodes);
-      setEdges(nextState.edges);
-      toast({
-        title: "Redo",
-        description: "Action redone",
-      });
-      updateUndoRedoState();
-    }
-  }, [nodes, edges, setNodes, setEdges, toast]);
-
-  const updateUndoRedoState = useCallback(() => {
-    setCanUndo(mindMapHistory.canUndo());
-    setCanRedo(mindMapHistory.canRedo());
-  }, []);
-
-  // Handle saving mind map with exam category and sub-exam
+  // Override save function to filter out nodes outside bounds
   const handleSaveMindMap = useCallback((name: string, examCategory: ExamCategory, subExamName: string) => {
-    saveCurrentMindMap(name, examCategory, subExamName);
-  }, [saveCurrentMindMap]);
+    // Get nodes within bounds
+    const validNodeIds = checkNodesWithinBounds();
+    
+    // Filter nodes and related edges
+    const filteredNodes = nodes.filter(node => validNodeIds.includes(node.id));
+    const filteredEdges = edges.filter(edge => 
+      validNodeIds.includes(edge.source) && validNodeIds.includes(edge.target)
+    );
+    
+    // Save only the filtered content
+    saveCurrentMindMap(name, examCategory, subExamName, filteredNodes, filteredEdges);
+  }, [nodes, edges, checkNodesWithinBounds, saveCurrentMindMap]);
 
   // Record changes to history
   useEffect(() => {
@@ -321,6 +328,7 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
+            <BoundedArea width={CONTENT_BOUNDS.width} height={CONTENT_BOUNDS.height} />
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 
