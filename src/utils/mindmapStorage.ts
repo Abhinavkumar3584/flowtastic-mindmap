@@ -92,6 +92,24 @@ export const getAllMindMaps = (): string[] => {
   }
 };
 
+// Add the missing loadAllMindMaps function
+export const loadAllMindMaps = (): MindMapData[] => {
+  try {
+    const mindmapsData = localStorage.getItem('mindmaps') || '{}';
+    const mindmaps = safeJSONParse(mindmapsData, {});
+    return Object.values(mindmaps).map((mindmap: any) => ({
+      nodes: mindmap.nodes || [],
+      edges: mindmap.edges || [],
+      name: mindmap.name,
+      examCategory: mindmap.examCategory || '',
+      subExamName: mindmap.subExamName || ''
+    }));
+  } catch (error) {
+    console.error('Error loading all mind maps:', error);
+    return [];
+  }
+};
+
 export const deleteMindMap = (name: string): boolean => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';

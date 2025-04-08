@@ -82,7 +82,7 @@ const MindMapManagement = () => {
 
   const openLinkDialog = (mindMap: MindMapData) => {
     setCurrentMindMap(mindMap);
-    setSelectedExamCategory(mindMap.examCategory || "");
+    setSelectedExamCategory(mindMap.examCategory as ExamCategory || "");
     setSelectedSubExam(mindMap.subExamName || "");
     setIsLinkDialogOpen(true);
   };
@@ -224,7 +224,7 @@ const MindMapManagement = () => {
               </label>
               <Select 
                 value={selectedExamCategory} 
-                onValueChange={(value) => setSelectedExamCategory(value as ExamCategory)}
+                onValueChange={(value: string) => setSelectedExamCategory(value as ExamCategory)}
               >
                 <SelectTrigger id="exam-category">
                   <SelectValue placeholder="Select a category" />
