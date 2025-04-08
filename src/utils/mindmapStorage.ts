@@ -81,24 +81,6 @@ export const loadMindMap = (name: string): MindMapData | null => {
   }
 };
 
-export const loadAllMindMaps = (): MindMapData[] => {
-  try {
-    const mindmapsData = localStorage.getItem('mindmaps') || '{}';
-    const mindmaps = safeJSONParse(mindmapsData, {});
-    
-    return Object.values(mindmaps).map((mindmap: any) => ({
-      nodes: mindmap.nodes || [],
-      edges: mindmap.edges || [],
-      name: mindmap.name || '',
-      examCategory: mindmap.examCategory || '',
-      subExamName: mindmap.subExamName || ''
-    }));
-  } catch (error) {
-    console.error('Error loading all mind maps:', error);
-    return [];
-  }
-};
-
 export const getAllMindMaps = (): string[] => {
   try {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
@@ -136,11 +118,9 @@ export const getMindMapsByExamCategory = (category: string): MindMapData[] => {
     return Object.values(mindmaps)
       .filter((mindmap: any) => mindmap.examCategory === category)
       .map((mindmap: any) => ({
+        ...mindmap,
         nodes: mindmap.nodes || [],
-        edges: mindmap.edges || [],
-        name: mindmap.name || '',
-        examCategory: mindmap.examCategory || '',
-        subExamName: mindmap.subExamName || ''
+        edges: mindmap.edges || []
       }));
   } catch (error) {
     console.error('Error getting mind maps by category:', error);
@@ -164,11 +144,9 @@ export const getMindMapBySubExam = (category: string, subExam: string): MindMapD
     }
     
     return {
+      ...mindmap,
       nodes: mindmap.nodes || [],
-      edges: mindmap.edges || [],
-      name: mindmap.name || '',
-      examCategory: mindmap.examCategory || '',
-      subExamName: mindmap.subExamName || ''
+      edges: mindmap.edges || []
     };
   } catch (error) {
     console.error('Error finding mind map by sub-exam:', error);

@@ -119,16 +119,10 @@ export const useMindMapStorage = ({
     setIsSaveDialogOpen(true);
   }, []);
 
-  const saveCurrentMindMap = useCallback((
-    name: string, 
-    examCategory: ExamCategory, 
-    subExamName: string,
-    filteredNodes = nodes,
-    filteredEdges = edges
-  ) => {
+  const saveCurrentMindMap = useCallback((name: string, examCategory: ExamCategory, subExamName: string) => {
     const success = saveMindMap({ 
-      nodes: filteredNodes, 
-      edges: filteredEdges, 
+      nodes, 
+      edges, 
       name,
       examCategory,
       subExamName

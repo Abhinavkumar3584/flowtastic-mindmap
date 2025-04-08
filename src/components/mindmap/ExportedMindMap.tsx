@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -61,16 +62,9 @@ const nodeTypes: NodeTypes = {
 interface ExportedMindMapProps {
   predefinedMindMap?: MindMapData;
   containerHeight?: string;
-  showBackground?: boolean;
-  isViewOnly?: boolean; // New prop to control view-only mode
 }
 
-export const ExportedMindMap = ({ 
-  predefinedMindMap, 
-  containerHeight = "100vh", 
-  showBackground = false,
-  isViewOnly = true // Default to view-only mode
-}: ExportedMindMapProps) => {
+export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }: ExportedMindMapProps) => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
@@ -83,29 +77,6 @@ export const ExportedMindMap = ({
       setMindMapData(predefinedMindMap);
     }
   }, [predefinedMindMap]);
-
-  // Process nodes when loaded to ensure view-only mode
-  useEffect(() => {
-    if (mindMapData?.nodes && isViewOnly) {
-      // Create a deep copy to avoid mutating the original
-      const processedNodes = JSON.parse(JSON.stringify(mindMapData.nodes));
-      
-      // Disable interactive features for view-only mode
-      const viewOnlyNodes = processedNodes.map((node: Node) => ({
-        ...node,
-        draggable: false,
-        connectable: false,
-        selectable: true, // Keep selectable to allow viewing content
-        // Add a CSS class for view-only styling
-        className: `${node.className || ''} view-only-node`
-      }));
-      
-      setMindMapData({
-        ...mindMapData,
-        nodes: viewOnlyNodes
-      });
-    }
-  }, [mindMapData?.name, isViewOnly]);
 
   const handleRender = () => {
     if (!selectedMap) {
@@ -138,10 +109,7 @@ export const ExportedMindMap = ({
 
   const handleNodeClick = (_: React.MouseEvent, node: any) => {
     console.log('Node clicked:', node);
-    // In view-only mode, we only show content dialog
-    if (isViewOnly) {
-      setSelectedNode(node.data);
-    }
+    setSelectedNode(node.data);
   };
 
   // Render selection UI if no mind map data is available yet
@@ -179,11 +147,8 @@ export const ExportedMindMap = ({
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
-          zoomOnScroll={!isViewOnly} // Disable zoom on scroll for view-only mode
-          panOnDrag={!isViewOnly}    // Disable pan on drag for view-only mode
-          className={isViewOnly ? 'view-only-mindmap' : ''}
         >
-          {showBackground && <Background gap={12} size={1} />}
+          <Background gap={12} size={1} />
         </ReactFlow>
       </div>
 
@@ -206,7 +171,6 @@ export const ExportedMindMap = ({
             </div>
           )}
           
-          {/* Keep existing code for other node type content display */}
           {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content.links && selectedNode.content.links.length > 0 && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Links</h3>
@@ -227,7 +191,7 @@ export const ExportedMindMap = ({
             </div>
           )}
           
-          {/* Keep existing code for specialized node content */}
+          {/* Display specialized content based on node type */}
           {selectedNode?.nodeType === 'checklist' && (selectedNode as any).checklistItems && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Checklist Items</h3>
@@ -287,22 +251,6 @@ export const ExportedMindMap = ({
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Add CSS for view-only mode */}
-      <style jsx global>{`
-        .view-only-mindmap .react-flow__handle {
-          display: none;
-        }
-        
-        .view-only-mindmap .react-flow__node:hover {
-          cursor: pointer;
-        }
-        
-        .view-only-node .node-settings-button,
-        .view-only-node .node-connectors {
-          display: none;
-        }
-      `}</style>
     </>
   );
 };

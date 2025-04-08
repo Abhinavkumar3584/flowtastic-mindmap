@@ -29,6 +29,7 @@ import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
 import { MindMapDeleteDialog } from './MindMapDeleteDialog';
 import { MindMapSaveDialog } from './MindMapSaveDialog';
+import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
@@ -51,14 +52,13 @@ import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { useToast } from '@/hooks/use-toast';
-import { ExamCategory, MindMapNode, MindMapEdge } from './types';
+import { ExamCategory } from './types';
 import { 
   AutoSaveConfig, 
   initAutoSaveConfig, 
   shouldAutoSave, 
   performAutoSave 
 } from '@/utils/mindmapAutoSave';
-import { BoundedArea } from './BoundedArea';
 
 const nodeTypes: NodeTypes = {
   base: BaseNode,
@@ -77,13 +77,6 @@ const nodeTypes: NodeTypes = {
   concept: ConceptNode,
 };
 
-// Define the bounds for valid content (in pixels)
-// These dimensions ensure content will fit nicely on web and mobile
-const CONTENT_BOUNDS = {
-  width: 800,  // Standard width that works well on most screens
-  height: 1500, // Tall enough for scrollable content
-};
-
 export const MindMap = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -97,31 +90,6 @@ export const MindMap = () => {
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
-
-  // Function to update undo/redo state
-  const updateUndoRedoState = useCallback(() => {
-    setCanUndo(mindMapHistory.canUndo());
-    setCanRedo(mindMapHistory.canRedo());
-  }, []);
-
-  // Undo/Redo handlers
-  const handleUndo = useCallback(() => {
-    const previousState = mindMapHistory.undo(nodes, edges);
-    if (previousState) {
-      setNodes(previousState.nodes as any);
-      setEdges(previousState.edges as any);
-      updateUndoRedoState();
-    }
-  }, [nodes, edges, setNodes, setEdges, updateUndoRedoState]);
-
-  const handleRedo = useCallback(() => {
-    const nextState = mindMapHistory.redo(nodes, edges);
-    if (nextState) {
-      setNodes(nextState.nodes as any);
-      setEdges(nextState.edges as any);
-      updateUndoRedoState();
-    }
-  }, [nodes, edges, setNodes, setEdges, updateUndoRedoState]);
 
   // Node handlers
   const { 
@@ -163,48 +131,48 @@ export const MindMap = () => {
     initialNodes
   });
 
-  // Add a state to track nodes within bounds
-  const [nodesWithinBounds, setNodesWithinBounds] = useState<string[]>([]);
-  
-  // Check if nodes are within bounds before saving
-  const checkNodesWithinBounds = useCallback(() => {
-    // Get nodes that are within the content boundaries
-    const validNodeIds = nodes.filter(node => {
-      // Calculate node center position
-      const centerX = node.position.x + (node.width || 0) / 2;
-      const centerY = node.position.y + (node.height || 0) / 2;
-      
-      // Check if node center is within bounds
-      return (
-        Math.abs(centerX) <= CONTENT_BOUNDS.width / 2 &&
-        Math.abs(centerY) <= CONTENT_BOUNDS.height / 2
-      );
-    }).map(node => node.id);
-    
-    setNodesWithinBounds(validNodeIds);
-    return validNodeIds;
-  }, [nodes]);
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    const previousState = mindMapHistory.undo(nodes, edges);
+    if (previousState) {
+      setNodes(previousState.nodes);
+      setEdges(previousState.edges);
+      toast({
+        title: "Undo",
+        description: "Previous action undone",
+      });
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, toast]);
 
-  // Override save function to filter out nodes outside bounds
+  const handleRedo = useCallback(() => {
+    const nextState = mindMapHistory.redo(nodes, edges);
+    if (nextState) {
+      setNodes(nextState.nodes);
+      setEdges(nextState.edges);
+      toast({
+        title: "Redo",
+        description: "Action redone",
+      });
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, toast]);
+
+  const updateUndoRedoState = useCallback(() => {
+    setCanUndo(mindMapHistory.canUndo());
+    setCanRedo(mindMapHistory.canRedo());
+  }, []);
+
+  // Handle saving mind map with exam category and sub-exam
   const handleSaveMindMap = useCallback((name: string, examCategory: ExamCategory, subExamName: string) => {
-    // Get nodes within bounds
-    const validNodeIds = checkNodesWithinBounds();
-    
-    // Filter nodes and related edges
-    const filteredNodes = nodes.filter(node => validNodeIds.includes(node.id));
-    const filteredEdges = edges.filter(edge => 
-      validNodeIds.includes(edge.source) && validNodeIds.includes(edge.target)
-    );
-    
-    // Save only the filtered content
-    saveCurrentMindMap(name, examCategory, subExamName, filteredNodes, filteredEdges);
-  }, [nodes, edges, checkNodesWithinBounds, saveCurrentMindMap]);
+    saveCurrentMindMap(name, examCategory, subExamName);
+  }, [saveCurrentMindMap]);
 
   // Record changes to history
   useEffect(() => {
     // Don't record the initial state or states that are a result of undo/redo
     if (nodes !== initialNodes || edges !== initialEdges) {
-      mindMapHistory.record(nodes as any, edges as any);
+      mindMapHistory.record(nodes, edges);
       updateUndoRedoState();
       lastChangeRef.current = Date.now();
     }
@@ -353,7 +321,6 @@ export const MindMap = () => {
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
-            <BoundedArea width={CONTENT_BOUNDS.width} height={CONTENT_BOUNDS.height} />
             
             {selectedEdge && edges.find(edge => edge.id === selectedEdge) && (
               <EdgeSettings 

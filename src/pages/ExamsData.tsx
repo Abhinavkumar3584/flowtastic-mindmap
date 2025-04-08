@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -166,17 +167,16 @@ const ExamsData = () => {
             <h2 className="font-semibold text-lg">{activeTab}: {selectedExam}</h2>
           </div>
           
-          <div className="h-[calc(100vh-200px)] mindmap-viewer-container">
+          <div className="h-[calc(100vh-200px)]">
             <ExportedMindMap 
               predefinedMindMap={mindMapData} 
               containerHeight="100%" 
-              showBackground={false}
-              isViewOnly={true} // Explicitly set to view-only mode
             />
           </div>
         </div>
       ) : (
         <div className="flex flex-col md:flex-row gap-6">
+          {/* Left sidebar with exam categories */}
           <div className="md:w-1/4">
             <div className="bg-white shadow-md rounded-lg p-4">
               <h2 className="font-semibold mb-4 text-lg">Categories</h2>
@@ -206,6 +206,7 @@ const ExamsData = () => {
             </div>
           </div>
           
+          {/* Right content area with sub-exams */}
           <div className="md:w-3/4">
             <div className="bg-white shadow-md rounded-lg p-4">
               <h2 className="font-semibold mb-4 text-lg">{activeTab} Exams</h2>
@@ -237,21 +238,6 @@ const ExamsData = () => {
           </div>
         </div>
       )}
-      
-      <style jsx global>{`
-        .mindmap-viewer-container .react-flow__node {
-          pointer-events: all;
-          cursor: pointer;
-        }
-        
-        .mindmap-viewer-container .react-flow__node:hover {
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
-        }
-        
-        .mindmap-viewer-container .react-flow__controls {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };

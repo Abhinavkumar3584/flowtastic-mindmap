@@ -63,32 +63,27 @@ export const NodeContainer = ({
     combinedStyle.transform = `rotate(${nodeData.rotation}deg)`;
   }
 
-  // Check if we're in a view-only context by looking at parent classes
-  const isViewOnly = document.querySelector('.view-only-mindmap') !== null;
-
   return (
     <div 
       className={`min-w-[100px] min-h-[40px] ${nodeStyle} 
                  flex items-center justify-center relative
                  transition-shadow duration-200 ease-in-out
-                 ${nodeData.nodeType !== 'title' && !isViewOnly ? 'hover:border-mindmap-node-selected' : ''}`}
+                 ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
       style={combinedStyle}
       onDoubleClick={onDoubleClick}
     >
-      {/* Add connectors only if not in view-only mode and showConnectors is true */}
-      {showConnectors && !isViewOnly && <NodeConnectors className="node-connectors" />}
+      {/* Add connectors to enable connections between nodes */}
+      {showConnectors && <NodeConnectors />}
       
-      {/* Show NodeResizer only when not in view-only mode */}
-      {!isViewOnly && (
-        <NodeResizer 
-          minWidth={100}
-          minHeight={40}
-          isVisible={selected}
-          lineClassName="border-mindmap-primary"
-          handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
-          keepAspectRatio={forceAspectRatio}
-        />
-      )}
+      {/* Show NodeResizer for all nodes with consistent behavior */}
+      <NodeResizer 
+        minWidth={100}
+        minHeight={40}
+        isVisible={selected}
+        lineClassName="border-mindmap-primary"
+        handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
+        keepAspectRatio={forceAspectRatio}
+      />
       {children}
     </div>
   );
