@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -28,7 +29,6 @@ import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
 import { MindMapDeleteDialog } from './MindMapDeleteDialog';
 import { MindMapSaveDialog } from './MindMapSaveDialog';
-import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
@@ -51,7 +51,7 @@ import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { useToast } from '@/hooks/use-toast';
-import { ExamCategory } from './types';
+import { ExamCategory, MindMapNode, MindMapEdge } from './types';
 import { 
   AutoSaveConfig, 
   initAutoSaveConfig, 
@@ -97,6 +97,31 @@ export const MindMap = () => {
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
+
+  // Function to update undo/redo state
+  const updateUndoRedoState = useCallback(() => {
+    setCanUndo(mindMapHistory.canUndo());
+    setCanRedo(mindMapHistory.canRedo());
+  }, []);
+
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    const previousState = mindMapHistory.undo(nodes, edges);
+    if (previousState) {
+      setNodes(previousState.nodes as any);
+      setEdges(previousState.edges as any);
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, updateUndoRedoState]);
+
+  const handleRedo = useCallback(() => {
+    const nextState = mindMapHistory.redo(nodes, edges);
+    if (nextState) {
+      setNodes(nextState.nodes as any);
+      setEdges(nextState.edges as any);
+      updateUndoRedoState();
+    }
+  }, [nodes, edges, setNodes, setEdges, updateUndoRedoState]);
 
   // Node handlers
   const { 
@@ -179,7 +204,7 @@ export const MindMap = () => {
   useEffect(() => {
     // Don't record the initial state or states that are a result of undo/redo
     if (nodes !== initialNodes || edges !== initialEdges) {
-      mindMapHistory.record(nodes, edges);
+      mindMapHistory.record(nodes as any, edges as any);
       updateUndoRedoState();
       lastChangeRef.current = Date.now();
     }

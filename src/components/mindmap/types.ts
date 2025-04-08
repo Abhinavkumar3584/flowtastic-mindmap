@@ -70,13 +70,18 @@ export interface BaseNodeData {
   definition?: string;
   importance?: string;
   examples?: string[];
+  // For shape nodes
+  aspectRatio?: number;
   // For legend
   legend?: {
     show: boolean;
     position: LegendPosition;
     title: string;
+    color?: string;
+    enabled?: boolean;
     items: Array<{id: string, label: string, color: string}>;
   };
+  [key: string]: any; // Index signature to satisfy Record<string, unknown>
 }
 
 export interface TopicNodeData extends BaseNodeData {
@@ -149,6 +154,13 @@ export type EdgeData = {
   animated?: boolean;
   style?: React.CSSProperties;
   type?: string;
+  arrowStart?: boolean;
+  arrowEnd?: boolean;
+  strokeWidth?: number;
+  strokeColor?: string;
+  strokeStyle?: 'solid' | 'dashed' | 'dotted';
+  pathStyle?: 'bezier' | 'straight' | 'step';
+  [key: string]: any; // Index signature
 };
 
 export type MindMapNode = Node<BaseNodeData>;
