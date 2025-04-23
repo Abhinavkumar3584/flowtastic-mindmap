@@ -1,4 +1,3 @@
-
 import { ReactNode, CSSProperties } from 'react';
 import { NodeResizer } from '@xyflow/react';
 import { BaseNodeData } from '../types';
@@ -80,10 +79,7 @@ export const NodeContainer = ({
       onDoubleClick={onDoubleClick}
       data-nodeid={nodeData.id}
     >
-      {/* Add connectors to enable connections between nodes */}
       {showConnectors && <NodeConnectors />}
-      
-      {/* Show NodeResizer for all nodes with consistent behavior */}
       <NodeResizer 
         minWidth={100}
         minHeight={40}
@@ -91,11 +87,11 @@ export const NodeContainer = ({
         lineClassName="border-mindmap-primary"
         handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
         keepAspectRatio={forceAspectRatio}
-        onResize={(event, params) => {
+        onResize={(_, params) => {
           if (window.mindmapApi) {
             window.mindmapApi.updateNodeData(nodeData.id, {
               width: params.width,
-              height: params.height
+              height: params.height,
             });
           }
         }}

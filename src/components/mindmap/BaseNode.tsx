@@ -41,6 +41,10 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
 
   const nodeStyle = getNodeStyle(nodeData.nodeType);
 
+  // Aspect ratio: TRUE for title, topic, subtopic, paragraph. Else FALSE.
+  const rectangularTypes = ['title', 'topic', 'subtopic', 'paragraph'];
+  const forceAspectRatio = rectangularTypes.includes(nodeData.nodeType ?? '');
+
   return (
     <NodeContextMenu id={id}>
       <NodeContainer
@@ -48,7 +52,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
         nodeData={nodeData}
         selected={selected}
         onDoubleClick={handleDoubleClick}
-        forceAspectRatio={false} // Allow free resizing by default for all nodes
+        forceAspectRatio={forceAspectRatio}
       >
         <NodeContent
           nodeData={nodeData}
@@ -59,10 +63,7 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
         />
-        
-        {selected && (
-          <SettingsButton onClick={() => {}} />
-        )}
+        {selected && <SettingsButton onClick={() => {}} />}
         {selected && <NodeSettings data={nodeData} nodeId={id} />}
       </NodeContainer>
     </NodeContextMenu>

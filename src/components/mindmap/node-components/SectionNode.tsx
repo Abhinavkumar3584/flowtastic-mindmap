@@ -35,23 +35,12 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
 
   if (!nodeData) return null;
 
-  const isSelected = selected ? true : false;
+  const isSelected = !!selected;
 
-  const handleCopy = () => {
-    window.mindmapApi?.copyNode?.(id);
-  };
-
-  const handlePaste = () => {
-    window.mindmapApi?.pasteNode?.(id);
-  };
-
-  const handleDuplicate = () => {
-    window.mindmapApi?.duplicateNode?.(id);
-  };
-
-  const handleDelete = () => {
-    window.mindmapApi?.deleteNode(id);
-  };
+  const handleCopy = () => window.mindmapApi?.copyNode?.(id);
+  const handlePaste = () => window.mindmapApi?.pasteNode?.(id);
+  const handleDuplicate = () => window.mindmapApi?.duplicateNode?.(id);
+  const handleDelete = () => window.mindmapApi?.deleteNode(id);
 
   const handleDataChange = (updates: Partial<typeof nodeData>) => {
     window.mindmapApi?.updateNodeData(id, updates);
@@ -85,7 +74,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
           selected={isSelected}
           onDoubleClick={handleDoubleClick}
           customStyle={customStyle}
-          forceAspectRatio={false} /* Allow rectangles, proportional scaling */
+          forceAspectRatio={true}
         >
           {isSelected && (
             <Sheet>
