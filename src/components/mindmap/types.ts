@@ -14,7 +14,7 @@ export interface BaseNodeData {
   label: string;
   nodeType?: string;
   color?: string;
-  fontSize?: number;
+  fontSize?: number | string;
   fontColor?: string;
   width?: number | string;
   height?: number | string;
@@ -48,6 +48,25 @@ export interface BaseNodeData {
     position: LegendPosition;
     text: string;
   };
+  // Additional properties for specialized nodes
+  checklistItems?: any[];
+  isChecked?: boolean;
+  hasCheckbox?: boolean;
+  noteContent?: string;
+  noteColor?: string;
+  tags?: string[];
+  definition?: string;
+  examples?: string[];
+  pinned?: boolean;
+  resources?: any[];
+  questions?: any[];
+  flashcards?: any[];
+  branches?: any[];
+  startDate?: string;
+  endDate?: string;
+  timelineItems?: any[];
+  position?: { x: number; y: number };
+  [key: string]: any; // Index signature to allow additional properties
 }
 
 export interface TopicNodeData extends BaseNodeData {
@@ -80,13 +99,20 @@ export type EdgeData = {
   color?: string;
   width?: number;
   arrowType?: 'default' | 'closed' | 'none';
+  strokeWidth?: number;
+  strokeColor?: string;
+  strokeStyle?: string;
+  pathStyle?: string;
+  arrowStart?: string;
+  arrowEnd?: string;
+  [key: string]: any; // Index signature to allow additional properties
 };
 
 export type OnEdgeClick = (event: React.MouseEvent, edge: MindMapEdge) => void;
 
-export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 's' | 'm' | 'l';
 export type NodeContent = { title?: string; description?: string; links?: { label: string; url: string }[] };
-export type LegendPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type LegendPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'left-top' | 'left-center' | 'left-bottom' | 'right-top' | 'right-center' | 'right-bottom';
 
 export type ExamCategory = 
   | 'SSC EXAMS'

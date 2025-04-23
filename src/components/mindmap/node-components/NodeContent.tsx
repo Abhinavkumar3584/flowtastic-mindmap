@@ -40,13 +40,22 @@ export const NodeContent: React.FC<NodeContentProps> = ({
     onLabelChange(e.target.value);
   };
 
-  const getFontClassName = (fontSize?: 'xs' | 's' | 'm' | 'l' | 'xl') => {
+  const getFontClassName = (fontSize?: number | string) => {
+    if (typeof fontSize === 'number') {
+      return `text-[${fontSize}px]`;
+    }
+    
     switch (fontSize) {
       case 'xs': return 'text-xs';
-      case 's': return 'text-sm';
-      case 'l': return 'text-lg';
+      case 's': 
+      case 'sm': return 'text-sm';
+      case 'l': 
+      case 'lg': return 'text-lg';
       case 'xl': return 'text-xl';
+      case '2xl': return 'text-2xl';
+      case '3xl': return 'text-3xl';
       case 'm':
+      case 'md':
       default: return 'text-base';
     }
   };
@@ -59,10 +68,11 @@ export const NodeContent: React.FC<NodeContentProps> = ({
         onChange={handleInputChange}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
-        className="w-full h-full bg-transparent outline-none resize-none text-center"
+        className="w-full h-full bg-transparent outline-none resize-none"
         style={{
           fontFamily: nodeData.fontFamily,
-          fontSize: nodeData.fontSize,
+          fontSize: typeof nodeData.fontSize === 'number' ? `${nodeData.fontSize}px` : undefined,
+          textAlign: nodeData.textAlign || 'center',
         }}
       />
     );
@@ -70,10 +80,17 @@ export const NodeContent: React.FC<NodeContentProps> = ({
 
   return (
     <div 
-      className={`text-center break-words ${getFontClassName(nodeData.fontSize)}`}
+      className={`w-full h-full break-words ${getFontClassName(nodeData.fontSize)}`}
       style={{
         fontFamily: nodeData.fontFamily,
+        color: nodeData.fontColor,
         textAlign: nodeData.textAlign || 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 
+          nodeData.textAlign === 'left' ? 'flex-start' : 
+          nodeData.textAlign === 'right' ? 'flex-end' : 
+          'center',
       }}
     >
       {label || 'New Node'}

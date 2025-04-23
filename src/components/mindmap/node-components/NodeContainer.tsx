@@ -78,6 +78,7 @@ export const NodeContainer = ({
                  ${nodeData.nodeType !== 'title' ? 'hover:border-mindmap-node-selected' : ''}`}
       style={combinedStyle}
       onDoubleClick={onDoubleClick}
+      data-nodeid={nodeData.id}
     >
       {/* Add connectors to enable connections between nodes */}
       {showConnectors && <NodeConnectors />}
@@ -90,6 +91,14 @@ export const NodeContainer = ({
         lineClassName="border-mindmap-primary"
         handleClassName="h-3 w-3 bg-white border-2 border-mindmap-primary rounded"
         keepAspectRatio={forceAspectRatio}
+        onResize={(event, params) => {
+          if (window.mindmapApi) {
+            window.mindmapApi.updateNodeData(nodeData.id, {
+              width: params.width,
+              height: params.height
+            });
+          }
+        }}
       />
       {children}
     </div>
