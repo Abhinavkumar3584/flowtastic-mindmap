@@ -43,6 +43,12 @@ export const NodeContainer = ({
     filter: `drop-shadow(0 0 ${nodeData.glow.blur || 8}px ${nodeData.glow.color || '#3b82f6'})`,
   } : {};
 
+  // Make sure width and height are properly applied
+  const dimensionStyle = {
+    width: nodeData.width ? (typeof nodeData.width === 'number' ? `${nodeData.width}px` : nodeData.width) : undefined,
+    height: nodeData.height ? (typeof nodeData.height === 'number' ? `${nodeData.height}px` : nodeData.height) : undefined,
+  };
+
   // Combine all styles
   const combinedStyle: CSSProperties = {
     backgroundColor,
@@ -53,8 +59,7 @@ export const NodeContainer = ({
     textAlign: textAlign as 'left' | 'center' | 'right',
     padding: '4px',
     margin: '4px',
-    width: nodeData.width ? (typeof nodeData.width === 'number' ? `${nodeData.width}px` : nodeData.width) : undefined,
-    height: nodeData.height ? (typeof nodeData.height === 'number' ? `${nodeData.height}px` : nodeData.height) : undefined,
+    ...dimensionStyle,
     ...shadowStyle,
     ...glowStyle,
     ...customStyle,

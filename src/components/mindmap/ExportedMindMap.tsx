@@ -161,21 +161,21 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
             </DialogDescription>
           </DialogHeader>
           
-          {/* Display node content based on node type */}
-          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content.description && (
+          {/* Display node content based on node type - safely handle nullable content */}
+          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content?.description && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Description</h3>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {selectedNode.content.description}
+                {selectedNode.content?.description}
               </p>
             </div>
           )}
           
-          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content.links && selectedNode.content.links.length > 0 && (
+          {selectedNode?.content && typeof selectedNode.content === 'object' && selectedNode.content?.links && selectedNode.content?.links.length > 0 && (
             <div className="mt-4">
               <h3 className="font-medium mb-2">Links</h3>
               <div className="space-y-2">
-                {selectedNode.content.links.map((link: any, index: number) => (
+                {selectedNode.content?.links.map((link: any, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <a
                       href={link.url}
