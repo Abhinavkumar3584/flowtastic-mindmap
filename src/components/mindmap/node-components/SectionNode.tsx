@@ -85,7 +85,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
           selected={isSelected}
           onDoubleClick={handleDoubleClick}
           customStyle={customStyle}
-          forceAspectRatio={false} {/* Allow rectangles, proportional scaling */}
+          forceAspectRatio={false} /* Allow rectangles, proportional scaling */
         >
           {isSelected && (
             <Sheet>
