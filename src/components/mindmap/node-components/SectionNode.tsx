@@ -1,12 +1,12 @@
 
 import { useState } from 'react';
-import { 
-  ContextMenu, 
-  ContextMenuContent, 
-  ContextMenuItem, 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
   ContextMenuTrigger,
   ContextMenuSeparator,
-  ContextMenuShortcut 
+  ContextMenuShortcut
 } from "@/components/ui/context-menu";
 import { Copy, Clipboard, Trash2, CopyPlus, Settings } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -34,7 +34,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
   const [nodeData, setNodeData] = useState(data);
 
   if (!nodeData) return null;
-  
+
   const isSelected = selected ? true : false;
 
   const handleCopy = () => {
@@ -58,8 +58,14 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
     setNodeData({ ...nodeData, ...updates });
   };
 
-  const handleDoubleClick = () => {
-    // This can be implemented if needed
+  const handleDoubleClick = () => {};
+
+  // Apply custom width/height if set
+  const customStyle: React.CSSProperties = {
+    borderRadius: `${nodeData.borderRadius || 4}px`,
+    padding: '8px',
+    width: nodeData.width ? nodeData.width : undefined,
+    height: nodeData.height ? nodeData.height : undefined
   };
 
   return (
@@ -73,20 +79,20 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
             strokeColor: nodeData.strokeColor || '#000',
             strokeWidth: nodeData.strokeWidth || 1,
             strokeStyle: nodeData.strokeStyle || 'dashed',
+            width: nodeData.width,
+            height: nodeData.height
           }}
           selected={isSelected}
           onDoubleClick={handleDoubleClick}
-          customStyle={{
-            borderRadius: `${nodeData.borderRadius || 4}px`,
-            padding: '8px'
-          }}
+          customStyle={customStyle}
+          forceAspectRatio={false} {/* Allow rectangles, proportional scaling */}
         >
           {isSelected && (
             <Sheet>
               <SheetTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="absolute top-2 right-2 z-50 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
                 >
                   <Settings className="h-4 w-4" />
@@ -96,7 +102,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
                 <div className="space-y-6 py-6">
                   <div className="space-y-2">
                     <Label>Section Label</Label>
-                    <Input 
+                    <Input
                       value={nodeData.label || ''}
                       onChange={(e) => handleDataChange({ label: e.target.value })}
                       placeholder="Enter section label"
@@ -127,10 +133,10 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
 
                   <div className="space-y-2">
                     <Label>Border Style</Label>
-                    <RadioGroup 
+                    <RadioGroup
                       defaultValue={nodeData.strokeStyle || "dashed"}
-                      onValueChange={(value) => handleDataChange({ 
-                        strokeStyle: value as 'solid' | 'dashed' | 'dotted' 
+                      onValueChange={(value) => handleDataChange({
+                        strokeStyle: value as 'solid' | 'dashed' | 'dotted'
                       })}
                       className="grid grid-cols-3 gap-2"
                     >
@@ -163,6 +169,26 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
                         />
                       ))}
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Width</Label>
+                    <Slider
+                      defaultValue={[nodeData.width ? Number(nodeData.width) : 240]}
+                      min={100}
+                      max={600}
+                      step={10}
+                      onValueChange={(value) => handleDataChange({ width: value[0] })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Height</Label>
+                    <Slider
+                      defaultValue={[nodeData.height ? Number(nodeData.height) : 120]}
+                      min={40}
+                      max={400}
+                      step={10}
+                      onValueChange={(value) => handleDataChange({ height: value[0] })}
+                    />
                   </div>
                 </div>
               </SheetContent>

@@ -37,7 +37,7 @@ export const NodeContainer = ({
   const shadowStyle = nodeData.shadow?.enabled ? {
     boxShadow: `${nodeData.shadow.offsetX || 2}px ${nodeData.shadow.offsetY || 2}px ${nodeData.shadow.blur || 4}px ${nodeData.shadow.color || 'rgba(0,0,0,0.3)'}`,
   } : {};
-  
+
   // Apply glow if enabled
   const glowStyle = nodeData.glow?.enabled ? {
     filter: `drop-shadow(0 0 ${nodeData.glow.blur || 8}px ${nodeData.glow.color || '#3b82f6'})`,
@@ -53,6 +53,8 @@ export const NodeContainer = ({
     textAlign: textAlign as 'left' | 'center' | 'right',
     padding: '4px',
     margin: '4px',
+    width: nodeData.width ? (typeof nodeData.width === 'number' ? `${nodeData.width}px` : nodeData.width) : undefined,
+    height: nodeData.height ? (typeof nodeData.height === 'number' ? `${nodeData.height}px` : nodeData.height) : undefined,
     ...shadowStyle,
     ...glowStyle,
     ...customStyle,
