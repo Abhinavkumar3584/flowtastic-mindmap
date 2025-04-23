@@ -57,6 +57,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
     height: nodeData.height ? nodeData.height : undefined
   };
 
+  // Do NOT force aspect ratio for the Section node
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -74,7 +75,7 @@ export const SectionNode = ({ data, id, selected }: MindMapNodeProps) => {
           selected={isSelected}
           onDoubleClick={handleDoubleClick}
           customStyle={customStyle}
-          forceAspectRatio={true}
+          forceAspectRatio={false}
         >
           {isSelected && (
             <Sheet>

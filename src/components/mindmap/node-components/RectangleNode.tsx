@@ -40,6 +40,7 @@ export const RectangleNode: React.FC<MindMapNodeProps> = ({
     ...glowStyle,
   };
 
+  // Rectangle nodes should allow free resizing (not forced aspect ratio)
   return (
     <NodeContainer 
       nodeStyle="flex items-center justify-center"

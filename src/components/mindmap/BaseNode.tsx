@@ -41,9 +41,10 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
 
   const nodeStyle = getNodeStyle(nodeData.nodeType);
 
-  // Aspect ratio: TRUE for title, topic, subtopic, paragraph. Else FALSE.
+  // Remove forced aspect ratio for "title", "topic", "subtopic", "paragraph"
+  // so they behave like "Main Idea" (title type), i.e. allow width/height to scale freely
   const rectangularTypes = ['title', 'topic', 'subtopic', 'paragraph'];
-  const forceAspectRatio = rectangularTypes.includes(nodeData.nodeType ?? '');
+  const forceAspectRatio = false; // Apply free rectangular resizing for all such nodes
 
   return (
     <NodeContextMenu id={id}>
