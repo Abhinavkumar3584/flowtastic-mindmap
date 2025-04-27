@@ -46,7 +46,8 @@ export interface BaseNodeData {
   legend?: {
     enabled: boolean;
     position: LegendPosition;
-    text: string;
+    text?: string;
+    color?: string; // Added color property to fix typing errors
   };
   // Additional properties for specialized nodes
   checklistItems?: any[];

@@ -51,6 +51,7 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
         enabled: true,
         position,
         color: data.legend?.color || '#000000',
+        text: data.legend?.text || '',
       },
     });
   };
@@ -61,6 +62,7 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
         enabled: false,
         position: data.legend?.position || 'right-top',
         color: data.legend?.color || '#000000',
+        text: data.legend?.text || '',
       },
     });
   };

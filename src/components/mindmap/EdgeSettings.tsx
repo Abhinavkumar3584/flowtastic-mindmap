@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,8 +22,12 @@ interface EdgeSettingsProps {
 
 export const EdgeSettings = ({ id, data }: EdgeSettingsProps) => {
   const [label, setLabel] = useState(data.label || '');
-  const [arrowStart, setArrowStart] = useState(data.arrowStart || false);
-  const [arrowEnd, setArrowEnd] = useState(data.arrowEnd || false);
+  const [arrowStart, setArrowStart] = useState<boolean>(
+    typeof data.arrowStart === 'boolean' ? data.arrowStart : false
+  );
+  const [arrowEnd, setArrowEnd] = useState<boolean>(
+    typeof data.arrowEnd === 'boolean' ? data.arrowEnd : false
+  );
   const [strokeWidth, setStrokeWidth] = useState(data.strokeWidth || 1);
   const [strokeColor, setStrokeColor] = useState(data.strokeColor || 'black');
   const [strokeStyle, setStrokeStyle] = useState(data.strokeStyle || 'solid');

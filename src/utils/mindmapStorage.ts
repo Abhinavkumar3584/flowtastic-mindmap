@@ -74,7 +74,7 @@ export const loadMindMap = (name: string): MindMapData | null => {
     }
     
     console.log('Mind map loaded successfully:', name);
-    return loadedData;
+    return loadedData as MindMapData;
   } catch (error) {
     console.error('Error loading mind map:', error);
     return null;
@@ -115,13 +115,21 @@ export const getMindMapsByExamCategory = (category: string): MindMapData[] => {
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = safeJSONParse(mindmapsData, {});
     
-    return Object.values(mindmaps)
-      .filter((mindmap: any) => mindmap.examCategory === category)
-      .map((mindmap: any) => ({
-        ...mindmap,
-        nodes: mindmap.nodes || [],
-        edges: mindmap.edges || []
-      }));
+    const result: MindMapData[] = [];
+    
+    Object.values(mindmaps).forEach((mindmap: any) => {
+      if (mindmap.examCategory === category) {
+        result.push({
+          nodes: mindmap.nodes || [],
+          edges: mindmap.edges || [],
+          name: mindmap.name || '',
+          examCategory: mindmap.examCategory,
+          subExamName: mindmap.subExamName,
+        });
+      }
+    });
+    
+    return result;
   } catch (error) {
     console.error('Error getting mind maps by category:', error);
     return [];
@@ -133,21 +141,24 @@ export const getMindMapBySubExam = (category: string, subExam: string): MindMapD
     const mindmapsData = localStorage.getItem('mindmaps') || '{}';
     const mindmaps = safeJSONParse(mindmapsData, {});
     
-    const mindmap = Object.values(mindmaps).find((mindmap: any) => 
-      mindmap.examCategory === category && 
-      mindmap.subExamName && 
-      mindmap.subExamName.toLowerCase() === subExam.toLowerCase()
-    );
-    
-    if (!mindmap) {
-      return null;
+    for (const key in mindmaps) {
+      const mindmap = mindmaps[key];
+      if (
+        mindmap.examCategory === category && 
+        mindmap.subExamName && 
+        mindmap.subExamName.toLowerCase() === subExam.toLowerCase()
+      ) {
+        return {
+          nodes: mindmap.nodes || [],
+          edges: mindmap.edges || [],
+          name: mindmap.name || '',
+          examCategory: mindmap.examCategory,
+          subExamName: mindmap.subExamName,
+        };
+      }
     }
     
-    return {
-      ...mindmap,
-      nodes: mindmap.nodes || [],
-      edges: mindmap.edges || []
-    };
+    return null;
   } catch (error) {
     console.error('Error finding mind map by sub-exam:', error);
     return null;
