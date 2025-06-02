@@ -35,8 +35,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getAllMindMaps } from '@/utils/mindmapStorage';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
-// Define all node types to ensure all components load properly
+// Node types mapping for the viewer
 const nodeTypes: NodeTypes = {
   base: BaseNode,
   section: SectionNode,
@@ -52,74 +54,101 @@ const nodeTypes: NodeTypes = {
   mindmap: MindMapNodeComponent,
   note: NoteNode,
   concept: ConceptNode,
-  // Map the nodeType to the component for any missing types
   title: BaseNode,
   topic: BaseNode,
   subtopic: BaseNode,
   paragraph: BaseNode,
 };
 
-interface ExportedMindMapProps {
+interface MindMapViewerProps {
   predefinedMindMap?: MindMapData;
   containerHeight?: string;
 }
 
-export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }: ExportedMindMapProps) => {
+export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }: MindMapViewerProps) => {
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
 
-  // If a predefined mind map is provided, use it
+  // Auto-load mind map from URL parameter
+  useEffect(() => {
+    const mapName = searchParams.get('map');
+    if (mapName) {
+      setSelectedMap(mapName);
+      handleRenderMap(mapName);
+    }
+  }, [searchParams]);
+
+  // Use predefined mind map if provided
   useEffect(() => {
     if (predefinedMindMap) {
       setMindMapData(predefinedMindMap);
     }
   }, [predefinedMindMap]);
 
-  const handleRender = () => {
-    if (!selectedMap) {
+  const handleRenderMap = (mapName: string) => {
+    if (!mapName) {
       toast({
         title: "Error",
-        description: "Please select a mind map to render",
+        description: "Please select a mind map to view",
         variant: "destructive",
       });
       return;
     }
 
-    const data = renderMindMap(selectedMap);
+    const data = renderMindMap(mapName);
     if (data) {
-      console.log('Mind map data loaded:', data);
+      console.log('Mind map loaded for viewing:', data);
       setMindMapData(data);
       
       toast({
         title: "Success",
-        description: `Loaded mind map: ${selectedMap}`,
+        description: `Loaded mind map: ${mapName}`,
       });
     } else {
-      console.error('Failed to load mind map:', selectedMap);
+      console.error('Failed to load mind map:', mapName);
       toast({
         title: "Error",
-        description: `Failed to load mind map: ${selectedMap}`,
+        description: `Failed to load mind map: ${mapName}`,
         variant: "destructive",
       });
     }
   };
 
+  const handleRender = () => {
+    handleRenderMap(selectedMap);
+  };
+
   const handleNodeClick = (_: React.MouseEvent, node: any) => {
-    console.log('Node clicked:', node);
+    console.log('Node selected for details:', node);
     setSelectedNode(node.data);
   };
 
-  // Render selection UI if no mind map data is available yet
+  // Render map selection interface if no data is available
   if (!mindMapData && !predefinedMindMap) {
     return (
-      <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
+      <div className="w-full h-screen flex flex-col items-center justify-center gap-6 bg-gray-50">
+        <div className="absolute top-4 left-4">
+          <Link to="/exams">
+            <Button variant="outline" className="flex gap-2 items-center">
+              <ArrowLeft size={16} />
+              <span>Back to Catalog</span>
+            </Button>
+          </Link>
+        </div>
+        
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Mind Map Viewer</h1>
+          <p className="text-gray-600 mb-6">Select a mind map to view in presentation mode</p>
+        </div>
+        
         <div className="flex gap-4 items-center">
           <Select value={selectedMap} onValueChange={setSelectedMap}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a mind map" />
+            <SelectTrigger className="w-[250px]">
+              <SelectValue placeholder="Choose a mind map to view" />
             </SelectTrigger>
             <SelectContent>
               {mindMaps.map((name) => (
@@ -129,7 +158,9 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleRender}>Render</Button>
+          <Button onClick={handleRender} disabled={!selectedMap}>
+            View Mind Map
+          </Button>
         </div>
       </div>
     );
@@ -137,7 +168,22 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
 
   return (
     <>
-      <div className="w-full" style={{ height: containerHeight }}>
+      <div className="absolute top-4 left-4 z-10">
+        <Link to="/exams">
+          <Button variant="outline" className="flex gap-2 items-center">
+            <ArrowLeft size={16} />
+            <span>Back to Catalog</span>
+          </Button>
+        </Link>
+      </div>
+
+      <div 
+        className="w-full mindmap-viewer" 
+        style={{ 
+          height: containerHeight,
+          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+        }}
+      >
         <ReactFlow
           nodes={mindMapData?.nodes || []}
           edges={mindMapData?.edges || []}
@@ -147,17 +193,31 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
-        >
-          <Background gap={12} size={1} />
-        </ReactFlow>
+          className="mindmap-display"
+        />
+
+        <style jsx>{`
+          .mindmap-viewer .react-flow__node:hover .react-flow__resize-control,
+          .mindmap-viewer .react-flow__node:hover button {
+            display: none !important;
+          }
+          
+          .mindmap-viewer .react-flow__resize-control {
+            display: none !important;
+          }
+          
+          .mindmap-viewer .react-flow__node button {
+            display: none !important;
+          }
+        `}</style>
       </div>
 
       <Dialog open={!!selectedNode} onOpenChange={() => setSelectedNode(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{selectedNode?.label}</DialogTitle>
+            <DialogTitle className="text-xl">{selectedNode?.label}</DialogTitle>
             <DialogDescription>
-              Click outside to close
+              Node details and content
             </DialogDescription>
           </DialogHeader>
           

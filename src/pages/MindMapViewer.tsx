@@ -1,7 +1,8 @@
+
 import { ExportedMindMap } from "@/components/mindmap/ExportedMindMap";
 
-const Export = () => {
+const MindMapViewer = () => {
   return <ExportedMindMap />;
 };
 
-export default Export;
+export default MindMapViewer;
