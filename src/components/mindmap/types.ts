@@ -47,7 +47,7 @@ export interface BaseNodeData {
     enabled: boolean;
     position: LegendPosition;
     text?: string;
-    color?: string; // Added color property to fix typing errors
+    color?: string;
   };
   // Additional properties for specialized nodes
   checklistItems?: any[];
@@ -104,8 +104,8 @@ export type EdgeData = {
   strokeColor?: string;
   strokeStyle?: string;
   pathStyle?: string;
-  arrowStart?: string;
-  arrowEnd?: string;
+  arrowStart?: boolean; // Changed from string to boolean
+  arrowEnd?: boolean; // Changed from string to boolean
   [key: string]: any; // Index signature to allow additional properties
 };
 
