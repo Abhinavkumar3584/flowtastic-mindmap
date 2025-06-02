@@ -33,14 +33,14 @@ export const CircleNode: React.FC<MindMapNodeProps> = ({
     filter: `drop-shadow(0 0 ${data.glow.blur || 8}px ${data.glow.color || '#3b82f6'})`,
   } : {};
   
-  // Combine all styles - Apply free rectangular resizing like Main Idea
+  // Combine all styles
   const combinedStyle = {
     ...rotationStyle,
     ...shadowStyle,
     ...glowStyle,
+    aspectRatio: data.aspectRatio !== false ? '1 / 1' : 'auto', // Force 1:1 aspect ratio by default
   };
 
-  // Apply free rectangular resizing like Main Idea component
   return (
     <NodeContainer 
       nodeStyle="flex items-center justify-center rounded-full overflow-hidden"
@@ -48,7 +48,7 @@ export const CircleNode: React.FC<MindMapNodeProps> = ({
       selected={selected}
       onDoubleClick={handleDoubleClick}
       customStyle={combinedStyle}
-      forceAspectRatio={false}
+      forceAspectRatio={data.aspectRatio !== false}
     >
       <div className="w-full h-full p-2 flex items-center justify-center relative">
         <div className="text-center">{data.label || 'Circle'}</div>
