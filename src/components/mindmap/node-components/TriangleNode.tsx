@@ -42,9 +42,8 @@ export const TriangleNode: React.FC<MindMapNodeProps> = ({
         onDoubleClick={handleDoubleClick}
         customStyle={{
           ...rotationStyle,
-          aspectRatio: data.aspectRatio !== false ? '1 / 1' : 'auto',
         }}
-        forceAspectRatio={data.aspectRatio !== false}
+        forceAspectRatio={false}
       >
         <div 
           className="triangle absolute top-0 left-0 w-full h-full"
