@@ -112,6 +112,34 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
     setSelectedNode(node.data);
   };
 
+  // Calculate mindmap bounds for auto-sizing
+  const calculateMindMapBounds = () => {
+    if (!mindMapData?.nodes || mindMapData.nodes.length === 0) {
+      return { width: '100vw', height: '100vh' };
+    }
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    
+    mindMapData.nodes.forEach(node => {
+      const x = node.position.x;
+      const y = node.position.y;
+      const width = node.data.width || 200; // Default node width
+      const height = node.data.height || 100; // Default node height
+      
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x + width);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y + height);
+    });
+
+    // Add padding
+    const padding = 100;
+    const width = Math.max(800, maxX - minX + padding * 2);
+    const height = Math.max(600, maxY - minY + padding * 2);
+
+    return { width: `${width}px`, height: `${height}px` };
+  };
+
   // Render selection UI if no mind map data is available yet
   if (!mindMapData && !predefinedMindMap) {
     return (
@@ -135,9 +163,39 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
     );
   }
 
+  const bounds = calculateMindMapBounds();
+
   return (
     <>
-      <div className="w-full" style={{ height: containerHeight }}>
+      <style>{`
+        /* Hide resize handles and settings buttons on exported page */
+        .react-flow__node .react-flow__handle {
+          display: none !important;
+        }
+        
+        .react-flow__node button[aria-label*="Settings"],
+        .react-flow__node button:has(.lucide-settings) {
+          display: none !important;
+        }
+        
+        /* Hide resize handles on hover */
+        .react-flow__node:hover .react-flow__handle {
+          display: none !important;
+        }
+        
+        /* Remove selection outline */
+        .react-flow__node.selected {
+          outline: none !important;
+        }
+        
+        /* Hide any resize dots or controls */
+        .react-flow__node .resize-control,
+        .react-flow__node .resize-handle {
+          display: none !important;
+        }
+      `}</style>
+      
+      <div className="w-full overflow-auto" style={{ width: bounds.width, height: bounds.height }}>
         <ReactFlow
           nodes={mindMapData?.nodes || []}
           edges={mindMapData?.edges || []}
@@ -147,8 +205,9 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
+          style={{ background: 'transparent' }}
         >
-          <Background gap={12} size={1} />
+          {/* Remove Background component to eliminate dotted pattern */}
         </ReactFlow>
       </div>
 
