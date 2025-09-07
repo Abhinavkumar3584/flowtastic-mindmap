@@ -196,7 +196,7 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
           className="mindmap-display"
         />
 
-        <style jsx>{`
+        <style>{`
           .mindmap-viewer .react-flow__node:hover .react-flow__resize-control,
           .mindmap-viewer .react-flow__node:hover button {
             display: none !important;
