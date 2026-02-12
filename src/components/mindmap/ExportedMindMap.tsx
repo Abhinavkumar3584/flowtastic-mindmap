@@ -192,7 +192,7 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
           fitView
           nodesDraggable={false}
           nodesConnectable={false}
-          elementsSelectable={true}
+          elementsSelectable={false}
           className="mindmap-display"
         />
 

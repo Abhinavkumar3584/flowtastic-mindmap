@@ -1,5 +1,6 @@
 
 import { BaseNodeData } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const addNode = (
   setNodes: React.Dispatch<React.SetStateAction<any[]>>,
@@ -10,7 +11,7 @@ export const addNode = (
   if (!type) return;
   
   const newNode = {
-    id: `${nodes.length + 1}`,
+    id: uuidv4(),
     type: getNodeType(type),
     data: { 
       label: additionalData.label || getDefaultLabel(type),

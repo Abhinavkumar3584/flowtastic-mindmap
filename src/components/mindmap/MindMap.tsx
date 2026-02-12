@@ -29,7 +29,7 @@ import { initialNodes, initialEdges } from './MindMapInitialData';
 import { MindMapTopBar } from './MindMapTopBar';
 import { MindMapDeleteDialog } from './MindMapDeleteDialog';
 import { MindMapSaveDialog } from './MindMapSaveDialog';
-import { useMindMapKeyboardHandlers } from './MindMapKeyboardHandlers';
+
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
 import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
@@ -195,7 +195,7 @@ export const MindMap = () => {
           // Only save if there were changes in the last minute
           if (timeSinceLastChange < 60000) {
             const newConfig = performAutoSave(
-              { nodes, edges, name: currentMindMap },
+              { nodes, edges, name: currentMindMap, examCategory: (nodes[0]?.data as any)?.examCategory, subExamName: (nodes[0]?.data as any)?.subExamName },
               autoSaveConfig
             );
             
@@ -216,14 +216,19 @@ export const MindMap = () => {
   }, [autoSaveConfig, currentMindMap, nodes, edges]);
 
   // Assign API to window for global access
-  window.mindmapApi = {
-    deleteNode,
-    updateNodeData,
-    updateEdge,
-    copyNode,
-    pasteNode,
-    duplicateNode
-  };
+  useEffect(() => {
+    (window as any).mindmapApi = {
+      deleteNode,
+      updateNodeData,
+      updateEdge,
+      copyNode,
+      pasteNode,
+      duplicateNode
+    };
+    return () => {
+      delete (window as any).mindmapApi;
+    };
+  }, [deleteNode, updateNodeData, updateEdge, copyNode, pasteNode, duplicateNode]);
 
   // Toggle between sidebars
   const handleToggleSidebar = () => {

@@ -24,20 +24,22 @@ const ExamCatalog = () => {
   useEffect(() => {
     const loadMindMaps = () => {
       const savedMaps = getAllMindMaps();
+      let allMindmaps: Record<string, any> = {};
+      try {
+        const raw = localStorage.getItem('mindmaps');
+        if (raw) allMindmaps = JSON.parse(raw);
+      } catch (error) {
+        console.error('Error parsing mindmaps storage:', error);
+      }
       const mapData: MindMapItem[] = savedMaps.map(name => {
-        try {
-          const data = localStorage.getItem(`mindmap_${name}`);
-          if (data) {
-            const parsed = JSON.parse(data);
-            return {
-              name,
-              examCategory: parsed.examCategory,
-              subExamName: parsed.subExamName,
-              createdAt: parsed.createdAt || new Date().toISOString()
-            };
-          }
-        } catch (error) {
-          console.error('Error parsing mind map data:', error);
+        const entry = allMindmaps[name];
+        if (entry) {
+          return {
+            name,
+            examCategory: entry.examCategory,
+            subExamName: entry.subExamName,
+            createdAt: entry.createdAt || new Date().toISOString()
+          };
         }
         return { name };
       });
