@@ -37,6 +37,7 @@ import {
 import { getAllMindMaps } from '@/utils/mindmapStorage';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { WORKSPACE_WIDTH, WORKSPACE_HEIGHT } from './WorkspaceBoundary';
 
 // Node types mapping for the viewer
 const nodeTypes: NodeTypes = {
@@ -185,14 +186,27 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
         }}
       >
         <ReactFlow
-          nodes={mindMapData?.nodes || []}
+          nodes={(mindMapData?.nodes || []).filter(n => n.id !== '__workspace_boundary__')}
           edges={mindMapData?.edges || []}
           nodeTypes={nodeTypes}
           onNodeClick={handleNodeClick}
           fitView
+          fitViewOptions={{ 
+            padding: 0.05,
+            minZoom: 0.5,
+            maxZoom: 1.5,
+          }}
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={false}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          zoomOnDoubleClick={false}
+          panOnDrag={[1]}
+          translateExtent={[
+            [0, -100],
+            [WORKSPACE_WIDTH, WORKSPACE_HEIGHT + 100]
+          ]}
           className="mindmap-display"
         />
 
