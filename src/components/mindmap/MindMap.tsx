@@ -51,6 +51,7 @@ import { NoteSettings } from './settings/NoteSettings';
 import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
 import { mindMapHistory } from '@/utils/mindmapHistory';
+import { WorkspaceBoundaryNode, WORKSPACE_WIDTH, WORKSPACE_HEIGHT, WORKSPACE_X, WORKSPACE_Y } from './WorkspaceBoundary';
 import { useToast } from '@/hooks/use-toast';
 import { ExamCategory } from './types';
 import { 
@@ -75,10 +76,24 @@ const nodeTypes: NodeTypes = {
   mindmap: MindMapNodeComponent,
   note: NoteNode,
   concept: ConceptNode,
+  workspace: WorkspaceBoundaryNode,
+};
+
+// The workspace boundary node (always present, non-interactive)
+const workspaceBoundaryNode = {
+  id: '__workspace_boundary__',
+  type: 'workspace' as const,
+  position: { x: WORKSPACE_X, y: WORKSPACE_Y },
+  data: { id: '__workspace_boundary__', label: '' } as any,
+  selectable: false,
+  draggable: false,
+  deletable: false,
+  focusable: false,
+  style: { zIndex: -1 },
 };
 
 export const MindMap = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState([workspaceBoundaryNode, ...initialNodes]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
@@ -322,6 +337,7 @@ export const MindMap = () => {
             onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             fitView
+            nodeExtent={[[WORKSPACE_X, WORKSPACE_Y], [WORKSPACE_X + WORKSPACE_WIDTH, WORKSPACE_Y + WORKSPACE_HEIGHT]]}
           >
             <Controls />
             <MiniMap />
