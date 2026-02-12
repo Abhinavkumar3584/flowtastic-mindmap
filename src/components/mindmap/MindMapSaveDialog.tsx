@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,12 @@ export function MindMapSaveDialog({
   const [examCategory, setExamCategory] = useState<ExamCategory | ''>('');
   const [subExamName, setSubExamName] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (open) {
+      setName(currentName);
+    }
+  }, [open, currentName]);
 
   const handleSave = () => {
     if (!name.trim()) {
