@@ -7,6 +7,11 @@ export interface MindMapData {
   name: string;
   examCategory?: string;
   subExamName?: string;
+  headerData?: {
+    title: string;
+    description: string;
+    subDetails: string;
+  };
 }
 
 export interface BaseNodeData {

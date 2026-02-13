@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { saveMindMap, loadMindMap, deleteMindMap } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapData, ExamCategory } from './types';
+import { MindMapHeaderData } from './MindMapHeader';
 
 interface UseMindMapStorageProps {
   nodes: any[];
@@ -13,6 +14,8 @@ interface UseMindMapStorageProps {
   setCurrentMindMap: React.Dispatch<React.SetStateAction<string>>;
   setMindMapToDelete: React.Dispatch<React.SetStateAction<string | null>>;
   initialNodes: any[];
+  headerData?: MindMapHeaderData;
+  setHeaderData?: React.Dispatch<React.SetStateAction<MindMapHeaderData>>;
 }
 
 export const useMindMapStorage = ({
@@ -23,7 +26,9 @@ export const useMindMapStorage = ({
   currentMindMap,
   setCurrentMindMap,
   setMindMapToDelete,
-  initialNodes
+  initialNodes,
+  headerData,
+  setHeaderData
 }: UseMindMapStorageProps) => {
   const { toast } = useToast();
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
@@ -75,6 +80,12 @@ export const useMindMapStorage = ({
       setNodes(data.nodes);
       setEdges(data.edges);
       setCurrentMindMap(name);
+      
+      // Load header data if available
+      if (data.headerData && setHeaderData) {
+        setHeaderData(data.headerData);
+      }
+      
       toast({
         title: "Success",
         description: `Loaded mind map: ${name}`,
@@ -86,7 +97,7 @@ export const useMindMapStorage = ({
         variant: "destructive",
       });
     }
-  }, [setNodes, setEdges, setCurrentMindMap, toast]);
+  }, [setNodes, setEdges, setCurrentMindMap, setHeaderData, toast]);
 
   const handleDeleteMindMap = useCallback((name: string) => {
     setMindMapToDelete(name);
@@ -125,7 +136,8 @@ export const useMindMapStorage = ({
       edges, 
       name,
       examCategory,
-      subExamName
+      subExamName,
+      headerData
     });
     
     if (success) {
@@ -141,7 +153,7 @@ export const useMindMapStorage = ({
         variant: "destructive",
       });
     }
-  }, [nodes, edges, setCurrentMindMap, toast]);
+  }, [nodes, edges, headerData, setCurrentMindMap, toast]);
 
   return {
     handleExport,

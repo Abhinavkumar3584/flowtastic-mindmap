@@ -42,7 +42,8 @@ export const saveMindMap = (data: MindMapData): boolean => {
       edges: data.edges,
       name: data.name,
       examCategory: data.examCategory || '',
-      subExamName: data.subExamName || ''
+      subExamName: data.subExamName || '',
+      headerData: data.headerData
     };
     
     localStorage.setItem('mindmaps', JSON.stringify(mindmaps));

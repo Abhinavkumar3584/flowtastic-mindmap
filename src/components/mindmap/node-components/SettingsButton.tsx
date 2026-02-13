@@ -11,7 +11,7 @@ export const SettingsButton = ({ onClick }: SettingsButtonProps) => {
     <Button 
       variant="ghost" 
       size="sm" 
-      className="absolute top-0 right-0 -translate-y-full h-6 w-6 p-0 bg-white/70 hover:bg-white/90 rounded-full"
+      className="settings-button absolute top-0 right-0 -translate-y-full h-6 w-6 p-0 bg-white/70 hover:bg-white/90 rounded-full"
       onClick={onClick}
     >
       <Settings className="h-3 w-3" />

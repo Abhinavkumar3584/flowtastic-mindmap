@@ -63,14 +63,14 @@ export const ChecklistNode: React.FC<MindMapNodeProps> = ({
       <div className="w-full p-2 relative">
         <div className="font-semibold text-sm mb-2">{data.label || 'Checklist'}</div>
         
-        {/* Settings button in top right corner - only visible when selected */}
-        {selected && (
+        {/* Settings button in top right corner - only visible when selected and not in view mode */}
+        {selected && !document.querySelector('[data-viewmode="true"]') && (
           <Dialog>
             <DialogTrigger asChild>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
+                className="settings-button absolute top-1 right-1 h-6 w-6 p-0 rounded-full bg-white/70 hover:bg-white/90"
               >
                 <Settings className="h-3 w-3" />
               </Button>

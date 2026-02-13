@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { BaseNodeData, FontSize, NodeContent, LegendPosition } from "./types";
-import { Plus, Trash, Check } from "lucide-react";
+import { Plus, Trash, Check, Settings } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -98,8 +98,8 @@ export function NodeSettings({ data, nodeId }: NodeSettingsProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="absolute top-0 right-0 -translate-y-full">
-          Settings
+        <Button variant="ghost" size="sm" className="node-settings absolute top-0 right-0 -translate-y-full h-6 w-6 p-0">
+          <Settings className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">

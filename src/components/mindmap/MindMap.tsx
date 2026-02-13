@@ -32,14 +32,12 @@ import { MindMapSaveDialog } from './MindMapSaveDialog';
 
 import { useMindMapStorage } from './MindMapStorage';
 import { ComponentsSidebar } from './ComponentsSidebar';
-import { AdvancedComponentsSidebar } from './AdvancedComponentsSidebar';
-import { EducationSidebar } from './EducationSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useMindMapNodeHandlers } from './hooks/useMindMapNodeHandlers';
 import { useMindMapEdgeHandlers } from './hooks/useMindMapEdgeHandlers';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Settings } from 'lucide-react';
+import { Settings, ChevronRight } from 'lucide-react';
 import { TimelineSettings } from './settings/TimelineSettings';
 import { ChecklistSettings } from './settings/ChecklistSettings';
 import { ResourceSettings } from './settings/ResourceSettings';
@@ -50,6 +48,7 @@ import { MindMapSettings } from './settings/MindMapSettings';
 import { NoteSettings } from './settings/NoteSettings';
 import { ConceptSettings } from './settings/ConceptSettings';
 import { NodeConnectors } from './NodeConnectors';
+import { MindMapHeader, MindMapHeaderData } from './MindMapHeader';
 import { mindMapHistory } from '@/utils/mindmapHistory';
 import { WorkspaceBoundaryNode, WORKSPACE_WIDTH, WORKSPACE_HEIGHT, WORKSPACE_X, WORKSPACE_Y } from './WorkspaceBoundary';
 import { useToast } from '@/hooks/use-toast';
@@ -97,11 +96,17 @@ export const MindMap = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [currentMindMap, setCurrentMindMap] = useState<string>('');
   const [mindMapToDelete, setMindMapToDelete] = useState<string | null>(null);
-  const [sidebarMode, setSidebarMode] = useState<'basic' | 'advanced' | 'education'>('basic');
+  const [sidebarVisible, setSidebarVisible] = useState<boolean>(true);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
   const [autoSaveConfig, setAutoSaveConfig] = useState<AutoSaveConfig>(initAutoSaveConfig());
+  const [headerData, setHeaderData] = useState<MindMapHeaderData>({
+    title: '',
+    description: '',
+    subDetails: ''
+  });
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState<boolean>(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const lastChangeRef = useRef<number>(Date.now());
@@ -143,7 +148,9 @@ export const MindMap = () => {
     currentMindMap,
     setCurrentMindMap,
     setMindMapToDelete,
-    initialNodes
+    initialNodes,
+    headerData,
+    setHeaderData
   });
 
   // Undo/Redo handlers
@@ -245,15 +252,9 @@ export const MindMap = () => {
     };
   }, [deleteNode, updateNodeData, updateEdge, copyNode, pasteNode, duplicateNode]);
 
-  // Toggle between sidebars
+  // Toggle sidebar visibility
   const handleToggleSidebar = () => {
-    if (sidebarMode === 'basic') {
-      setSidebarMode('advanced');
-    } else if (sidebarMode === 'advanced') {
-      setSidebarMode('education');
-    } else {
-      setSidebarMode('basic');
-    }
+    setSidebarVisible(!sidebarVisible);
   };
 
   // Confirm deletion handler for mind maps
@@ -281,38 +282,28 @@ export const MindMap = () => {
   // Check if the selected node is an education node
   const isEducationNode = nodeType === 'flashcard' || nodeType === 'quiz' || nodeType === 'mindmap';
 
-  // Render the appropriate sidebar based on mode
-  const renderSidebar = () => {
-    switch (sidebarMode) {
-      case 'advanced':
-        return (
-          <AdvancedComponentsSidebar 
-            onAddNode={addNode} 
-            onToggleSidebar={handleToggleSidebar}
-          />
-        );
-      case 'education':
-        return (
-          <EducationSidebar 
-            onAddNode={addNode} 
-            onToggleSidebar={handleToggleSidebar}
-          />
-        );
-      default:
-        return (
+  return (
+    <SidebarProvider>
+      <div className="w-full h-screen flex">
+        {!sidebarVisible && (
+          <Button 
+            variant="outline"
+            size="sm"
+            className="absolute top-16 left-4 z-50 bg-white shadow-md border flex items-center gap-1"
+            onClick={handleToggleSidebar}
+            title="Show Sidebar"
+          >
+            <ChevronRight className="h-4 w-4" />
+            <span>Tools</span>
+          </Button>
+        )}
+        {sidebarVisible && (
           <ComponentsSidebar 
             onAddNode={addNode} 
             onToggleSidebar={handleToggleSidebar}
           />
-        );
-    }
-  };
-
-  return (
-    <SidebarProvider>
-      <div className="w-full h-screen flex">
-        {renderSidebar()}
-        <div className="flex-1 relative">
+        )}
+        <div className="flex-1 flex flex-col h-screen overflow-hidden">
           <MindMapTopBar
             currentMindMap={currentMindMap}
             onSave={openSaveDialog}
@@ -327,18 +318,28 @@ export const MindMap = () => {
             autoSaveConfig={autoSaveConfig}
             onAutoSaveConfigChange={setAutoSaveConfig}
           />
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onEdgeClick={onEdgeClick}
-            onNodeClick={onNodeClick}
-            nodeTypes={nodeTypes}
-            fitView
-            nodeExtent={[[WORKSPACE_X, WORKSPACE_Y], [WORKSPACE_X + WORKSPACE_WIDTH, WORKSPACE_Y + WORKSPACE_HEIGHT]]}
-          >
+          
+          {/* Mind Map Header */}
+          <MindMapHeader
+            data={headerData}
+            onChange={setHeaderData}
+            isCollapsed={isHeaderCollapsed}
+            onToggleCollapse={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+          />
+          
+          <div className="flex-1 overflow-hidden">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onEdgeClick={onEdgeClick}
+              onNodeClick={onNodeClick}
+              nodeTypes={nodeTypes}
+              fitView
+              nodeExtent={[[WORKSPACE_X, WORKSPACE_Y], [WORKSPACE_X + WORKSPACE_WIDTH, WORKSPACE_Y + WORKSPACE_HEIGHT]]}
+            >
             <Controls />
             <MiniMap />
             <Background gap={12} size={1} />
@@ -350,6 +351,7 @@ export const MindMap = () => {
               />
             )}
           </ReactFlow>
+          </div>
           
           {/* Settings Button for specialized nodes - only visible when a specialized node is selected */}
           {selectedNode && (

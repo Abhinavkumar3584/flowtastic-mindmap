@@ -18,7 +18,9 @@ import {
   Trash2,
   Settings,
   Undo,
-  Redo
+  Redo,
+  BookOpen,
+  Eye
 } from 'lucide-react';
 import { getAllMindMaps } from '@/utils/mindmapStorage';
 import { useToast } from '@/hooks/use-toast';
@@ -167,8 +169,36 @@ export const MindMapTopBar = ({
           className="px-2"
         >
           <Settings className="h-4 w-4" />
+        </Button>        
+        {/* Browse Exams Button */}
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => window.open('/exams', '_blank')}
+          title="Browse Exams"
+          className="px-2 gap-1"
+        >
+          <BookOpen className="h-4 w-4" />
+          <span>Browse</span>
         </Button>
         
+        {/* View Mind Map Button */}
+        <Button 
+          variant="default" 
+          size="sm"
+          onClick={() => {
+            if (currentMindMap) {
+              window.open(`/view?map=${encodeURIComponent(currentMindMap)}`, '_blank');
+            } else {
+              alert('Please save the mind map first before viewing');
+            }
+          }}
+          title="View Mind Map"
+          className="px-2 gap-1 bg-blue-600 hover:bg-blue-700"
+        >
+          <Eye className="h-4 w-4" />
+          <span>View</span>
+        </Button>        
         <div className="ml-auto flex items-center gap-2">
           {autoSaveConfig.enabled && (
             <div className="text-xs px-2 py-1 bg-blue-100 rounded-full">

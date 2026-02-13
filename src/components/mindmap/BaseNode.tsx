@@ -64,8 +64,13 @@ export const BaseNode = ({ data, id, selected }: MindMapNodeProps) => {
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
         />
-        {selected && <SettingsButton onClick={() => {}} />}
-        {selected && <NodeSettings data={nodeData} nodeId={id} />}
+        {/* Only show settings in edit mode, not in view mode */}
+        {selected && !document.querySelector('[data-viewmode="true"]') && (
+          <>
+            <SettingsButton onClick={() => {}} />
+            <NodeSettings data={nodeData} nodeId={id} />
+          </>
+        )}
       </NodeContainer>
     </NodeContextMenu>
   );

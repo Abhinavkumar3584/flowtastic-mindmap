@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { ReactFlow, Background, NodeTypes, Node } from '@xyflow/react';
+import { ReactFlow, NodeTypes, Node, Controls, Background, ReactFlowProvider, DefaultEdgeOptions, MarkerType } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { BaseNode } from './BaseNode';
 import { SectionNode } from './node-components/SectionNode';
@@ -19,6 +19,7 @@ import { ConceptNode } from './node-components/ConceptNode';
 import { renderMindMap } from '@/utils/mindmapRenderer';
 import { useToast } from '@/hooks/use-toast';
 import { MindMapData, BaseNodeData } from './types';
+import { MindMapHeader, MindMapHeaderData } from './MindMapHeader';
 import {
   Select,
   SelectContent,
@@ -70,9 +71,17 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
   const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
   const [selectedMap, setSelectedMap] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<BaseNodeData | null>(null);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const mindMaps = getAllMindMaps();
+
+  // Default header data
+  const defaultHeaderData: MindMapHeaderData = {
+    title: 'Untitled Mind Map',
+    description: 'No description provided',
+    subDetails: 'No additional details'
+  };
 
   // Auto-load mind map from URL parameter
   useEffect(() => {
@@ -103,11 +112,18 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
     const data = renderMindMap(mapName);
     if (data) {
       console.log('Mind map loaded for viewing:', data);
+      console.log('Number of nodes:', data.nodes?.length || 0);
+      console.log('Number of edges:', data.edges?.length || 0);
+      console.log('Edges data:', JSON.stringify(data.edges, null, 2));
+      
+      // Alert for debugging
+      alert(`Mind map loaded!\nNodes: ${data.nodes?.length || 0}\nConnections (edges): ${data.edges?.length || 0}`);
+      
       setMindMapData(data);
       
       toast({
         title: "Success",
-        description: `Loaded mind map: ${mapName}`,
+        description: `Loaded mind map: ${mapName} with ${data.edges?.length || 0} connections`,
       });
     } else {
       console.error('Failed to load mind map:', mapName);
@@ -169,59 +185,153 @@ export const ExportedMindMap = ({ predefinedMindMap, containerHeight = "100vh" }
 
   return (
     <>
-      <div className="absolute top-4 left-4 z-10">
-        <Link to="/exams">
-          <Button variant="outline" className="flex gap-2 items-center">
-            <ArrowLeft size={16} />
-            <span>Back to Catalog</span>
-          </Button>
-        </Link>
-      </div>
+      {/* Only show back button and map selector if no data is available */}
+      {!mindMapData && !predefinedMindMap && (
+        <div className="w-full h-screen flex flex-col items-center justify-center gap-6 bg-gray-50">
+          <div className="absolute top-4 left-4">
+            <Link to="/exams">
+              <Button variant="outline" className="flex gap-2 items-center">
+                <ArrowLeft size={16} />
+                <span>Back to Catalog</span>
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="text-center max-w-md">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Mind Map Viewer</h1>
+            <p className="text-gray-600 mb-6">Select a mind map to view in presentation mode</p>
+          </div>
+          
+          <div className="flex gap-4 items-center">
+            <Select value={selectedMap} onValueChange={setSelectedMap}>
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Choose a mind map to view" />
+              </SelectTrigger>
+              <SelectContent>
+                {mindMaps.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button onClick={handleRender} disabled={!selectedMap}>
+              View Mind Map
+            </Button>
+          </div>
+        </div>
+      )}
 
-      <div 
-        className="w-full mindmap-viewer" 
-        style={{ 
-          height: containerHeight,
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
-        }}
-      >
-        <ReactFlow
-          nodes={(mindMapData?.nodes || []).filter(n => n.id !== '__workspace_boundary__')}
-          edges={mindMapData?.edges || []}
-          nodeTypes={nodeTypes}
-          onNodeClick={handleNodeClick}
-          fitView
-          fitViewOptions={{ 
-            padding: 0.05,
-            minZoom: 0.5,
-            maxZoom: 1.5,
-          }}
-          nodesDraggable={false}
-          nodesConnectable={false}
-          elementsSelectable={false}
-          zoomOnScroll={false}
-          zoomOnPinch={false}
-          zoomOnDoubleClick={false}
-          panOnDrag={[1]}
-          translateExtent={[
-            [0, -100],
-            [WORKSPACE_WIDTH, WORKSPACE_HEIGHT + 100]
-          ]}
-          className="mindmap-display"
-        />
+      {/* Mind Map Canvas - Full Screen when data is available */}
+      {(mindMapData || predefinedMindMap) && (
+        <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', background: 'white' }}>
+          {/* Mind Map Header - Fixed at top */}
+          <div style={{ flexShrink: 0, background: 'white', borderBottom: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', zIndex: 100 }}>
+            <MindMapHeader
+              data={mindMapData?.headerData || defaultHeaderData}
+              onChange={() => {}} // Read-only in view mode
+              isCollapsed={isHeaderCollapsed}
+              onToggleCollapse={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+              readOnly={true}
+            />
+          </div>
 
-        <style>{`
-          .mindmap-viewer .react-flow__handle {
-            display: none !important;
-          }
-          .mindmap-viewer .react-flow__resize-control {
-            display: none !important;
-          }
-          .mindmap-viewer .react-flow__node button {
-            display: none !important;
-          }
-        `}</style>
-      </div>
+          {/* Mind Map Canvas - Takes remaining height */}
+          <div style={{ flex: 1, position: 'relative', background: 'white' }}>
+            <ReactFlow
+              nodes={(mindMapData?.nodes || []).filter(n => n.id !== '__workspace_boundary__')}
+              edges={(mindMapData?.edges || []).map(edge => {
+                console.log('Rendering edge:', edge);
+                return {
+                  ...edge,
+                  type: edge.type || 'default',
+                  style: {
+                    stroke: edge.style?.stroke || edge.data?.strokeColor || '#333',
+                    strokeWidth: edge.style?.strokeWidth || edge.data?.strokeWidth || 2,
+                  },
+                  markerEnd: {
+                    type: MarkerType.ArrowClosed,
+                    color: edge.style?.stroke || edge.data?.strokeColor || '#333',
+                    width: 20,
+                    height: 20,
+                  }
+                };
+              })}
+              nodeTypes={nodeTypes}
+              onNodeClick={handleNodeClick}
+              defaultViewport={{ x: 50, y: 20, zoom: 1 }}
+              minZoom={0.5}
+              maxZoom={2}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={true}
+              zoomOnScroll={true}
+              zoomOnPinch={true}
+              zoomOnDoubleClick={false}
+              panOnDrag={true}
+              panOnScroll={true}
+              defaultEdgeOptions={{
+                type: 'default',
+                style: { stroke: '#333', strokeWidth: 2 },
+                markerEnd: { type: MarkerType.ArrowClosed, color: '#333' }
+              }}
+              className="mindmap-display"
+              data-viewmode="true"
+              proOptions={{ hideAttribution: true }}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                background: 'white'
+              }}
+            >
+            </ReactFlow>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .mindmap-display .react-flow__handle {
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+        .mindmap-display .react-flow__resize-control {
+          display: none !important;
+        }
+        .mindmap-display .react-flow__node .settings-button {
+          display: none !important;
+        }
+        .mindmap-display .react-flow__node .node-settings {
+          display: none !important;
+        }
+        .mindmap-display {
+          background: white !important;
+        }
+        .mindmap-display .react-flow__background {
+          display: none !important;
+        }
+        .mindmap-display .react-flow__edges {
+          z-index: 5 !important;
+          pointer-events: none;
+        }
+        .mindmap-display .react-flow__edge {
+          pointer-events: none;
+        }
+        .mindmap-display .react-flow__edge path,
+        .mindmap-display .react-flow__edge-path {
+          stroke: #333 !important;
+          stroke-width: 2px !important;
+          fill: none !important;
+        }
+        .mindmap-display .react-flow__edge.selected path {
+          stroke: #3b82f6 !important;
+        }
+        .mindmap-display .react-flow__edgelabel {
+          display: block !important;
+        }
+        .react-flow__edge-interaction {
+          pointer-events: none;
+        }
+      `}</style>
 
       <Dialog open={!!selectedNode} onOpenChange={() => setSelectedNode(null)}>
         <DialogContent className="max-w-2xl">

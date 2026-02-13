@@ -18,6 +18,15 @@ import {
   Circle,
   Square,
   Triangle,
+  ListTodo,
+  Timer,
+  FileText,
+  StickyNote,
+  Lightbulb,
+  Library,
+  FlaskConical,
+  BrainCircuit,
+  GraduationCap,
 } from "lucide-react";
 
 interface ComponentsSidebarProps {
@@ -42,7 +51,7 @@ export const ComponentsSidebar = ({
             size="sm" 
             className="h-8 w-8 p-0"
             onClick={onToggleSidebar}
-            title="Advanced Components"
+            title="Close Sidebar"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -51,7 +60,7 @@ export const ComponentsSidebar = ({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Components</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-1.5 p-2">
+          <SidebarGroupContent className="space-y-0.5 p-1">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
@@ -97,7 +106,7 @@ export const ComponentsSidebar = ({
         
         <SidebarGroup>
           <SidebarGroupLabel>Shapes</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-1.5 p-2">
+          <SidebarGroupContent className="space-y-0.5 p-1">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2"
@@ -129,6 +138,82 @@ export const ComponentsSidebar = ({
             >
               <Triangle className="h-4 w-4" />
               <span>Triangle</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Advanced Components</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-0.5 p-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("checklist")}
+            >
+              <ListTodo className="h-4 w-4" />
+              <span>Checklist</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("timeline")}
+            >
+              <Timer className="h-4 w-4" />
+              <span>Timeline</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("resource")}
+            >
+              <FileText className="h-4 w-4" />
+              <span>Resources</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("note")}
+            >
+              <StickyNote className="h-4 w-4" />
+              <span>Note</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("concept")}
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Concept</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Education Tools</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-0.5 p-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("flashcard")}
+            >
+              <Library className="h-4 w-4" />
+              <span>Flashcards</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("quiz")}
+            >
+              <FlaskConical className="h-4 w-4" />
+              <span>Quiz</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2"
+              onClick={() => onAddNode("mindmap")}
+            >
+              <BrainCircuit className="h-4 w-4" />
+              <span>Nested Map</span>
             </Button>
           </SidebarGroupContent>
         </SidebarGroup>
